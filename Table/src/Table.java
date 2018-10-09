@@ -6,7 +6,7 @@
 
 
 /**
- *<h1> The poker table.</h1>
+ *<h1> The poker table </h1>
  * Handles the flop, turn and river. Keeps track on big and small blind and the 
  * dealer button. Keeps track of the players around the table. 
  * 
@@ -17,20 +17,32 @@ public class Table {
     private enum UpcomingCards {
         FLOP,
         TURN,
-        RIVER,
+        RIVER;
     }
     
     private UpcomingCards upcomingCards;
-    public Deck deck;
-    public Card[] turnedCards;
-    public Players players; 
+    private Deck deck;
+    private Card[] turnedCards;
+    private Players players; 
+    
     /**
      * A no argument constructor.
      */
     public Table() {
-        upcomingCards = UpcomingCards.FLOP;
-        deck = new Deck();
-        turnedCards = new Card[5];
+        this.upcomingCards = UpcomingCards.FLOP;
+        this.deck = new Deck();
+        this.turnedCards = new Card[5];
+    }
+    
+     /**
+     * A parameterized constructor which populates the table. 
+     * @param pPlayers The players participating in the poker game.
+     */
+    public Table(Players pPlayers) {
+        this.upcomingCards = UpcomingCards.FLOP;
+        this.deck = new Deck();
+        this.turnedCards = new Card[5];
+        this.players = pPlayers;
     }
     
     /**
@@ -44,8 +56,9 @@ public class Table {
     
    /**
     * Deals the flop, the turn and the river to the table. 
+    * @return The flopped cards. 
     */
-   public void turnCard()
+   public Card[] turnCard()
    {   
         switch(upcomingCards)
         {
@@ -66,11 +79,13 @@ public class Table {
             case RIVER: 
                 burnCard();
                 turnedCards[5] = deck.getTopCard();
+                upcomingCards = UpcomingCards.FLOP;
                 break;
             default: 
                 // The state machine should never be in this state. 
                 break;
         }
+        return turnedCards;
    }
    
     /**
@@ -78,6 +93,7 @@ public class Table {
     */
    public void moveBlinds()
    {
+       Player nextPlayer = this.players.nextPlayer();
        
    }
    
@@ -91,17 +107,25 @@ public class Table {
    
     /**
     * Populating players to the poker table. 
+    * @param pPlayers The players participating in the poker game.
     */
-   public void populateTable()
+   public void populateTable(Players pPlayers)
    {
-       
+       this.players = pPlayers;
    }
-                   
+             
+   public void removeCardsFromTable()
+   {
+       for(int i=0; i<5; i++)
+       {
+           turnedCards[i] = null;
+       }
+   }
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {   
-       
+        
     }
     
 }

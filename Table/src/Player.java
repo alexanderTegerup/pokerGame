@@ -4,15 +4,9 @@
  * and open the template in the editor.
  */
 
-
 /**
  * <h1> Stub class </h1>
- * 
  */
-public class Deck {
-   public Card getTopCard(){
-       Card topCard = new Card();
-       return topCard;
-   }
-   public void shuffleDeck(){}
+public class Player {
+    
 }

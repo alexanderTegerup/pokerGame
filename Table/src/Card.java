@@ -6,9 +6,7 @@
 
 
 /**
- *<h1> Stub class.</h1>
- * @author ATESXB
- * Dummy class
+ *<h1> Stub class </h1>
  */
 public class Card {
     

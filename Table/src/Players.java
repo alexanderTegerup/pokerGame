@@ -5,9 +5,14 @@
  */
 
 /**
- *<h1> Stub class.</h1>
- * @author ATESXB
+ *<h1> Stub class </h1>
  */
 public class Players {
+    
+    public Player nextPlayer()
+    {
+        Player p = new Player();
+        return p;
+    }
     
 }
