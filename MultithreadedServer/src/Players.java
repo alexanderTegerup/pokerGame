@@ -1,39 +1,51 @@
-package players;
-
 import java.util.ArrayList;
 
 public class Players {
 
-    private static int amountOfPlayers;
+    private static int minMaxAmountOfPlayers;
     private static int amountOfPlayersOnBoard;
     private static double defaultStakes;
     private static ArrayList<Player> boardOfPlayers;
 
     public Players(int playerAmount, double defaultStakesPerPlayer) {
-        amountOfPlayers = playerAmount;
+        minMaxAmountOfPlayers = playerAmount;
         defaultStakes = defaultStakesPerPlayer;
         boardOfPlayers = new ArrayList<>();
         amountOfPlayersOnBoard = 0;
     }
 
     public static boolean addPlayerToTable(String userName) {
-        int i = 0;
+        int currentAmount = 0;
         for (Player p:boardOfPlayers) {
-            i++;
+            currentAmount++;
+            if(p.getUserName().equals(userName))
+                return false;
         }
-        if(i<amountOfPlayers) {
+        if(currentAmount<minMaxAmountOfPlayers) {
             boardOfPlayers.add(new Player(userName, defaultStakes));
             System.out.println("Du har joint");
             amountOfPlayersOnBoard++;
 
-            for (Player p:boardOfPlayers) {
-                if(p.getUserName().equals(userName))
-                    if(amountOfPlayers== i)
-                        setStateOnPlayer(boardOfPlayers.get(0).getUserName(), States.GO);
+            if(minMaxAmountOfPlayers==amountOfPlayersOnBoard) {
+                System.out.println("Den som ska få go är...");
+                setStateOnPlayer(boardOfPlayers.get(0).getUserName(), States.GO);
+                System.out.println("Nu har han staten... " + getStateOfPlayer(boardOfPlayers.get(0).getUserName()));
             }
             return true;
         }
         return false;
+    }
+
+    public static Player getPlayer(String username) {
+        int i = 0;
+
+        for (Player p:boardOfPlayers) {
+            if(p.getUserName().equals(username)) {
+                return  boardOfPlayers.get(i);
+            }
+            i++;
+        }
+        return null;
     }
 
     public static boolean deletePlayerFromTable(String userName) {
@@ -50,7 +62,7 @@ public class Players {
     }
 
     public static int getAmountOfPlayers() {
-        return amountOfPlayers;
+        return minMaxAmountOfPlayers;
     }
 
     public static int getAmountOfPlayersOnBoard() {

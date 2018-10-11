@@ -29,17 +29,14 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import players.Players;
-
 import java.net.*;
 import java.io.*;
-import java.util.concurrent.TimeUnit;
 
-public class KKMultiServer {
+public class MultiServer {
     public static void main(String[] args) throws IOException {
 
         if (args.length != 1) {
-            System.err.println("Usage: java KKMultiServer <port number>");
+            System.err.println("Usage: java MultiServer <port number>");
             System.exit(1);
         }
 
@@ -47,10 +44,9 @@ public class KKMultiServer {
         boolean listening = true;
 
         Players players = new Players(4, 200);
-        Thread t1;
         try (ServerSocket serverSocket = new ServerSocket(portNumber)) {
             while (listening) {
-               new Thread(new KKMultiServerThread(serverSocket.accept())).start();
+               new Thread(new MultiServerThread(serverSocket.accept(), players)).start();
             }
 
             System.out.println("TABLE FILLED");

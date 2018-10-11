@@ -1,5 +1,3 @@
-package players;
-
 public class Player {
 
     private String userName;
@@ -35,4 +33,5 @@ public class Player {
     public void setState(States state) {
         this.state = state;
     }
+
 }
