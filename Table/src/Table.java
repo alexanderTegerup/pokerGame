@@ -117,7 +117,7 @@ public class Table {
     */
    public void moveBlinds()
    {
-  
+       this.players.moveBlinds();
    }
    
     /**
@@ -125,7 +125,7 @@ public class Table {
     */
    public void moveDealerButton()
    {
-       
+       this.players.moveDealerButton();
    }
    
     /**

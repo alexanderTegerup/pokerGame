@@ -8,5 +8,5 @@
  * <h1> Stub class </h1>
  */
 public class Player {
-    
+
 }

@@ -9,10 +9,14 @@
  */
 public class Players {
     
-    public Player nextPlayer()
-    {
-        Player p = new Player();
-        return p;
-    }
+   public void moveBlinds()
+   {
+
+   }
+   
+   public void moveDealerButton()
+   {
+       
+   }
     
 }
