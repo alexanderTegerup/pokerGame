@@ -24,6 +24,7 @@ public class Table {
     private Deck deck;
     private Card[] turnedCards;
     private Players players; 
+    private Card burnedCard;
     
     /**
      * A no argument constructor.
@@ -50,15 +51,13 @@ public class Table {
     */
     private void burnCard()
     {
-        deck.getTopCard(); // Do I need to typecast the return value to void
-                           // or handle the return value somehow? 
+        burnedCard = deck.getTopCard();
     }
     
    /**
     * Deals the flop, the turn and the river to the table. 
-    * @return The flopped cards. 
     */
-   public Card[] turnCard()
+   public void turnCard()
    {   
         switch(upcomingCards)
         {
@@ -85,16 +84,40 @@ public class Table {
                 // The state machine should never be in this state. 
                 break;
         }
-        return turnedCards;
    }
    
+    /**
+    * Get the cards which are shown on the table. 
+    * @return The all flopped cards. 
+    */
+   public Card[] getAllFloppedCards()
+   {
+       return turnedCards;
+   }
+   
+   /**
+    * Get one of the cards on the table. 
+    * @return A flopped card. 
+    * @param index Which one of the five cards (0 - 4) that will be returned.
+    */
+   public Card getFloppedCard(int index)
+   {
+       try{
+           return turnedCards[index];
+       }
+       catch(ArrayIndexOutOfBoundsException e)
+       {
+           System.out.println("Warning: ArrayIndexOutOfBoundsException");
+       }
+       return null;
+   }
+           
     /**
     * Move the big and small blind to the next players. 
     */
    public void moveBlinds()
    {
-       Player nextPlayer = this.players.nextPlayer();
-       
+  
    }
    
     /**
@@ -113,7 +136,11 @@ public class Table {
    {
        this.players = pPlayers;
    }
-             
+      
+    /**
+    * Remove the flop, turn and river from the table. This is simulated by 
+    * assigning all those cards to cards to null. 
+    */
    public void removeCardsFromTable()
    {
        for(int i=0; i<5; i++)
@@ -125,7 +152,7 @@ public class Table {
      * @param args the command line arguments
      */
     public static void main(String[] args) {   
-        
+
     }
     
 }
