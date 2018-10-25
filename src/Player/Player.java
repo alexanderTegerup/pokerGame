@@ -17,7 +17,9 @@ public class Player
 		CHECK,
 		FOLD,
 		CALL,
-		RAISE;
+		RAISE,
+		ALL_IN,
+		OUT;
 	}
 
 
