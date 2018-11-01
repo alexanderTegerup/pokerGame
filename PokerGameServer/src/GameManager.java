@@ -5,7 +5,7 @@ import java.util.concurrent.TimeUnit;
 
 public class GameManager {
 
-    private boolean playersession = true, playerPlayed = false, newRound = false;
+    private boolean playersession = true, playerPlayed = false, newRound;
     private double bigblind, smallblind;
     private double pot = 0, round = 1, raise = 0;
     private PrintWriter out;
@@ -36,6 +36,16 @@ public class GameManager {
         updateDealerBigandSmall();
 
         while (round < 5) {
+
+            newRound = false;
+
+            cleanPlayedArray();
+
+            //deal three cards to table
+
+            //deal 1 card to table
+
+            //deal 1 card to table
 
             while (playersession) {
                 //dealer deals cards, the blind ones must put out money
@@ -77,6 +87,7 @@ public class GameManager {
 
                 if (newRound) {
                     round++;
+                    raise = 0;
                     break;
                 }
             }
@@ -99,7 +110,7 @@ public class GameManager {
 
         if (stateOfBet == States.RAISE) {
             if (raise < (played[ID] + bets)) {
-                raise = bets;
+                raise = (played[ID] + bets);
                 pot += bets;
                 minimumState = States.RAISE;
                 played[ID] += bets;
@@ -107,6 +118,13 @@ public class GameManager {
         } else if (stateOfBet == States.CALL) {
             if (raise == (played[ID] + bets)) {
                 pot += bets;
+                int tmp = 0;
+                for(int i = 0; i < played.length;i++) {
+                    if(played[i] == raise || foldedPlayers[i])
+                        tmp++;
+                }
+                if(tmp == amountOfPlayers)
+                    newRound = true;
             }
         } else if (stateOfBet == States.CHECK) {
             minimumState = States.CHECK;
@@ -121,4 +139,16 @@ public class GameManager {
             observer.dealCards(/*dealCard(), dealcard()))*/);
     }
 
+    private void cleanFoldedArray() {
+        for(int i = 0; i < amountOfPlayers; i++) {
+            foldedPlayers[i] = false;
+            played[i] = 0;
+        }
+    }
+
+    private void cleanPlayedArray() {
+        for(int i = 0; i < amountOfPlayers; i++) {
+            played[i] = 0;
+        }
+    }
 }
