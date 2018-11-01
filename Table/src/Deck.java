@@ -8,8 +8,9 @@ import java.util.Scanner;
 import java.util.ArrayList;
 import java.util.Collections;
 /**
- * <h1> Stub class </h1>
- * 
+ * <h1> Class which generates a deck </h1>
+ * Each card in the deck has a reference to the card below in the deck. This 
+ * means that the deck is a linked list of cards. 
  */
 public class Deck {
     
@@ -34,11 +35,23 @@ public class Deck {
     */
     public Card getTopCard(){
         
-        return topCard;
+        Card removedCard = topCard;
+        topCard = topCard.getReference(); 
+        return removedCard;
     }
     
+    /** 
+    * Method that shuffles the deck. 
+    */
     public void shuffleDeck(){
        
+    }
+    
+    /**
+     * Method that removes card objects from the heap. 
+     */
+    public void resetDeck() {
+        
     }
     
     /**
@@ -64,7 +77,7 @@ public class Deck {
         topCard = null;
         for(int index=0; index<numCardsInDeck; index++){
             
-            randomSuitAndRank(index);
+            randomizeSuitAndRank(index);
             cardBelow = topCard;
             topCard = new Card(suit, rank, cardBelow);
         }
@@ -75,7 +88,7 @@ public class Deck {
     * generated before. 
     * @param index The index in the array with random numbers.
     */
-    private void randomSuitAndRank(int index) {
+    private void randomizeSuitAndRank(int index) {
         
         int randomNumber = randomNumbers.get(index);
         if (randomNumber < 13){
