@@ -1,10 +1,10 @@
-import java.util.ArrayList;
+package common;
 
 public interface Observer {
 
     public void updateLastPlayersMove(String playerName, States move);
 
-    public void dealCards(Card card1, Card card2);
+  //  public void dealCards(Card card1, Card card2);
 
     public void updateTurnAndOptions(int player, States minimumState, double raise);
 
@@ -16,7 +16,7 @@ public interface Observer {
 
     public void CurrentTurnPotRaises(double raises);
 
-    public void flipOfCardT(ArrayList<Card>());
+  //  public void flipOfCardT(ArrayList<Card>());
 
     public void updateFoldFromServer();
 }

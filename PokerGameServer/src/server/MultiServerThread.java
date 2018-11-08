@@ -6,9 +6,9 @@ import java.net.Socket;
 
 public class MultiServerThread implements Runnable {
     private Socket socket = null;
-    private Players players;
+    private player.Players players;
 
-    public MultiServerThread(Socket socket, Players players) {
+    public MultiServerThread(Socket socket, player.Players players) {
         this.socket = socket;
         this.players = players;
     }
@@ -16,13 +16,13 @@ public class MultiServerThread implements Runnable {
     public void run() {
         try {
             String outputLine, inputLine;
-            Player user;
+            player.Player user;
 
             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
             BufferedReader in = new BufferedReader(
                     new InputStreamReader(
                             socket.getInputStream()));
-            LoginManager loginManager = new LoginManager(out, in, players);
+            managers.LoginManager loginManager = new managers.LoginManager(out, in, players);
 
             user = loginManager.loginFunction();
 
@@ -31,7 +31,8 @@ public class MultiServerThread implements Runnable {
             }
             else {
                 //open game with user
-                GameManager gameManager = new GameManager(out, in);
+                managers.GameManager gameManager = new managers.GameManager(out, in, players);
+                player.setGameManager(gameManager);
                 gameManager.playingTheGame();
             }
         } catch (IOException e) {

@@ -1,3 +1,9 @@
+package player;
+
+import common.Observer;
+import common.Subject;
+import managers.GameManager;
+
 import java.util.ArrayList;
 
 public class Players implements Subject {
@@ -5,13 +11,12 @@ public class Players implements Subject {
         private int MaxAmountOfPlayers;
         private double defaultStakes;
         private /*static*/ ArrayList<Observer> players;
-        private /*static*/ int currentAmount = 0;
+        private static int currentAmount = 0;
         private /*static*/ boolean goodToGo;
         private /*static*/ GameManager gameManager;
 
 
-    public Players(int playerAmount, double defaultStakesPerPlayer, GameManager gm) {
-        gameManager = gm;
+    public Players(int playerAmount, double defaultStakesPerPlayer) {
             MaxAmountOfPlayers = playerAmount;
             defaultStakes = defaultStakesPerPlayer;
             players = new ArrayList<>();
@@ -47,7 +52,7 @@ public class Players implements Subject {
         // Get the index of the observer to delete
         int observerIndex = players.indexOf(deleteObserver);
         // Print out message (Have to increment index to match)
-        System.out.println("Observer " + (observerIndex+1) + " deleted");
+        System.out.println("common.Observer " + (observerIndex+1) + " deleted");
         // Removes observer from the ArrayList
         players.remove(observerIndex);
         currentAmount--;
@@ -59,5 +64,9 @@ public class Players implements Subject {
 
     public /*static*/ boolean isGoodToGo() {
         return goodToGo;
+    }
+
+    public void setGameManager(GameManager gameManager) {
+        this.gameManager = gameManager;
     }
 }

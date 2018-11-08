@@ -1,3 +1,9 @@
+package managers;
+
+import common.Observer;
+import common.States;
+import player.Players;
+
 import java.io.BufferedReader;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -18,11 +24,11 @@ public class GameManager {
     private States minimumState = States.BIG;
     ArrayList<Observer> listPlayers;
 
-    public GameManager(PrintWriter o, BufferedReader i, Players players) {
+    public GameManager(/*PrintWriter o, BufferedReader i, */Players players) {
         this.players = players;
         amountOfPlayers = players.getCurrentAmount();
-        in = i;
-        out = o;
+     //   in = i;
+     //   out = o;
         playerTurn = 0;
         bigblind = 100;
         smallblind = 50;
@@ -135,8 +141,8 @@ public class GameManager {
     }
 
     private void dealHandsToPlayers() {
-        for (Observer observer : listPlayers)
-            observer.dealCards(/*dealCard(), dealcard()))*/);
+       // for (common.Observer observer : listPlayers)
+        //    observer.dealCards(/*dealCard(), dealcard()))*/);
     }
 
     private void cleanFoldedArray() {

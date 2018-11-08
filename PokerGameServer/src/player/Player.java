@@ -1,6 +1,12 @@
+package player;
+
+import common.Observer;
+import common.States;
+import managers.GameManager;
+
 public class Player implements Observer {
 
-   private Card hand;
+  // private Card hand;
     private String userName;
     private double stakes;
     private States state;
@@ -12,11 +18,11 @@ public class Player implements Observer {
     private int observerID;
 
     public Player(String uname, double gameStakes, GameManager gm) {
-        gameManager = gm;
         userName = uname;
         stakes = gameStakes;
         state = States.WAITING;
         this.observerID = observerIDTracker;
+        gameManager = gm;
     }
 
     public String getUserName() {
@@ -44,10 +50,10 @@ public class Player implements Observer {
 
     }
 
-    @Override
-    public void dealCards(Card card1, Card card2) {
+  //  @Override
+  //  public void dealCards(Card card1, Card card2) {
 
-    }
+  //  }
 
     @Override
     public void updateTurnAndOptions(int player, States minimumState, double raisedPot) {
@@ -76,6 +82,7 @@ public class Player implements Observer {
         else if(state == States.SMALL) {
             bettingCash += small;
         }
+
         }
 
     @Override
@@ -96,10 +103,10 @@ public class Player implements Observer {
 
     }
 
-    @Override
-    public void flipOfCardT() {
+ //   @Override
+ //   public void flipOfCardT() {
 
-    }
+//    }
 
     @Override
     public void updateFoldFromServer() {
