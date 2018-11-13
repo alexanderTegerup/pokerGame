@@ -4,7 +4,6 @@
  * and open the template in the editor.
  */
 
-import java.util.Scanner;
 import java.util.ArrayList;
 import java.util.Collections;
 /**
@@ -20,7 +19,7 @@ public class Deck {
     private Card.Rank rank;
     private int numCardsInDeck = 52;
     
-    ArrayList<Integer> randomNumbers;
+    private ArrayList<Integer> randomNumbers;
     
      /**
      * A no argument constructor.

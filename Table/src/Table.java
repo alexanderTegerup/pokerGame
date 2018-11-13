@@ -30,9 +30,9 @@ public class Table {
      * A no argument constructor.
      */
     public Table() {
-        this.upcomingCards = UpcomingCards.FLOP;
-        this.deck = new Deck();
-        this.turnedCards = new Card[5];
+        upcomingCards = UpcomingCards.FLOP;
+        deck = new Deck();
+        turnedCards = new Card[5];
     }
     
      /**
@@ -40,10 +40,10 @@ public class Table {
      * @param pPlayers The players participating in the poker game.
      */
     public Table(Players pPlayers) {
-        this.upcomingCards = UpcomingCards.FLOP;
-        this.deck = new Deck();
-        this.turnedCards = new Card[5];
-        this.players = pPlayers;
+        upcomingCards = UpcomingCards.FLOP;
+        deck = new Deck();
+        turnedCards = new Card[5];
+        players = pPlayers;
     }
     
     /**
@@ -57,7 +57,7 @@ public class Table {
    /**
     * Deals the flop, the turn and the river to the table. 
     */
-   public void turnCard()
+   public void dealCard()
    {   
         switch(upcomingCards)
         {
@@ -90,7 +90,7 @@ public class Table {
     * Get the cards which are shown on the table. 
     * @return The all flopped cards. 
     */
-   public Card[] getAllFloppedCards()
+   public Card[] showAllCards()
    {
        return turnedCards;
    }
@@ -100,7 +100,7 @@ public class Table {
     * @return A flopped card. 
     * @param index Which one of the five cards (0 - 4) that will be returned.
     */
-   public Card getFloppedCard(int index)
+   public Card showCard(int index)
    {
        try{
            return turnedCards[index];
@@ -117,7 +117,7 @@ public class Table {
     */
    public void moveBlinds()
    {
-       this.players.moveBlinds();
+       players.moveBlinds();
    }
    
     /**
@@ -125,7 +125,7 @@ public class Table {
     */
    public void moveDealerButton()
    {
-       this.players.moveDealerButton();
+       players.moveDealerButton();
    }
    
     /**
@@ -134,7 +134,7 @@ public class Table {
     */
    public void populateTable(Players pPlayers)
    {
-       this.players = pPlayers;
+       players = pPlayers;
    }
       
     /**
@@ -152,7 +152,7 @@ public class Table {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-
+        
     }
     
 }

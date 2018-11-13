@@ -39,19 +39,19 @@ public class Card {
     
     private Suit suit;
     private Rank rank;
-    private Card cReference; 
+    private Card reference; 
     
     /**
     * A parameterized constructor which generates a card. 
-    * @param suit The suit of the card.
-    * @param rank The rank of the card.
-    * @param cReference A reference to another card. 
+    * @param suit_ The suit of the card.
+    * @param rank_ The rank of the card.
+    * @param reference_ A reference to another card. 
     */
-    public Card(Suit suit, Rank rank, Card cReference){
+    public Card(Suit suit_, Rank rank_, Card reference_){
         
-        this.suit       = suit;
-        this.rank       = rank; 
-        this.cReference = cReference; 
+        suit      = suit_;
+        rank      = rank_; 
+        reference = reference_; 
     }
     
     /** 
@@ -59,7 +59,7 @@ public class Card {
      * @return The reference of the card object
      */
     public Card getReference(){
-        return cReference;
+        return reference;
     }
     
     /** 
@@ -67,7 +67,7 @@ public class Card {
      * @return The suit of the card object
      */
     public Suit getSuit(){
-        return this.suit;
+        return suit;
     }
     
     /** 
@@ -75,7 +75,7 @@ public class Card {
      * @return The rank of the card object
      */    
     public Rank getRank(){
-        return this.rank;
+        return rank;
     }
     
 }
