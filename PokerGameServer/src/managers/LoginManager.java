@@ -17,6 +17,10 @@ public class LoginManager {
     private Players players;
     Player player;
 
+    /**
+     * Constructor for LoginManager class
+     * @param players instance of playerclass
+     */
     public LoginManager(/*PrintWriter o, BufferedReader i, */Players players) {
         //out = o;
         //in = i;
@@ -24,6 +28,11 @@ public class LoginManager {
 
     }
 
+    /**
+     * Log in function for registering a player to be an observer as long as the amount of players is not filled
+     * @param username string input from user used as a username when trying to log in.
+     * @return player object
+     */
     public Player loginFunction(String username) {
        // String username = "";
         //try {
