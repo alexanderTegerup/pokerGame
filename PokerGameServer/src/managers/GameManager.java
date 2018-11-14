@@ -24,6 +24,10 @@ public class GameManager {
     private States minimumState = States.BIG;
     ArrayList<Observer> listPlayers;
 
+    /**
+     * Constructor for GameManager class
+     * @param players using instance of players to notify the players of the changes in the gamemanager
+     */
     public GameManager(/*PrintWriter o, BufferedReader i, */Players players) {
         this.players = players;
         amountOfPlayers = players.getCurrentAmount();
@@ -35,6 +39,9 @@ public class GameManager {
         listPlayers = players.getPlayers();
     }
 
+    /**
+     * The game which is being played between players through the server
+     */
     public void playingTheGame() {
 
         raise = bigblind;
@@ -101,6 +108,9 @@ public class GameManager {
 
     }
 
+    /**
+     * Notify players at the beginning of the round who will act as dealer, small blind or big blind
+     */
     private void updateDealerBigandSmall() {
         if (playerTurn >= amountOfPlayers)
             playerTurn = (playerTurn % amountOfPlayers);
@@ -110,6 +120,13 @@ public class GameManager {
 
     }
 
+    /**
+     * Update the collected pot with bets collected from a players move
+     * @param ID - of specific player
+     * @param player - name of specific player who made a move
+     * @param bets - bets of player who made a move
+     * @param stateOfBet - state of the player which made a move
+     */
     public void updatePot(int ID, String player, double bets, States stateOfBet) {
         pot += bets;
         playerPlayed = true;
@@ -140,11 +157,17 @@ public class GameManager {
         }
     }
 
+    /**
+     * Deal two cards to each player
+     */
     private void dealHandsToPlayers() {
        // for (common.Observer observer : listPlayers)
         //    observer.dealCards(/*dealCard(), dealcard()))*/);
     }
 
+    /**
+     * clean up the array responsible for tracking folded players
+     */
     private void cleanFoldedArray() {
         for(int i = 0; i < amountOfPlayers; i++) {
             foldedPlayers[i] = false;
@@ -152,6 +175,9 @@ public class GameManager {
         }
     }
 
+    /**
+     * Clean the array responsible for tracking players bets
+     */
     private void cleanPlayedArray() {
         for(int i = 0; i < amountOfPlayers; i++) {
             played[i] = 0;

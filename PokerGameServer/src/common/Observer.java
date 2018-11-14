@@ -1,5 +1,8 @@
 package common;
 
+/**
+ * Observer interface for notifying observers when a change occurs
+ */
 public interface Observer {
 
     public void updateLastPlayersMove(String playerName, States move);
