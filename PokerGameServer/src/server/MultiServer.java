@@ -11,12 +11,16 @@ import java.net.ServerSocket;
 public class MultiServer {
     public static void main(String[] args) throws IOException {
 
+        //Create a player instance
         Player user;
 
+        //Initiate players instance with amount of players on table and the stakes of the players to be able to register and derefister players
         Players players = new Players(4, 200);
+
+        //Perform a login session for a player
         LoginManager loginManager = new LoginManager(/*out, in, */players);
 
-        //open game with user
+        //Initiate a gamemanager instance for playing the game
         GameManager gameManager = new GameManager(/*out, in, */players);
 
         //user = loginManager.loginFunction();
