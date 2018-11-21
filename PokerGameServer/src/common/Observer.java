@@ -1,4 +1,6 @@
-package common;
+
+
+import table.Card;
 
 /**
  * Observer interface for notifying observers when a change occurs
@@ -7,7 +9,7 @@ public interface Observer {
 
     public void updateLastPlayersMove(String playerName, States move);
 
-  //  public void dealCards(Card card1, Card card2);
+    public void dealCards(Card card1, Card card2);
 
     public void updateTurnAndOptions(int player, States minimumState, double raise);
 

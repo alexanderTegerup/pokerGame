@@ -1,8 +1,9 @@
-package managers;
+
 
 import common.Observer;
 import common.States;
 import player.Players;
+import table.Table;
 
 import java.io.BufferedReader;
 import java.io.PrintWriter;
@@ -22,6 +23,7 @@ public class GameManager {
     private double[] played;
     private Players players;
     private States minimumState = States.BIG;
+    private Table table;
     ArrayList<Observer> listPlayers;
 
     /**
@@ -45,8 +47,10 @@ public class GameManager {
     public void playingTheGame() {
 
         raise = bigblind;
+        table = new Table();
 
         updateDealerBigandSmall();
+        dealHandsToPlayers();
 
         while (round < 5) {
 
@@ -54,11 +58,9 @@ public class GameManager {
 
             cleanPlayedArray();
 
-            //deal three cards to table
-
-            //deal 1 card to table
-
-            //deal 1 card to table
+            // Deal one or three cards to the table, depending on if it is the 
+            // flop, turn or the river. 
+            table.dealCard();
 
             while (playersession) {
                 //dealer deals cards, the blind ones must put out money
@@ -161,8 +163,8 @@ public class GameManager {
      * Deal two cards to each player
      */
     private void dealHandsToPlayers() {
-       // for (common.Observer observer : listPlayers)
-        //    observer.dealCards(/*dealCard(), dealcard()))*/);
+        for (common.Observer observer : listPlayers)
+            observer.dealCards(table.getCardFromDeck(),table.getCardFromDeck());
     }
 
     /**

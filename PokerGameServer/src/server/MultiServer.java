@@ -1,4 +1,4 @@
-package server;
+
 
 import managers.GameManager;
 import managers.LoginManager;

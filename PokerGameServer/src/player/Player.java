@@ -1,8 +1,9 @@
-package player;
+
 
 import common.Observer;
 import common.States;
 import managers.GameManager;
+import table.Card;
 
 public class Player implements Observer {
 
@@ -115,6 +116,11 @@ public class Player implements Observer {
 
     public int getObserverID() {
         return observerID;
+    }
+
+    @Override
+    public void dealCards(Card card1, Card card2) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }
 

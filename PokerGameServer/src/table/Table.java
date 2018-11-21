@@ -1,3 +1,6 @@
+
+
+import player.Players;
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -66,19 +69,19 @@ public class Table {
                 turnedCards[0] = deck.getTopCard();
                 turnedCards[1] = deck.getTopCard();
                 turnedCards[2] = deck.getTopCard();
-                upcomingCards = UpcomingCards.TURN;
+                upcomingCards  = UpcomingCards.TURN;
                 break;
                 
             case TURN: 
                 burnCard();
                 turnedCards[4] = deck.getTopCard();
-                upcomingCards = UpcomingCards.RIVER;
+                upcomingCards  = UpcomingCards.RIVER;
                 break;
                 
             case RIVER: 
                 burnCard();
                 turnedCards[5] = deck.getTopCard();
-                upcomingCards = UpcomingCards.FLOP;
+                upcomingCards  = UpcomingCards.FLOP;
                 break;
             default: 
                 // The state machine should never be in this state. 
@@ -117,7 +120,7 @@ public class Table {
     */
    public void moveBlinds()
    {
-       players.moveBlinds();
+       /*players.moveBlinds();*/
    }
    
     /**
@@ -125,7 +128,7 @@ public class Table {
     */
    public void moveDealerButton()
    {
-       players.moveDealerButton();
+       /*players.moveDealerButton();*/
    }
    
     /**
@@ -148,6 +151,17 @@ public class Table {
            turnedCards[i] = null;
        }
    }
+   
+    /**
+    * Returns the card at the top of the deck on the table. 
+    * @return The card at the top of the deck on the table. 
+    */
+   public Card getCardFromDeck()
+   {
+       return deck.getTopCard();
+   }
+   
+   
     /**
      * @param args the command line arguments
      */
