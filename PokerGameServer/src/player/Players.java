@@ -1,4 +1,4 @@
-
+package player;
 
 import common.Observer;
 import common.Subject;

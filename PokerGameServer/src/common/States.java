@@ -1,4 +1,4 @@
-
+package common;
 
 /**
  * Enom of different States in a pokergame

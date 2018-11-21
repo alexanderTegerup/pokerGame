@@ -1,4 +1,4 @@
-
+package managers;
 
 import common.Observer;
 import common.States;
