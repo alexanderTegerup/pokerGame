@@ -1,5 +1,7 @@
 package player;
 
+import java.util.Scanner;
+
 import common.Observer;
 import common.States;
 import managers.GameManager;
@@ -8,54 +10,89 @@ import table.Card;
 public class Player implements Observer {
 
   // private Card hand;
-    private String userName;
-    private double stakes;
+    private String name;
+    private double wealth;
     private States state;
     private boolean dealer;
-    private double bettingCash = 0;
+    private double bet = 0;
     private /*static*/ GameManager gameManager;
     private static int observerIDTracker = 0;
         // Used to track the observers
     private int observerID;
+    
 
     public Player(String uname, double gameStakes, GameManager gm) {
-        userName = uname;
-        stakes = gameStakes;
+        name = uname;
+        wealth = gameStakes;
         state = States.WAITING;
         this.observerID = observerIDTracker;
         gameManager = gm;
     }
+    
 
     public String getUserName() {
-        return userName;
+        return name;
     }
 
-    public double getStakes() {
-        return stakes;
+    
+    public double getWealth() {
+        return wealth;
     }
 
-    private void setStakes(double stakes) {
-        this.stakes = stakes;
-    }
 
     public States getState() {
         return state;
     }
 
-    private void setState(States state) {
-        this.state = state;
-    }
 
     @Override
     public void updateLastPlayersMove(String playerName, States move) {
+    	
+    	double callCost = 0; //callCost dummy --- TO BE Implemented  
+    	
+		Scanner raiseScan = new Scanner(System.in);
+		double raise = raiseScan.nextDouble();
+		//TO DO parseouble or throw excp. to control that input is double
+		//TO DO shutdown the scanners
+		
+		Scanner stateScan = new Scanner(System.in);
+		States selectedState = States.valueOf(stateScan.next().toUpperCase());
+		
+		double bet = 0;
+		
+		switch(selectedState) {
+		
+		case FOLD:
+		case CHECK:
+			state = selectedState;
+		case CALL:
+			bet = callCost;
+			state = selectedState;
+		
+		case RAISE:
+			bet = callCost + raise;
+			state = selectedState;
+			
+		case ALLIN:
+			//bet = wealth;
+			state = selectedState;
+			
+		default:
+			}
+
+		
+		wealth -= bet;
+		gameManager.updatePot(observerID, name, bet, state);
 
     }
+    
+/*
+    @Override
+    public void dealCards(Card card1, Card card2) {
 
-  //  @Override
-  //  public void dealCards(Card card1, Card card2) {
-
-  //  }
-
+    }
+*/
+    
     @Override
     public void updateTurnAndOptions(int player, States minimumState, double raisedPot) {
         if (player == observerID)
@@ -78,45 +115,53 @@ public class Player implements Observer {
             state = States.SMALL;
         }
         if(state == States.BIG) {
-            bettingCash += big;
+            bet += big;
         }
         else if(state == States.SMALL) {
-            bettingCash += small;
+            bet += small;
         }
-
-        }
+        
+    }
+    
 
     @Override
     public void updateWinner(int playername, double winningPot) {
-        bettingCash = 0;
+        bet = 0;
     }
+    
 
     @Override
     public void updatePot(double currentRaisedPot) {
-        bettingCash+=currentRaisedPot;
-        gameManager.updatePot(observerID, userName, bettingCash, state);
-        stakes -= bettingCash;
-        bettingCash = 0;
+        bet+=currentRaisedPot;
+        gameManager.updatePot(observerID, name, bet, state);
+        wealth -= bet;
+        bet = 0;
     }
+    
 
     @Override
     public void CurrentTurnPotRaises(double raises) {
 
     }
+    
 
- //   @Override
- //   public void flipOfCardT() {
-
-//    }
+    /*
+   @Override
+   public void flipOfCardT() {
+   
+   }
+ */
 
     @Override
     public void updateFoldFromServer() {
         state = States.FOLD;
     }
+    
 
     public int getObserverID() {
         return observerID;
     }
+    
 
     @Override
     public void dealCards(Card card1, Card card2) {
@@ -124,10 +169,11 @@ public class Player implements Observer {
     }
 }
 
+
 //kalla på server härifrån
 
 //get winning pot
 
-//announce state and followup info
+//announce state and followup info - KLAR!
 
 //server måste veta om man är fold

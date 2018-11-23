@@ -9,28 +9,28 @@ import java.util.ArrayList;
 public class Players implements Subject {
 
         private int MaxAmountOfPlayers;
-        private double defaultStakes;
+        private double wealth;
         private /*static*/ ArrayList<Observer> players;
-        private static int currentAmount = 0;
+        private static int AmountOfPlayers = 0;
         private /*static*/ boolean goodToGo;
         private /*static*/ GameManager gameManager;
 
 
-    public Players(int playerAmount, double defaultStakesPerPlayer) {
+    public Players(int playerAmount, double playerWealth) {
             MaxAmountOfPlayers = playerAmount;
-            defaultStakes = defaultStakesPerPlayer;
+            wealth = playerWealth;
             players = new ArrayList<>();
             goodToGo = false;
         }
 
     public boolean addPlayerToTable(String userName) {
-            if(currentAmount<MaxAmountOfPlayers) {
-                register(new Player(userName, defaultStakes, gameManager));
-                System.out.println("Du har joint");
-                currentAmount++;
+            if (AmountOfPlayers<MaxAmountOfPlayers) {
+                register(new Player(userName, wealth, gameManager));
+                System.out.println("You joined the game!");
+                AmountOfPlayers++;
 
-                if(MaxAmountOfPlayers==currentAmount) {
-                    System.out.println("Den som ska få go är...");
+                if (MaxAmountOfPlayers == AmountOfPlayers) {
+                    System.out.println(userName + "is starting");
                     goodToGo = true;
                 }
                 return true;
@@ -55,18 +55,18 @@ public class Players implements Subject {
         System.out.println("common.Observer " + (observerIndex+1) + " deleted");
         // Removes observer from the ArrayList
         players.remove(observerIndex);
-        currentAmount--;
+        AmountOfPlayers--;
     }
 
     public /*static*/ int getCurrentAmount() {
-        return currentAmount;
+        return AmountOfPlayers;
     }
 
     public /*static*/ boolean isGoodToGo() {
         return goodToGo;
     }
 
-    public void setGameManager(GameManager gameManager) {
-        this.gameManager = gameManager;
+    public void setGameManager(GameManager gm) {
+        gameManager = gm;
     }
 }
