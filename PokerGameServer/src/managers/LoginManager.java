@@ -28,7 +28,6 @@ public class LoginManager {
         //out = o;
         //in = i;
         this.players = players;
-
     }
 
     /**
@@ -85,5 +84,4 @@ public class LoginManager {
        // }
         return player;
     }
-
 }

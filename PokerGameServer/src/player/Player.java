@@ -16,6 +16,7 @@ public class Player implements Observer {
     private static int observerIDTracker = 0;
         // Used to track the observers
     private int observerID;
+    private int hej;
 
     public Player(String uname, double gameStakes, GameManager gm) {
         userName = uname;
@@ -116,6 +117,7 @@ public class Player implements Observer {
     public int getObserverID() {
         return observerID;
     }
+
 }
 
 //kalla på server härifrån
