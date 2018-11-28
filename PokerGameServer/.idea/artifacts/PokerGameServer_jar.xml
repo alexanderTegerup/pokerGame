@@ -1,8 +1,0 @@
-<component name="ArtifactManager">
-  <artifact type="jar" name="PokerGameServer:jar">
-    <output-path>$PROJECT_DIR$/out/artifacts/PokerGameServer_jar</output-path>
-    <root id="archive" name="PokerGameServer.jar">
-      <element id="module-output" name="PokerGameServer" />
-    </root>
-  </artifact>
-</component>
