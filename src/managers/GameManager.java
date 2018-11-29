@@ -10,6 +10,9 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * A manager which holds a game session where players (users) play a game of poker
+ */
 public class GameManager {
 
     private boolean playersession = true, playerPlayed = false, newRound;
