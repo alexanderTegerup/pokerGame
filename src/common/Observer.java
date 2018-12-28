@@ -1,5 +1,7 @@
 package common;
 
+import java.util.ArrayList;
+
 import table.Card;
 
 /**
@@ -17,11 +19,12 @@ public interface Observer {
 
     public void updateWinner(int playername, double winningPot);
 
-    public void updatePot(double currentPot);
+    public void bet(double currentPot);
 
     public void CurrentTurnPotRaises(double raises);
-
-  //  public void flipOfCardT(ArrayList<Card>());
+    
+    public void flipOfCardT(ArrayList<Card> tableCards);
 
     public void updateFoldFromServer();
 }
+
