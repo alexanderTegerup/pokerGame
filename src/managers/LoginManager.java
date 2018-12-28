@@ -9,6 +9,9 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Manager creating a login session for players (users) to register to a table for playing poker
+ */
 public class LoginManager {
 
     private String outputLine, inputLine;
@@ -25,7 +28,6 @@ public class LoginManager {
         //out = o;
         //in = i;
         this.players = players;
-
     }
 
     /**
@@ -82,5 +84,4 @@ public class LoginManager {
        // }
         return player;
     }
-
 }

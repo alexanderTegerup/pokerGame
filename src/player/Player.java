@@ -41,7 +41,6 @@ public class Player implements Observer {
     private static int observerIDTracker = 0;
     // Used to track the observers
     private int observerID;
-    
 
     public Player(String playerName, double playerWealth, GameManager gm) {
         name = playerName;
@@ -183,7 +182,6 @@ public class Player implements Observer {
     public int getObserverID() {
         return observerID;
     }
-    
 
     @Override
     public void dealCards(Card card1, Card card2) {
