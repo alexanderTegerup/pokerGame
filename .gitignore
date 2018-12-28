@@ -3,4 +3,6 @@
 *.com
 *.class
 *.idea
+*.classpath
+*.project
 out/
