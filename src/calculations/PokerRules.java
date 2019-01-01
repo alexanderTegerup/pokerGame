@@ -10,6 +10,7 @@ import java.util.ArrayList;
 class Hand{
     private Card card1;
     private Card card2;
+    private PokerRules.Ranking ranking;
 
     public Card getCard1(){ return card1; }
     public Card getCard2(){ return card2; }
@@ -22,16 +23,35 @@ class Hand{
 
 public class PokerRules {
 
-    //private Card[] Hand;
+    public enum Ranking
+    {
+        NOTHING,
+        PAIR,
+        TWO_PAIR,
+        THREE_OF_A_KIND,
+        STRAIGHT,
+        FLUSH,
+        FULL_HOUSE,
+        FOUR_OF_A_KIND,
+        STRAIGHT_FLUSH
+    }
 
-    /* ---- stubs  ---- */
+    /* ---- stubs stubs stubs stubs stubs stubs stubs  ---- */
     private Card[] cardsOnTable = new Card[5]; // stub
     private Deck deck = new Deck(); // stub
     private int numberOfPlayers = 2;
-    private Hand test;
+
+    private Card p1c1 = new Card(Card.Suit.DIAMONDS, Card.Rank.SIX, null);
+    private Card p1c2 = new Card(Card.Suit.SPADES, Card.Rank.SIX, null);
+
+    private Card p2c1 = new Card(Card.Suit.SPADES, Card.Rank.ACE, null);
+    private Card p2c2 = new Card(Card.Suit.HEARTS, Card.Rank.EIGHT, null);
+
+
     //----------------------
 
     private ArrayList<Hand> playersHands = new ArrayList<>(); // Array list with the hand of each player
+    private Ranking tableCardRank;
 
 
     /**
@@ -40,45 +60,78 @@ public class PokerRules {
      */
     public void determineBestHand()
     {
-        for(int i=0; i<5; i++){
-            cardsOnTable[i] = deck.getTopCard();
-        }
+
+        cardsOnTable[0] = new Card(Card.Suit.CLUBS, Card.Rank.TWO, null);
+        cardsOnTable[1] = new Card(Card.Suit.HEARTS, Card.Rank.FIVE, null);
+        cardsOnTable[2] = new Card(Card.Suit.SPADES, Card.Rank.ACE, null);
+        cardsOnTable[3] = new Card(Card.Suit.DIAMONDS, Card.Rank.FOUR, null);
+        cardsOnTable[4] = new Card(Card.Suit.HEARTS, Card.Rank.THREE, null);
 
         Hand hand1 = new Hand();
-        hand1.setHand(deck.getTopCard(),deck.getTopCard());
+        hand1.setHand(p1c1,p1c2);
 
         Hand hand2 = new Hand();
-        hand2.setHand(deck.getTopCard(),deck.getTopCard());
-
-
-        System.out.println("First player:");
-        System.out.println(hand1.getCard1().getSuit() + " " + hand1.getCard1().getRank());
-        System.out.println(hand1.getCard2().getSuit() + " " + hand1.getCard2().getRank() + "\n");
-
-        System.out.println("Second player:");
-        System.out.println(hand2.getCard1().getSuit() + " " + hand2.getCard1().getRank());
-        System.out.println(hand2.getCard2().getSuit() + " " + hand2.getCard2().getRank() + "\n");
-
-
+        hand2.setHand(p2c1,p2c2);
+        
         for(int i=0; i<numberOfPlayers; i++){
 
             playersHands.add(hand1);
             playersHands.add(hand2);
         }
 
-        System.out.println("Cards on table:");
-        for(int i=0; i<5; i++){
-            System.out.println(cardsOnTable[i].getSuit() + " " + cardsOnTable[i].getRank());
-        }
-        /*
-        test = playersHands.get(1);
-        System.out.println(test.getCard1().getSuit() + " "  + test.getCard1().getRank() + " " + "\n");*/
+
+        /* Find out which poker hand there is on the table. */
+        cardsOnTable = insertionSort(cardsOnTable);
+        tableCardRank = null;
+        do{
+            /* Check if there is a straight on the table. Also checking the special case with a
+             * straight from ACE to FIVE. */
+            if(cardsOnTable[4].getRank().ordinal() == cardsOnTable[3].getRank().ordinal()+1 &&
+               cardsOnTable[3].getRank().ordinal() == cardsOnTable[2].getRank().ordinal()+1 &&
+               cardsOnTable[2].getRank().ordinal() == cardsOnTable[1].getRank().ordinal()+1 &&
+               cardsOnTable[1].getRank().ordinal() == cardsOnTable[0].getRank().ordinal()+1 ||
+               Card.Rank.TWO                       == cardsOnTable[0].getRank()             &&
+               Card.Rank.THREE                     == cardsOnTable[1].getRank()             &&
+               Card.Rank.FOUR                      == cardsOnTable[2].getRank()             &&
+               Card.Rank.FIVE                      == cardsOnTable[3].getRank()             &&
+               Card.Rank.ACE                       == cardsOnTable[4].getRank() )
+            {
+                tableCardRank = Ranking.STRAIGHT;
+            }
+            else {
+                tableCardRank = Ranking.NOTHING;
+            }
 
 
+        }while (null == tableCardRank);
 
 
     }
 
+
+    /**
+     * Algorithm that sorts the rank of five cards in ascending order.
+     * @param cards The unsorted cards.
+     * @return cards The cards sorted from the lowest to the highest rank.
+     */
+    private Card[] insertionSort(Card[] cards) {
+
+        Card tmpCard;
+        int j;
+        for(int i = 1; i<5; i++) {
+
+            j=i;
+            while(j>0 && cards[j].getRank().ordinal() < cards[j-1].getRank().ordinal()){
+
+                tmpCard = cards[j-1];
+                cards[j-1] = cards[j];
+                cards[j] = tmpCard;
+                j--;
+            }
+        }
+
+        return cards;
+    }
 
     /**
      * @param args the command line arguments
@@ -89,6 +142,5 @@ public class PokerRules {
         p.determineBestHand();
 
     }
-
 
 }
