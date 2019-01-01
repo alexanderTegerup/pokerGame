@@ -61,10 +61,10 @@ public class PokerRules {
     public void determineBestHand()
     {
 
-        cardsOnTable[0] = new Card(Card.Suit.CLUBS, Card.Rank.TWO, null);
+        cardsOnTable[0] = new Card(Card.Suit.HEARTS, Card.Rank.TWO, null);
         cardsOnTable[1] = new Card(Card.Suit.HEARTS, Card.Rank.FIVE, null);
-        cardsOnTable[2] = new Card(Card.Suit.SPADES, Card.Rank.ACE, null);
-        cardsOnTable[3] = new Card(Card.Suit.DIAMONDS, Card.Rank.FOUR, null);
+        cardsOnTable[2] = new Card(Card.Suit.DIAMONDS, Card.Rank.SIX, null);
+        cardsOnTable[3] = new Card(Card.Suit.HEARTS, Card.Rank.FOUR, null);
         cardsOnTable[4] = new Card(Card.Suit.HEARTS, Card.Rank.THREE, null);
 
         Hand hand1 = new Hand();
@@ -72,7 +72,7 @@ public class PokerRules {
 
         Hand hand2 = new Hand();
         hand2.setHand(p2c1,p2c2);
-        
+
         for(int i=0; i<numberOfPlayers; i++){
 
             playersHands.add(hand1);
@@ -81,29 +81,25 @@ public class PokerRules {
 
 
         /* Find out which poker hand there is on the table. */
-        cardsOnTable = insertionSort(cardsOnTable);
-        tableCardRank = null;
-        do{
-            /* Check if there is a straight on the table. Also checking the special case with a
-             * straight from ACE to FIVE. */
-            if(cardsOnTable[4].getRank().ordinal() == cardsOnTable[3].getRank().ordinal()+1 &&
-               cardsOnTable[3].getRank().ordinal() == cardsOnTable[2].getRank().ordinal()+1 &&
-               cardsOnTable[2].getRank().ordinal() == cardsOnTable[1].getRank().ordinal()+1 &&
-               cardsOnTable[1].getRank().ordinal() == cardsOnTable[0].getRank().ordinal()+1 ||
-               Card.Rank.TWO                       == cardsOnTable[0].getRank()             &&
-               Card.Rank.THREE                     == cardsOnTable[1].getRank()             &&
-               Card.Rank.FOUR                      == cardsOnTable[2].getRank()             &&
-               Card.Rank.FIVE                      == cardsOnTable[3].getRank()             &&
-               Card.Rank.ACE                       == cardsOnTable[4].getRank() )
-            {
-                tableCardRank = Ranking.STRAIGHT;
-            }
-            else {
-                tableCardRank = Ranking.NOTHING;
-            }
+
+        if( checkStraight(cardsOnTable) && checkFlush(cardsOnTable) )
+        {
+            tableCardRank = Ranking.STRAIGHT_FLUSH;
+        }
+        else if( checkStraight(cardsOnTable) )
+        {
+            tableCardRank = Ranking.STRAIGHT;
+        }
+        else if( checkFlush(cardsOnTable) ) {
+            tableCardRank = Ranking.FLUSH;
+        }
+        else {
+            tableCardRank = Ranking.NOTHING;
+        }
 
 
-        }while (null == tableCardRank);
+
+        System.out.println(tableCardRank);
 
 
     }
@@ -112,7 +108,7 @@ public class PokerRules {
     /**
      * Algorithm that sorts the rank of five cards in ascending order.
      * @param cards The unsorted cards.
-     * @return cards The cards sorted from the lowest to the highest rank.
+     * @return The cards sorted from the lowest to the highest rank.
      */
     private Card[] insertionSort(Card[] cards) {
 
@@ -132,6 +128,51 @@ public class PokerRules {
 
         return cards;
     }
+
+    /**
+     * Method that checks if five cards make a straight. Also checking the special case with straight from ACE to FIVE.
+     * @param fiveCards The hand that may or may not make up a straight.
+     * @return A boolean that is true if the cards make a straight and is false otherwise.
+     */
+    private boolean checkStraight(Card[] fiveCards) {
+
+        /* Sort the cards */
+        fiveCards = insertionSort(fiveCards); // Why can I remove the return value here?
+
+        /* Check if the cards make a straight. Also checking the special case with a straight from ACE to FIVE. */
+        boolean gotStraight =  (fiveCards[4].getRank().ordinal() == fiveCards[3].getRank().ordinal()+1 &&
+                                fiveCards[3].getRank().ordinal() == fiveCards[2].getRank().ordinal()+1 &&
+                                fiveCards[2].getRank().ordinal() == fiveCards[1].getRank().ordinal()+1 &&
+                                fiveCards[1].getRank().ordinal() == fiveCards[0].getRank().ordinal()+1 ||
+                                Card.Rank.TWO                    == fiveCards[0].getRank()             &&
+                                Card.Rank.THREE                  == fiveCards[1].getRank()             &&
+                                Card.Rank.FOUR                   == fiveCards[2].getRank()             &&
+                                Card.Rank.FIVE                   == fiveCards[3].getRank()             &&
+                                Card.Rank.ACE                    == fiveCards[4].getRank()               );
+        return gotStraight;
+    }
+
+    /**
+     * Method that checks if five cards make a flush.
+     * @param fiveCards The hand that may or may not make up a flush.
+     * @return A boolean that is true if the cards make a flush and is false otherwise.
+     */
+    private boolean checkFlush(Card[] fiveCards){
+
+        boolean gotFlush = (fiveCards[0].getSuit() == fiveCards[1].getSuit() &&
+                            fiveCards[0].getSuit() == fiveCards[2].getSuit() &&
+                            fiveCards[0].getSuit() == fiveCards[3].getSuit() &&
+                            fiveCards[0].getSuit() == fiveCards[4].getSuit()   );
+
+        return gotFlush;
+    }
+
+    private boolean checkFourOfAKind(Card[] fiveCards){
+        boolean gotFourOfAKind;
+
+        return true;
+    }
+
 
     /**
      * @param args the command line arguments
