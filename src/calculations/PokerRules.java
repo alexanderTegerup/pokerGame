@@ -23,6 +23,9 @@ class Hand{
 
 public class PokerRules {
 
+    // TODO Optimize the code by not using insertionSort() more than necessary
+    // TODO Remove calculations for verification that the hand is not better than the hand we calculate in the function
+
     public enum Ranking
     {
         NOTHING,
@@ -61,11 +64,11 @@ public class PokerRules {
     public void determineBestHand()
     {
 
-        cardsOnTable[0] = new Card(Card.Suit.HEARTS, Card.Rank.JACK, null);
-        cardsOnTable[1] = new Card(Card.Suit.HEARTS, Card.Rank.TWO, null);
-        cardsOnTable[2] = new Card(Card.Suit.DIAMONDS, Card.Rank.JACK, null);
-        cardsOnTable[3] = new Card(Card.Suit.HEARTS, Card.Rank.JACK, null);
-        cardsOnTable[4] = new Card(Card.Suit.HEARTS, Card.Rank.TWO, null);
+        cardsOnTable[0] = new Card(Card.Suit.HEARTS, Card.Rank.THREE, null);
+        cardsOnTable[1] = new Card(Card.Suit.HEARTS, Card.Rank.JACK, null);
+        cardsOnTable[2] = new Card(Card.Suit.DIAMONDS, Card.Rank.THREE, null);
+        cardsOnTable[3] = new Card(Card.Suit.HEARTS, Card.Rank.ACE, null);
+        cardsOnTable[4] = new Card(Card.Suit.HEARTS, Card.Rank.THREE, null);
 
         Hand hand1 = new Hand();
         hand1.setHand(p1c1,p1c2);
@@ -90,20 +93,26 @@ public class PokerRules {
         {
             tableCardRank = Ranking.FOUR_OF_A_KIND;
         }
-        else if( checkStraight(cardsOnTable) )
+        else if ( checkFullHouse(cardsOnTable) )
         {
-            tableCardRank = Ranking.STRAIGHT;
+            tableCardRank = Ranking.FULL_HOUSE;
         }
         else if( checkFlush(cardsOnTable) )
         {
             tableCardRank = Ranking.FLUSH;
         }
+        else if( checkStraight(cardsOnTable) )
+        {
+            tableCardRank = Ranking.STRAIGHT;
+        }
+        else if ( checkThreeOfAKind(cardsOnTable) )
+        {
+            tableCardRank = Ranking.THREE_OF_A_KIND;
+        }
         else
         {
             tableCardRank = Ranking.NOTHING;
         }
-
-
 
         System.out.println(tableCardRank);
 
@@ -189,6 +198,50 @@ public class PokerRules {
         }
 
         return gotFourOfAKind;
+    }
+
+    private boolean checkFullHouse(Card[] fiveCards){
+
+        /* Sort the cards */
+        fiveCards = insertionSort(fiveCards);
+
+        boolean gotFullHouse = ( (fiveCards[0].getRank() == fiveCards[1].getRank()  &&
+                                  fiveCards[1].getRank() == fiveCards[2].getRank()  &&
+                                  fiveCards[2].getRank() != fiveCards[3].getRank()  &&
+                                  fiveCards[3].getRank() == fiveCards[4].getRank()) ||
+
+                                 (fiveCards[0].getRank() == fiveCards[1].getRank()  &&
+                                  fiveCards[1].getRank() != fiveCards[2].getRank()  &&
+                                  fiveCards[2].getRank() == fiveCards[3].getRank()  &&
+                                  fiveCards[3].getRank() == fiveCards[4].getRank())   );
+
+        return gotFullHouse;
+    }
+
+    private boolean checkThreeOfAKind(Card[] fiveCards){
+
+        boolean gotThreeOfAKind = false;
+
+        /* Sort the cards */
+        fiveCards = insertionSort(fiveCards);
+
+        /* for loop to permute all the possible combination to get three of a kind */
+        for (int i=0; i<3; i++)
+        {
+            // The last three rows in the if statement are unnecessary since/if we know before this function is called
+            // that we don't have anything better than three of a kind.
+            if (fiveCards[(i%5)].getRank() == fiveCards[(i+1)%5].getRank()   &&
+                fiveCards[(i+1)%5].getRank() == fiveCards[(i+2)%5].getRank() &&
+                fiveCards[(i+2)%5].getRank() != fiveCards[(i+3)%5].getRank() && // To verify that we don't have
+                fiveCards[(i+2)%5].getRank() != fiveCards[(i+4)%5].getRank() && // four of a kind.
+                fiveCards[(i+3)%5].getRank() != fiveCards[(i+4)%5].getRank()   ) // To verify that we don't have full house )
+            {
+                gotThreeOfAKind = true;
+                break;
+            }
+        }
+
+        return gotThreeOfAKind;
     }
 
 
