@@ -61,11 +61,11 @@ public class PokerRules {
     public void determineBestHand()
     {
 
-        cardsOnTable[0] = new Card(Card.Suit.HEARTS, Card.Rank.TWO, null);
-        cardsOnTable[1] = new Card(Card.Suit.HEARTS, Card.Rank.FIVE, null);
-        cardsOnTable[2] = new Card(Card.Suit.DIAMONDS, Card.Rank.SIX, null);
-        cardsOnTable[3] = new Card(Card.Suit.HEARTS, Card.Rank.FOUR, null);
-        cardsOnTable[4] = new Card(Card.Suit.HEARTS, Card.Rank.THREE, null);
+        cardsOnTable[0] = new Card(Card.Suit.HEARTS, Card.Rank.JACK, null);
+        cardsOnTable[1] = new Card(Card.Suit.HEARTS, Card.Rank.TWO, null);
+        cardsOnTable[2] = new Card(Card.Suit.DIAMONDS, Card.Rank.JACK, null);
+        cardsOnTable[3] = new Card(Card.Suit.HEARTS, Card.Rank.JACK, null);
+        cardsOnTable[4] = new Card(Card.Suit.HEARTS, Card.Rank.TWO, null);
 
         Hand hand1 = new Hand();
         hand1.setHand(p1c1,p1c2);
@@ -86,14 +86,20 @@ public class PokerRules {
         {
             tableCardRank = Ranking.STRAIGHT_FLUSH;
         }
+        else if ( checkFourOfAKind(cardsOnTable) )
+        {
+            tableCardRank = Ranking.FOUR_OF_A_KIND;
+        }
         else if( checkStraight(cardsOnTable) )
         {
             tableCardRank = Ranking.STRAIGHT;
         }
-        else if( checkFlush(cardsOnTable) ) {
+        else if( checkFlush(cardsOnTable) )
+        {
             tableCardRank = Ranking.FLUSH;
         }
-        else {
+        else
+        {
             tableCardRank = Ranking.NOTHING;
         }
 
@@ -168,9 +174,21 @@ public class PokerRules {
     }
 
     private boolean checkFourOfAKind(Card[] fiveCards){
-        boolean gotFourOfAKind;
 
-        return true;
+        boolean gotFourOfAKind = false;
+
+        for (int i=0;i<5;i++)
+        {
+            if (fiveCards[i%5].getRank() == fiveCards[(i+1)%5].getRank() &&
+                fiveCards[(i+1)%5].getRank() == fiveCards[(i+2)%5].getRank() &&
+                fiveCards[(i+2)%5].getRank() == fiveCards[(i+3)%5].getRank()   )
+            {
+                gotFourOfAKind = true;
+                break;
+            }
+        }
+
+        return gotFourOfAKind;
     }
 
 
