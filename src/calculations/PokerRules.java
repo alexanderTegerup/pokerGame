@@ -25,10 +25,13 @@ public class PokerRules {
 
     // TODO Optimize the code by not using insertionSort() more than necessary
     // TODO Remove calculations for verification that the hand is not better than the hand we calculate in the function
+    // TODO Don't call getRank or getSuit that ofter, save those values and reuse them instead
+    // TODO Comment the methods and create java doc
 
     public enum Ranking
     {
         NOTHING,
+        HIGH_CARD,
         PAIR,
         TWO_PAIR,
         THREE_OF_A_KIND,
@@ -65,10 +68,10 @@ public class PokerRules {
     {
 
         cardsOnTable[0] = new Card(Card.Suit.HEARTS, Card.Rank.THREE, null);
-        cardsOnTable[1] = new Card(Card.Suit.HEARTS, Card.Rank.JACK, null);
-        cardsOnTable[2] = new Card(Card.Suit.DIAMONDS, Card.Rank.THREE, null);
-        cardsOnTable[3] = new Card(Card.Suit.HEARTS, Card.Rank.ACE, null);
-        cardsOnTable[4] = new Card(Card.Suit.HEARTS, Card.Rank.THREE, null);
+        cardsOnTable[1] = new Card(Card.Suit.HEARTS, Card.Rank.ACE, null);
+        cardsOnTable[2] = new Card(Card.Suit.HEARTS, Card.Rank.SEVEN, null);
+        cardsOnTable[3] = new Card(Card.Suit.HEARTS, Card.Rank.SEVEN, null);
+        cardsOnTable[4] = new Card(Card.Suit.HEARTS, Card.Rank.ACE, null);
 
         Hand hand1 = new Hand();
         hand1.setHand(p1c1,p1c2);
@@ -109,13 +112,20 @@ public class PokerRules {
         {
             tableCardRank = Ranking.THREE_OF_A_KIND;
         }
+        else if ( checkTwoPair(cardsOnTable) )
+        {
+            tableCardRank = Ranking.TWO_PAIR;
+        }
+        else if ( checkPair(cardsOnTable))
+        {
+            tableCardRank = Ranking.PAIR;
+        }
         else
         {
             tableCardRank = Ranking.NOTHING;
         }
 
         System.out.println(tableCardRank);
-
 
     }
 
@@ -188,7 +198,7 @@ public class PokerRules {
 
         for (int i=0;i<5;i++)
         {
-            if (fiveCards[i%5].getRank() == fiveCards[(i+1)%5].getRank() &&
+            if (fiveCards[i%5].getRank()     == fiveCards[(i+1)%5].getRank() &&
                 fiveCards[(i+1)%5].getRank() == fiveCards[(i+2)%5].getRank() &&
                 fiveCards[(i+2)%5].getRank() == fiveCards[(i+3)%5].getRank()   )
             {
@@ -230,7 +240,7 @@ public class PokerRules {
         {
             // The last three rows in the if statement are unnecessary since/if we know before this function is called
             // that we don't have anything better than three of a kind.
-            if (fiveCards[(i%5)].getRank() == fiveCards[(i+1)%5].getRank()   &&
+            if (fiveCards[(i%5)].getRank()   == fiveCards[(i+1)%5].getRank() &&
                 fiveCards[(i+1)%5].getRank() == fiveCards[(i+2)%5].getRank() &&
                 fiveCards[(i+2)%5].getRank() != fiveCards[(i+3)%5].getRank() && // To verify that we don't have
                 fiveCards[(i+2)%5].getRank() != fiveCards[(i+4)%5].getRank() && // four of a kind.
@@ -242,6 +252,36 @@ public class PokerRules {
         }
 
         return gotThreeOfAKind;
+    }
+
+    private boolean checkTwoPair(Card[] fiveCards){
+
+        /* Sort the cards */
+        fiveCards = insertionSort(fiveCards);
+
+        boolean gotTwoPair = ( (fiveCards[0].getRank() == fiveCards[1].getRank()  &&
+                                fiveCards[2].getRank() == fiveCards[3].getRank()) ||
+
+                               (fiveCards[1].getRank() == fiveCards[2].getRank()  &&
+                                fiveCards[3].getRank() == fiveCards[4].getRank()) ||
+
+                               (fiveCards[0].getRank() == fiveCards[1].getRank()  &&
+                                fiveCards[3].getRank() == fiveCards[4].getRank())   );
+
+        return gotTwoPair;
+    }
+
+    private boolean checkPair(Card[] fiveCards){
+
+        /* Sort the cards */
+        fiveCards = insertionSort(fiveCards);
+
+        boolean gotPair = ( fiveCards[0].getRank() == fiveCards[1].getRank() ||
+                            fiveCards[1].getRank() == fiveCards[2].getRank() ||
+                            fiveCards[2].getRank() == fiveCards[3].getRank() ||
+                            fiveCards[3].getRank() == fiveCards[4].getRank()   );
+
+        return gotPair;
     }
 
 
