@@ -26,7 +26,9 @@ public class PokerRules {
     // TODO Optimize the code by not using insertionSort() more than necessary
     // TODO Remove calculations for verification that the hand is not better than the hand we calculate in the function
     // TODO Don't call getRank or getSuit that ofter, save those values and reuse them instead
-    // TODO Comment the methods and create java doc
+    // TODO Comment the methods and create java doc.
+    // TODO Go through and see if I can remove some hard coding.
+    // TODO Rename some methods and enums
 
     public enum Ranking
     {
