@@ -19,6 +19,9 @@ class Hand{
         card1 = c1;
         card2 = c2;
     }
+
+    public void setRanking(PokerRules.Ranking rnk) { ranking = rnk; }
+    public PokerRules.Ranking getRanking() {return ranking; }
 }
 
 public class PokerRules {
@@ -52,7 +55,7 @@ public class PokerRules {
     private Card p1c1 = new Card(Card.Suit.DIAMONDS, Card.Rank.SIX, null);
     private Card p1c2 = new Card(Card.Suit.SPADES, Card.Rank.SIX, null);
 
-    private Card p2c1 = new Card(Card.Suit.SPADES, Card.Rank.ACE, null);
+    private Card p2c1 = new Card(Card.Suit.HEARTS, Card.Rank.ACE, null);
     private Card p2c2 = new Card(Card.Suit.HEARTS, Card.Rank.EIGHT, null);
 
 
@@ -71,8 +74,8 @@ public class PokerRules {
 
         cardsOnTable[0] = new Card(Card.Suit.HEARTS, Card.Rank.THREE, null);
         cardsOnTable[1] = new Card(Card.Suit.HEARTS, Card.Rank.ACE, null);
-        cardsOnTable[2] = new Card(Card.Suit.HEARTS, Card.Rank.SEVEN, null);
-        cardsOnTable[3] = new Card(Card.Suit.HEARTS, Card.Rank.SEVEN, null);
+        cardsOnTable[2] = new Card(Card.Suit.SPADES, Card.Rank.FOUR, null);
+        cardsOnTable[3] = new Card(Card.Suit.SPADES, Card.Rank.SEVEN, null);
         cardsOnTable[4] = new Card(Card.Suit.HEARTS, Card.Rank.ACE, null);
 
         Hand hand1 = new Hand();
@@ -87,48 +90,79 @@ public class PokerRules {
             playersHands.add(hand2);
         }
 
-
         /* Find out which poker hand there is on the table. */
+        tableCardRank = determineHandRanking(cardsOnTable);
+        System.out.println(tableCardRank);
 
-        if( checkStraight(cardsOnTable) && checkFlush(cardsOnTable) )
-        {
-            tableCardRank = Ranking.STRAIGHT_FLUSH;
+        /* Decide the best combination each player can get */
+        // TODO Add combinations with four cards from the table and one card from the players
+        Ranking rankPlayer;
+        Ranking bestCombination;
+        Card[] cardCombination = new Card[5];
+        for (int iPlayer=0; iPlayer < numberOfPlayers; iPlayer++){
+
+            bestCombination = Ranking.NOTHING;
+            for (int i=0; i<5; i++){
+                cardCombination[0] = cardsOnTable[i%5];
+                cardCombination[1] = cardsOnTable[(i+1)%5];
+                cardCombination[2] = cardsOnTable[(i+2)%5];
+                cardCombination[3] = playersHands.get(iPlayer).getCard1();
+                cardCombination[4] = playersHands.get(iPlayer).getCard2();
+
+                rankPlayer = determineHandRanking(cardCombination);
+                if (rankPlayer.ordinal() > bestCombination.ordinal()){
+                    bestCombination = rankPlayer;
+                }
+            }
+            System.out.println(bestCombination);
         }
-        else if ( checkFourOfAKind(cardsOnTable) )
+
+
+    }
+
+
+    private Ranking determineHandRanking(Card[] fiveCards){
+
+        Ranking rankCards;
+
+        if( checkStraight(fiveCards) && checkFlush(fiveCards) )
         {
-            tableCardRank = Ranking.FOUR_OF_A_KIND;
+            rankCards = Ranking.STRAIGHT_FLUSH;
         }
-        else if ( checkFullHouse(cardsOnTable) )
+        else if ( checkFourOfAKind(fiveCards) )
         {
-            tableCardRank = Ranking.FULL_HOUSE;
+            rankCards = Ranking.FOUR_OF_A_KIND;
         }
-        else if( checkFlush(cardsOnTable) )
+        else if ( checkFullHouse(fiveCards) )
         {
-            tableCardRank = Ranking.FLUSH;
+            rankCards = Ranking.FULL_HOUSE;
         }
-        else if( checkStraight(cardsOnTable) )
+        else if( checkFlush(fiveCards) )
         {
-            tableCardRank = Ranking.STRAIGHT;
+            rankCards = Ranking.FLUSH;
         }
-        else if ( checkThreeOfAKind(cardsOnTable) )
+        else if( checkStraight(fiveCards) )
         {
-            tableCardRank = Ranking.THREE_OF_A_KIND;
+            rankCards = Ranking.STRAIGHT;
         }
-        else if ( checkTwoPair(cardsOnTable) )
+        else if ( checkThreeOfAKind(fiveCards) )
         {
-            tableCardRank = Ranking.TWO_PAIR;
+            rankCards = Ranking.THREE_OF_A_KIND;
         }
-        else if ( checkPair(cardsOnTable))
+        else if ( checkTwoPair(fiveCards) )
         {
-            tableCardRank = Ranking.PAIR;
+            rankCards = Ranking.TWO_PAIR;
+        }
+        else if ( checkPair(fiveCards))
+        {
+            rankCards = Ranking.PAIR;
         }
         else
         {
-            tableCardRank = Ranking.NOTHING;
+            rankCards = Ranking.NOTHING;
         }
 
-        System.out.println(tableCardRank);
-
+        return rankCards;
     }
 
 
