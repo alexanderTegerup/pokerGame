@@ -26,8 +26,6 @@ class Hand{
 
 public class PokerRules {
 
-    // TODO Optimize the code by not using insertionSort() more than necessary
-    // TODO Remove calculations for verification that the hand is not better than the hand we calculate in the function
     // TODO Don't call getRank or getSuit that ofter, save those values and reuse them instead
     // TODO Comment the methods and create java doc.
     // TODO Go through and see if I can remove some hard coding.
@@ -97,8 +95,9 @@ public class PokerRules {
         Ranking rankPlayer;
         Ranking bestCombination;
         Card[] cardCombination = new Card[5];
+
         /* Decide the best combination each player can get */
-        for (int iPlayer=0; iPlayer < numberOfPlayers; iPlayer++){
+        for (int iPlayersHand=0; iPlayersHand < numberOfPlayers; iPlayersHand++){
 
             bestCombination = Ranking.NOTHING;
             for (int i=0; i<15; i++){
@@ -109,8 +108,8 @@ public class PokerRules {
                     cardCombination[0] = cardsOnTable[i%5];
                     cardCombination[1] = cardsOnTable[(i+1)%5];
                     cardCombination[2] = cardsOnTable[(i+2)%5];
-                    cardCombination[3] = playersHands.get(iPlayer).getCard1();
-                    cardCombination[4] = playersHands.get(iPlayer).getCard2();
+                    cardCombination[3] = playersHands.get(iPlayersHand).getCard1();
+                    cardCombination[4] = playersHands.get(iPlayersHand).getCard2();
 
                 }
                 /* Test all combinations with the first card from the player and four cards from the table */
@@ -120,7 +119,7 @@ public class PokerRules {
                     cardCombination[1] = cardsOnTable[(i+1)%5];
                     cardCombination[2] = cardsOnTable[(i+2)%5];
                     cardCombination[3] = cardsOnTable[(i+3)%5];
-                    cardCombination[4] = playersHands.get(iPlayer).getCard1();
+                    cardCombination[4] = playersHands.get(iPlayersHand).getCard1();
                 }
                 /* Test all combinations with the second card from the player and four cards from the table */
                 else{
@@ -129,7 +128,7 @@ public class PokerRules {
                     cardCombination[1] = cardsOnTable[(i+1)%5];
                     cardCombination[2] = cardsOnTable[(i+2)%5];
                     cardCombination[3] = cardsOnTable[(i+3)%5];
-                    cardCombination[4] = playersHands.get(iPlayer).getCard2();
+                    cardCombination[4] = playersHands.get(iPlayersHand).getCard2();
                 }
 
                 /* Save the highest combination */
@@ -138,10 +137,16 @@ public class PokerRules {
                     bestCombination = rankPlayer;
                 }
             }
-            System.out.println("player " + iPlayer + ": " + bestCombination);
+
+            if (bestCombination.ordinal() > tableCardRank.ordinal()){
+                playersHands.get(iPlayersHand).setRanking(bestCombination);
+            }
+            else {
+                playersHands.get(iPlayersHand).setRanking(tableCardRank);
+            }
+
+            System.out.println("player " + iPlayersHand + ": " + playersHands.get(iPlayersHand).getRanking());
         }
-
-
     }
 
 
