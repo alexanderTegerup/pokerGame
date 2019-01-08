@@ -53,10 +53,10 @@ public class PokerRules {
     private int numberOfPlayers = 2;
 
     private Card p1c1 = new Card(Card.Suit.DIAMONDS, Card.Rank.SIX, null);
-    private Card p1c2 = new Card(Card.Suit.SPADES, Card.Rank.SIX, null);
+    private Card p1c2 = new Card(Card.Suit.SPADES, Card.Rank.FIVE, null);
 
-    private Card p2c1 = new Card(Card.Suit.HEARTS, Card.Rank.ACE, null);
-    private Card p2c2 = new Card(Card.Suit.HEARTS, Card.Rank.EIGHT, null);
+    private Card p2c1 = new Card(Card.Suit.HEARTS, Card.Rank.TWO, null);
+    private Card p2c2 = new Card(Card.Suit.SPADES, Card.Rank.EIGHT, null);
 
 
     //----------------------
@@ -74,8 +74,8 @@ public class PokerRules {
 
         cardsOnTable[0] = new Card(Card.Suit.HEARTS, Card.Rank.THREE, null);
         cardsOnTable[1] = new Card(Card.Suit.HEARTS, Card.Rank.ACE, null);
-        cardsOnTable[2] = new Card(Card.Suit.SPADES, Card.Rank.FOUR, null);
-        cardsOnTable[3] = new Card(Card.Suit.SPADES, Card.Rank.SEVEN, null);
+        cardsOnTable[2] = new Card(Card.Suit.HEARTS, Card.Rank.FOUR, null);
+        cardsOnTable[3] = new Card(Card.Suit.HEARTS, Card.Rank.ACE, null);
         cardsOnTable[4] = new Card(Card.Suit.HEARTS, Card.Rank.ACE, null);
 
         Hand hand1 = new Hand();
@@ -92,29 +92,53 @@ public class PokerRules {
 
         /* Find out which poker hand there is on the table. */
         tableCardRank = determineHandRanking(cardsOnTable);
-        System.out.println(tableCardRank);
+        System.out.println("cards on table " + tableCardRank);
 
-        /* Decide the best combination each player can get */
-        // TODO Add combinations with four cards from the table and one card from the players
         Ranking rankPlayer;
         Ranking bestCombination;
         Card[] cardCombination = new Card[5];
+        /* Decide the best combination each player can get */
         for (int iPlayer=0; iPlayer < numberOfPlayers; iPlayer++){
 
             bestCombination = Ranking.NOTHING;
-            for (int i=0; i<5; i++){
-                cardCombination[0] = cardsOnTable[i%5];
-                cardCombination[1] = cardsOnTable[(i+1)%5];
-                cardCombination[2] = cardsOnTable[(i+2)%5];
-                cardCombination[3] = playersHands.get(iPlayer).getCard1();
-                cardCombination[4] = playersHands.get(iPlayer).getCard2();
+            for (int i=0; i<15; i++){
 
+                /* Test all combinations with two cards from the player and three cards from the table */
+                if (i<5){
+
+                    cardCombination[0] = cardsOnTable[i%5];
+                    cardCombination[1] = cardsOnTable[(i+1)%5];
+                    cardCombination[2] = cardsOnTable[(i+2)%5];
+                    cardCombination[3] = playersHands.get(iPlayer).getCard1();
+                    cardCombination[4] = playersHands.get(iPlayer).getCard2();
+
+                }
+                /* Test all combinations with the first card from the player and four cards from the table */
+                else if (i < 10){
+
+                    cardCombination[0] = cardsOnTable[i%5];
+                    cardCombination[1] = cardsOnTable[(i+1)%5];
+                    cardCombination[2] = cardsOnTable[(i+2)%5];
+                    cardCombination[3] = cardsOnTable[(i+3)%5];
+                    cardCombination[4] = playersHands.get(iPlayer).getCard1();
+                }
+                /* Test all combinations with the second card from the player and four cards from the table */
+                else{
+
+                    cardCombination[0] = cardsOnTable[i%5];
+                    cardCombination[1] = cardsOnTable[(i+1)%5];
+                    cardCombination[2] = cardsOnTable[(i+2)%5];
+                    cardCombination[3] = cardsOnTable[(i+3)%5];
+                    cardCombination[4] = playersHands.get(iPlayer).getCard2();
+                }
+
+                /* Save the highest combination */
                 rankPlayer = determineHandRanking(cardCombination);
                 if (rankPlayer.ordinal() > bestCombination.ordinal()){
                     bestCombination = rankPlayer;
                 }
             }
-            System.out.println(bestCombination);
+            System.out.println("player " + iPlayer + ": " + bestCombination);
         }
 
 
@@ -124,6 +148,10 @@ public class PokerRules {
     private Ranking determineHandRanking(Card[] fiveCards){
 
         Ranking rankCards;
+
+        /* Sort the cards so that checkStraight, checkFullHouse,
+        checkThreeOfAKind, checkTwoPair and checkPair will work */
+        fiveCards = insertionSort(fiveCards);
 
         if( checkStraight(fiveCards) && checkFlush(fiveCards) )
         {
@@ -197,9 +225,6 @@ public class PokerRules {
      */
     private boolean checkStraight(Card[] fiveCards) {
 
-        /* Sort the cards */
-        fiveCards = insertionSort(fiveCards); // Why can I remove the return value here?
-
         /* Check if the cards make a straight. Also checking the special case with a straight from ACE to FIVE. */
         boolean gotStraight =  (fiveCards[4].getRank().ordinal() == fiveCards[3].getRank().ordinal()+1 &&
                                 fiveCards[3].getRank().ordinal() == fiveCards[2].getRank().ordinal()+1 &&
@@ -248,8 +273,6 @@ public class PokerRules {
 
     private boolean checkFullHouse(Card[] fiveCards){
 
-        /* Sort the cards */
-        fiveCards = insertionSort(fiveCards);
 
         boolean gotFullHouse = ( (fiveCards[0].getRank() == fiveCards[1].getRank()  &&
                                   fiveCards[1].getRank() == fiveCards[2].getRank()  &&
@@ -268,19 +291,13 @@ public class PokerRules {
 
         boolean gotThreeOfAKind = false;
 
-        /* Sort the cards */
-        fiveCards = insertionSort(fiveCards);
-
-        /* for loop to permute all the possible combination to get three of a kind */
+        /* For loop to permute all the possible combination to get three of a kind */
         for (int i=0; i<3; i++)
         {
-            // The last three rows in the if statement are unnecessary since/if we know before this function is called
-            // that we don't have anything better than three of a kind.
+
             if (fiveCards[(i%5)].getRank()   == fiveCards[(i+1)%5].getRank() &&
-                fiveCards[(i+1)%5].getRank() == fiveCards[(i+2)%5].getRank() &&
-                fiveCards[(i+2)%5].getRank() != fiveCards[(i+3)%5].getRank() && // To verify that we don't have
-                fiveCards[(i+2)%5].getRank() != fiveCards[(i+4)%5].getRank() && // four of a kind.
-                fiveCards[(i+3)%5].getRank() != fiveCards[(i+4)%5].getRank()   ) // To verify that we don't have full house )
+                fiveCards[(i+1)%5].getRank() == fiveCards[(i+2)%5].getRank()   );
+
             {
                 gotThreeOfAKind = true;
                 break;
@@ -291,9 +308,6 @@ public class PokerRules {
     }
 
     private boolean checkTwoPair(Card[] fiveCards){
-
-        /* Sort the cards */
-        fiveCards = insertionSort(fiveCards);
 
         boolean gotTwoPair = ( (fiveCards[0].getRank() == fiveCards[1].getRank()  &&
                                 fiveCards[2].getRank() == fiveCards[3].getRank()) ||
@@ -308,9 +322,6 @@ public class PokerRules {
     }
 
     private boolean checkPair(Card[] fiveCards){
-
-        /* Sort the cards */
-        fiveCards = insertionSort(fiveCards);
 
         boolean gotPair = ( fiveCards[0].getRank() == fiveCards[1].getRank() ||
                             fiveCards[1].getRank() == fiveCards[2].getRank() ||
