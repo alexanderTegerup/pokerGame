@@ -71,9 +71,9 @@ public class PokerRules {
     {
 
         cardsOnTable[0] = new Card(Card.Suit.HEARTS, Card.Rank.THREE, null);
-        cardsOnTable[1] = new Card(Card.Suit.HEARTS, Card.Rank.ACE, null);
-        cardsOnTable[2] = new Card(Card.Suit.HEARTS, Card.Rank.FOUR, null);
-        cardsOnTable[3] = new Card(Card.Suit.HEARTS, Card.Rank.ACE, null);
+        cardsOnTable[1] = new Card(Card.Suit.DIAMONDS, Card.Rank.EIGHT, null);
+        cardsOnTable[2] = new Card(Card.Suit.SPADES, Card.Rank.SEVEN, null);
+        cardsOnTable[3] = new Card(Card.Suit.HEARTS, Card.Rank.NINE, null);
         cardsOnTable[4] = new Card(Card.Suit.HEARTS, Card.Rank.ACE, null);
 
         Hand hand1 = new Hand();
@@ -92,6 +92,8 @@ public class PokerRules {
         tableCardRank = determineHandRanking(cardsOnTable);
         System.out.println("cards on table " + tableCardRank);
 
+
+        // TODO Make a function of this code called getPlayersBestHand()
         Ranking rankPlayer;
         Ranking bestCombination;
         Card[] cardCombination = new Card[5];
@@ -146,6 +148,32 @@ public class PokerRules {
             }
 
             System.out.println("player " + iPlayersHand + ": " + playersHands.get(iPlayersHand).getRanking());
+        }
+
+        int playerWithBestHand;
+        Ranking highestRank = Ranking.NOTHING;
+        for (int iPlayer=0; iPlayer < numberOfPlayers; iPlayer++){
+
+            rankPlayer = playersHands.get(iPlayer).getRanking();
+            if (rankPlayer.ordinal() > highestRank.ordinal())
+            {
+                highestRank = rankPlayer;
+                playerWithBestHand = iPlayer;
+            }
+            else if (rankPlayer == highestRank)
+            {
+                switch (rankPlayer){
+                    case NOTHING:
+                    case PAIR:
+                    case TWO_PAIR:
+                    case THREE_OF_A_KIND:
+                    case STRAIGHT:
+                    case FLUSH:
+                    case FULL_HOUSE:
+                    case FOUR_OF_A_KIND:
+                    case STRAIGHT_FLUSH:
+                }
+            }
         }
     }
 
@@ -301,8 +329,7 @@ public class PokerRules {
         {
 
             if (fiveCards[(i%5)].getRank()   == fiveCards[(i+1)%5].getRank() &&
-                fiveCards[(i+1)%5].getRank() == fiveCards[(i+2)%5].getRank()   );
-
+                fiveCards[(i+1)%5].getRank() == fiveCards[(i+2)%5].getRank()   )
             {
                 gotThreeOfAKind = true;
                 break;
