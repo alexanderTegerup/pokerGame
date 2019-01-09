@@ -1,10 +1,8 @@
 package calculations;
 
-import common.Observer;
-import player.Player;
 import table.Card;
 import table.Deck;
-import player.Players;
+
 import java.util.ArrayList;
 
 class Hand{
@@ -50,11 +48,11 @@ public class PokerRules {
     private Deck deck = new Deck(); // stub
     private int numberOfPlayers = 2;
 
-    private Card p1c1 = new Card(Card.Suit.DIAMONDS, Card.Rank.SIX, null);
-    private Card p1c2 = new Card(Card.Suit.SPADES, Card.Rank.FIVE, null);
+    private Card p1c1 = new Card(Card.Suit.DIAMONDS, Card.Rank.FIVE, null);
+    private Card p1c2 = new Card(Card.Suit.SPADES, Card.Rank.QUEEN, null);
 
-    private Card p2c1 = new Card(Card.Suit.HEARTS, Card.Rank.TWO, null);
-    private Card p2c2 = new Card(Card.Suit.SPADES, Card.Rank.EIGHT, null);
+    private Card p2c1 = new Card(Card.Suit.HEARTS, Card.Rank.SIX, null);
+    private Card p2c2 = new Card(Card.Suit.SPADES, Card.Rank.QUEEN, null);
 
 
     //----------------------
@@ -71,10 +69,10 @@ public class PokerRules {
     {
 
         cardsOnTable[0] = new Card(Card.Suit.HEARTS, Card.Rank.THREE, null);
-        cardsOnTable[1] = new Card(Card.Suit.DIAMONDS, Card.Rank.EIGHT, null);
+        cardsOnTable[1] = new Card(Card.Suit.HEARTS, Card.Rank.EIGHT, null);
         cardsOnTable[2] = new Card(Card.Suit.SPADES, Card.Rank.SEVEN, null);
         cardsOnTable[3] = new Card(Card.Suit.HEARTS, Card.Rank.NINE, null);
-        cardsOnTable[4] = new Card(Card.Suit.HEARTS, Card.Rank.ACE, null);
+        cardsOnTable[4] = new Card(Card.Suit.CLUBS, Card.Rank.TWO, null);
 
         Hand hand1 = new Hand();
         hand1.setHand(p1c1,p1c2);
@@ -92,8 +90,44 @@ public class PokerRules {
         tableCardRank = determineHandRanking(cardsOnTable);
         System.out.println("cards on table " + tableCardRank);
 
+        /* Set the best combination each player can have with their hands. */
+        setPlayersBestRanking();
 
-        // TODO Make a function of this code called getPlayersBestHand()
+        Ranking rankPlayer;
+        int playerWithBestHand = 0;
+        Ranking highestRank = Ranking.NOTHING;
+        for (int iPlayer=0; iPlayer < numberOfPlayers; iPlayer++){
+
+            rankPlayer = playersHands.get(iPlayer).getRanking();
+            if (rankPlayer.ordinal() > highestRank.ordinal())
+            {
+                highestRank = rankPlayer;
+                playerWithBestHand = iPlayer;
+            }
+            /* If several players have the same hand */
+            else if ( (rankPlayer == highestRank) && (iPlayer > 0) )
+            {
+                switch (rankPlayer){
+                    case NOTHING:
+                        playerWithBestHand = decideHighestCard(playerWithBestHand, playersHands.get(playerWithBestHand), iPlayer, playersHands.get(iPlayer) );
+                    case PAIR:
+                    case TWO_PAIR:
+                    case THREE_OF_A_KIND:
+                    case STRAIGHT:
+                    case FLUSH:
+                    case FULL_HOUSE:
+                    case FOUR_OF_A_KIND:
+                    case STRAIGHT_FLUSH:
+                }
+            }
+            System.out.println("player " + iPlayer + ": " + playersHands.get(iPlayer).getRanking());
+        }
+
+        System.out.println("The player with the best hand is payer " + playerWithBestHand);
+    }
+
+    private void setPlayersBestRanking(){
+
         Ranking rankPlayer;
         Ranking bestCombination;
         Card[] cardCombination = new Card[5];
@@ -146,37 +180,8 @@ public class PokerRules {
             else {
                 playersHands.get(iPlayersHand).setRanking(tableCardRank);
             }
-
-            System.out.println("player " + iPlayersHand + ": " + playersHands.get(iPlayersHand).getRanking());
-        }
-
-        int playerWithBestHand;
-        Ranking highestRank = Ranking.NOTHING;
-        for (int iPlayer=0; iPlayer < numberOfPlayers; iPlayer++){
-
-            rankPlayer = playersHands.get(iPlayer).getRanking();
-            if (rankPlayer.ordinal() > highestRank.ordinal())
-            {
-                highestRank = rankPlayer;
-                playerWithBestHand = iPlayer;
-            }
-            else if (rankPlayer == highestRank)
-            {
-                switch (rankPlayer){
-                    case NOTHING:
-                    case PAIR:
-                    case TWO_PAIR:
-                    case THREE_OF_A_KIND:
-                    case STRAIGHT:
-                    case FLUSH:
-                    case FULL_HOUSE:
-                    case FOUR_OF_A_KIND:
-                    case STRAIGHT_FLUSH:
-                }
-            }
         }
     }
-
 
     private Ranking determineHandRanking(Card[] fiveCards){
 
@@ -228,15 +233,16 @@ public class PokerRules {
 
 
     /**
-     * Algorithm that sorts the rank of five cards in ascending order.
+     * Algorithm that sorts the rank of an arbitrary number of cards in ascending order.
      * @param cards The unsorted cards.
      * @return The cards sorted from the lowest to the highest rank.
      */
     private Card[] insertionSort(Card[] cards) {
 
         Card tmpCard;
+        int numberOfCards = cards.length;
         int j;
-        for(int i = 1; i<5; i++) {
+        for(int i = 1; i<numberOfCards; i++) {
 
             j=i;
             while(j>0 && cards[j].getRank().ordinal() < cards[j-1].getRank().ordinal()){
@@ -249,6 +255,48 @@ public class PokerRules {
         }
 
         return cards;
+    }
+
+    /**
+     * Method that determines which of two players have the highest card, including the cards on the table.
+     * @param indexPlayer1 The index of the first player.
+     * @param h1 The hand the first player has.
+     * @param indexPlayer2 The index of the second player.
+     * @param h2 The hand the second player has.
+     * @return The index of the player who has the highest card. If they both have the exact same rank of the cards -1 is returned.
+     */
+    private int decideHighestCard(int indexPlayer1, Hand h1, int indexPlayer2, Hand h2){
+
+        Card[] hand1 = new Card[7];
+        Card[] hand2 = new Card[7];
+
+        for(int i=0; i<5; i++)
+        {
+            hand1[i] = cardsOnTable[i];
+            hand2[i] = cardsOnTable[i];
+        }
+
+        hand1[5] = h1.getCard1();
+        hand1[6] = h1.getCard2();
+
+        hand2[5] = h2.getCard1();
+        hand2[6] = h2.getCard2();
+
+        hand1 = insertionSort(hand1);
+        hand2 = insertionSort(hand2);
+
+        for (int i=0; i<5; i++)
+        {
+            if (hand1[6-i].getRank().ordinal() > hand2[6-i].getRank().ordinal())
+            {
+                return indexPlayer1;
+            }
+            else if (hand1[6-i].getRank().ordinal() < hand2[6-i].getRank().ordinal())
+            {
+                return indexPlayer2;
+            }
+        }
+        return -1;
     }
 
     /**
