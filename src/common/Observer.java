@@ -19,12 +19,19 @@ public interface Observer {
 
     public void updateWinner(int playername, double winningPot);
 
-    public void bet(double currentPot);
+    public void bet(double playerBet);
 
     public void CurrentTurnPotRaises(double raises);
     
     public void flipOfCardT(ArrayList<Card> tableCards);
 
     public void updateFoldFromServer();
+    
+    public String getUserName();
+    
+    public int getObserverID();
+    
+    public Hand getHand();
+    
 }
 
