@@ -48,11 +48,11 @@ public class PokerRules {
     private Deck deck = new Deck(); // stub
     private int numberOfPlayers = 2;
 
-    private Card p1c1 = new Card(Card.Suit.DIAMONDS, Card.Rank.FIVE, null);
-    private Card p1c2 = new Card(Card.Suit.SPADES, Card.Rank.QUEEN, null);
+    private Card p1c1 = new Card(Card.Suit.HEARTS, Card.Rank.EIGHT, null);
+    private Card p1c2 = new Card(Card.Suit.HEARTS, Card.Rank.QUEEN, null);
 
     private Card p2c1 = new Card(Card.Suit.HEARTS, Card.Rank.SIX, null);
-    private Card p2c2 = new Card(Card.Suit.SPADES, Card.Rank.QUEEN, null);
+    private Card p2c2 = new Card(Card.Suit.CLUBS, Card.Rank.QUEEN, null);
 
 
     //----------------------
@@ -109,8 +109,11 @@ public class PokerRules {
             {
                 switch (rankPlayer){
                     case NOTHING:
-                        playerWithBestHand = decideHighestCard(playerWithBestHand, playersHands.get(playerWithBestHand), iPlayer, playersHands.get(iPlayer) );
+                        playerWithBestHand = decideHighestCard(playerWithBestHand, playersHands.get(playerWithBestHand),
+                                                               iPlayer,            playersHands.get(iPlayer)          );
+
                     case PAIR:
+
                     case TWO_PAIR:
                     case THREE_OF_A_KIND:
                     case STRAIGHT:
@@ -123,7 +126,7 @@ public class PokerRules {
             System.out.println("player " + iPlayer + ": " + playersHands.get(iPlayer).getRanking());
         }
 
-        System.out.println("The player with the best hand is payer " + playerWithBestHand);
+        System.out.println("The player with the best hand is player " + playerWithBestHand);
     }
 
     private void setPlayersBestRanking(){
@@ -136,20 +139,28 @@ public class PokerRules {
         for (int iPlayersHand=0; iPlayersHand < numberOfPlayers; iPlayersHand++){
 
             bestCombination = Ranking.NOTHING;
-            for (int i=0; i<15; i++){
+            for (int i=0; i<20; i++){
 
-                /* Test all combinations with two cards from the player and three cards from the table */
+                /* i=0:9 tests all combinations with two cards from the player and three cards from the table
+                  (5 choose 3 = 10) */
                 if (i<5){
-
                     cardCombination[0] = cardsOnTable[i%5];
                     cardCombination[1] = cardsOnTable[(i+1)%5];
                     cardCombination[2] = cardsOnTable[(i+2)%5];
                     cardCombination[3] = playersHands.get(iPlayersHand).getCard1();
                     cardCombination[4] = playersHands.get(iPlayersHand).getCard2();
-
                 }
-                /* Test all combinations with the first card from the player and four cards from the table */
-                else if (i < 10){
+                else if (i<10)
+                {
+                    cardCombination[0] = cardsOnTable[i%5];
+                    cardCombination[1] = cardsOnTable[(i+1)%5];
+                    cardCombination[2] = cardsOnTable[(i+3)%5];
+                    cardCombination[3] = playersHands.get(iPlayersHand).getCard1();
+                    cardCombination[4] = playersHands.get(iPlayersHand).getCard2();
+                }
+                /* Test all combinations with the first card from the player and four cards from the table
+                  (5 choose 4 = 5)*/
+                else if (i < 15){
 
                     cardCombination[0] = cardsOnTable[i%5];
                     cardCombination[1] = cardsOnTable[(i+1)%5];
@@ -181,6 +192,7 @@ public class PokerRules {
                 playersHands.get(iPlayersHand).setRanking(tableCardRank);
             }
         }
+
     }
 
     private Ranking determineHandRanking(Card[] fiveCards){
