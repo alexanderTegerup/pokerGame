@@ -49,11 +49,11 @@ public class PokerRules {
     private Deck deck = new Deck(); // stub
     private int numberOfPlayers = 2;
 
-    private Card p1c1 = new Card(Card.Suit.HEARTS, Card.Rank.EIGHT, null);
-    private Card p1c2 = new Card(Card.Suit.HEARTS, Card.Rank.QUEEN, null);
+    private Card p1c1 = new Card(Card.Suit.HEARTS, Card.Rank.NINE, null);
+    private Card p1c2 = new Card(Card.Suit.SPADES, Card.Rank.TWO, null);
 
-    private Card p2c1 = new Card(Card.Suit.HEARTS, Card.Rank.SIX, null);
-    private Card p2c2 = new Card(Card.Suit.CLUBS, Card.Rank.QUEEN, null);
+    private Card p2c1 = new Card(Card.Suit.HEARTS, Card.Rank.EIGHT, null);
+    private Card p2c2 = new Card(Card.Suit.CLUBS, Card.Rank.NINE, null);
 
 
     //----------------------
@@ -70,10 +70,10 @@ public class PokerRules {
     {
 
         cardsOnTable[0] = new Card(Card.Suit.HEARTS, Card.Rank.THREE, null);
-        cardsOnTable[1] = new Card(Card.Suit.HEARTS, Card.Rank.EIGHT, null);
+        cardsOnTable[1] = new Card(Card.Suit.HEARTS, Card.Rank.FOUR, null);
         cardsOnTable[2] = new Card(Card.Suit.SPADES, Card.Rank.SEVEN, null);
         cardsOnTable[3] = new Card(Card.Suit.HEARTS, Card.Rank.NINE, null);
-        cardsOnTable[4] = new Card(Card.Suit.CLUBS, Card.Rank.TWO, null);
+        cardsOnTable[4] = new Card(Card.Suit.CLUBS, Card.Rank.ACE, null);
 
         Hand hand1 = new Hand();
         hand1.setHand(p1c1,p1c2);
@@ -112,12 +112,18 @@ public class PokerRules {
                     case NOTHING:
                         playerWithBestHand = decideHighestCard(playerWithBestHand, playersHands.get(playerWithBestHand),
                                                                iPlayer,            playersHands.get(iPlayer)          );
+                        break;
 
                     case PAIR:
 
                         playerWithBestHand = decideHighestPair(playerWithBestHand, playersHands.get(playerWithBestHand),
                                                                iPlayer,            playersHands.get(iPlayer)          );
+                        break;
+
                     case TWO_PAIR:
+                        playerWithBestHand = decideHighestTwoPair(); // Needs to be implemented
+                        break;
+
                     case THREE_OF_A_KIND:
                     case STRAIGHT:
                     case FLUSH:
@@ -274,6 +280,30 @@ public class PokerRules {
     }
 
     /**
+     * Method that takes the card a player has in its hand and add those cards to an array together with the five cards
+     * on the table. This array is sorted from the card with the lowest to the highest rank.
+     * @param playersHand The hand of a player.
+     * @param cardsOnTable The five cards that are on the table.
+     * @return The sorted array of seven cards.
+     */
+    private Card[] makeSortedArray7cards(Hand playersHand, Card[] cardsOnTable){
+
+        Card[] hand = new Card[7];
+
+        for(int i=0; i<5; i++)
+        {
+            hand[i] = cardsOnTable[i];
+        }
+
+        hand[5] = playersHand.getCard1();
+        hand[6] = playersHand.getCard2();
+
+        hand = insertionSort(hand);
+
+        return hand;
+    }
+
+    /**
      * Method that determines which of two players have the highest card, including the cards on the table.
      * @param indexPlayer1 The index of the first player.
      * @param h1 The hand the first player has.
@@ -283,26 +313,15 @@ public class PokerRules {
      */
     private int decideHighestCard(int indexPlayer1, Hand h1, int indexPlayer2, Hand h2){
 
-        Card[] hand1 = new Card[7];
-        Card[] hand2 = new Card[7];
+        Card[] hand1;
+        Card[] hand2;
 
-        for(int i=0; i<5; i++)
-        {
-            hand1[i] = cardsOnTable[i];
-            hand2[i] = cardsOnTable[i];
-        }
-
-        hand1[5] = h1.getCard1();
-        hand1[6] = h1.getCard2();
-
-        hand2[5] = h2.getCard1();
-        hand2[6] = h2.getCard2();
-
-        hand1 = insertionSort(hand1);
-        hand2 = insertionSort(hand2);
+        hand1 = makeSortedArray7cards(h1, cardsOnTable);
+        hand2 = makeSortedArray7cards(h2, cardsOnTable);
 
         for (int i=0; i<5; i++)
         {
+
             if (hand1[6-i].getRank().ordinal() > hand2[6-i].getRank().ordinal())
             {
                 return indexPlayer1;
@@ -312,57 +331,87 @@ public class PokerRules {
                 return indexPlayer2;
             }
         }
+
         return -1;
     }
 
     private int decideHighestPair(int indexPlayer1, Hand h1, int indexPlayer2, Hand h2)
     {
-        Card[] hand1 = new Card[7];
-        Card[] hand2 = new Card[7];
+        Card[] hand1;
+        Card[] hand2;
 
-        for(int i=0; i<5; i++)
-        {
-            hand1[i] = cardsOnTable[i];
-            hand2[i] = cardsOnTable[i];
-        }
+        hand1 = makeSortedArray7cards(h1, cardsOnTable);
+        hand2 = makeSortedArray7cards(h2, cardsOnTable);
 
-        hand1[5] = h1.getCard1();
-        hand1[6] = h1.getCard2();
+        Card.Rank pairHand1 = hand1[0].getRank(); // They need to be initialized.
+        Card.Rank pairHand2 = hand2[0].getRank(); // They need to be initialized.
 
-        hand2[5] = h2.getCard1();
-        hand2[6] = h2.getCard2();
+        /* Saving the index where the cards that make up a pair are. */
+        int idxPair1 = 0;
+        int idxPair2 = 0;
 
-        hand1 = insertionSort(hand1);
-        hand2 = insertionSort(hand2);
-
-        Card.Rank pairHand1 = hand1[0].getRank();
-        Card.Rank pairHand2 = hand2[0].getRank();
-
-        for (int i=1; i<6; i++)
+        for (int i=0; i<6; i++)
         {
             if (hand1[i].getRank() == hand1[i+1].getRank())
             {
                 pairHand1 = hand1[i].getRank();
+                idxPair1 = i+1;
             }
 
             if (hand2[i].getRank() == hand2[i+1].getRank())
             {
                 pairHand2 = hand2[i].getRank();
+                idxPair2 = i+1;
             }
         }
 
-        if (pairHand1.ordinal() > pairHand2.ordinal()){
+        int idxHighestCard1 = 6;
+        int idxHighestCard2 = 6;
+
+        /* If hand 1 has the highest pair, return that players index. */
+        if (pairHand1.ordinal() > pairHand2.ordinal())
+        {
             return indexPlayer1;
         }
+        /* If hand 2 has the highest pair, return that players index. */
         else if (pairHand1.ordinal() < pairHand2.ordinal())
         {
             return indexPlayer2;
         }
-
-        if (pairHand1 == pairHand2)
+        /* If they have the same pair, return the index of the player with the highest
+           card of their three remaining cards */
+        else if (pairHand1 == pairHand2)
         {
-            // To be implemented
+
+            /* Loop through the three highest remaining cards for both players */
+            for(int i=6; i>3; i--){
+
+                if (i == idxPair1){ // Skip the cards that make up the pair.
+                    idxHighestCard1 -=2;
+                }
+                if (i == idxPair2){ // Skip the cards that make up the pair.
+                    idxHighestCard2 -=2;
+                }
+
+                if (hand1[idxHighestCard1].getRank().ordinal() > hand2[idxHighestCard2].getRank().ordinal())
+                {
+                    return indexPlayer1;
+                }
+                else if (hand1[idxHighestCard1].getRank().ordinal() < hand2[idxHighestCard2].getRank().ordinal())
+                {
+                    return indexPlayer2;
+                }
+                idxHighestCard1--;
+                idxHighestCard2--;
+            }
         }
+
+        return -1;
+    }
+    
+
+    private int decideHighestTwoPair(){
+        // Needs to be implemented
 
         return -1;
     }
