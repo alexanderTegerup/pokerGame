@@ -28,6 +28,7 @@ public class PokerRules {
     // TODO Comment the methods and create java doc.
     // TODO Go through and see if I can remove some hard coding.
     // TODO Rename some methods and enums
+    // TODO Go trough the method decideHighestPair and look for bugs. I was tired when I wrote that.
 
     public enum Ranks
     {
@@ -50,7 +51,7 @@ public class PokerRules {
     private int numberOfPlayers = 2;
 
     private Card p1c1 = new Card(Card.Suit.HEARTS, Card.Rank.NINE, null);
-    private Card p1c2 = new Card(Card.Suit.SPADES, Card.Rank.TWO, null);
+    private Card p1c2 = new Card(Card.Suit.SPADES, Card.Rank.KING, null);
 
     private Card p2c1 = new Card(Card.Suit.HEARTS, Card.Rank.EIGHT, null);
     private Card p2c2 = new Card(Card.Suit.CLUBS, Card.Rank.NINE, null);
@@ -352,12 +353,13 @@ public class PokerRules {
 
         for (int i=0; i<6; i++)
         {
+            /* Save the ranking of the pair. */
             if (hand1[i].getRank() == hand1[i+1].getRank())
             {
                 pairHand1 = hand1[i].getRank();
                 idxPair1 = i+1;
             }
-
+            /* Save the ranking of the pair of the second hand. */
             if (hand2[i].getRank() == hand2[i+1].getRank())
             {
                 pairHand2 = hand2[i].getRank();
