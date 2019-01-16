@@ -53,48 +53,24 @@ public class PokerRules {
         ROYAL_FLUSH
     }
 
-    /* ---- stubs stubs stubs stubs stubs stubs stubs  ---- */
-    private Card[] cardsOnTable = new Card[5]; // stub
-    private Deck deck = new Deck(); // stub
-    private int numberOfPlayers = 2;
 
-    private Card p1c1 = new Card(Card.Suit.HEARTS, Card.Rank.ACE, null);
-    private Card p1c2 = new Card(Card.Suit.SPADES, Card.Rank.SEVEN, null);
-
-    private Card p2c1 = new Card(Card.Suit.HEARTS, Card.Rank.TEN, null);
-    private Card p2c2 = new Card(Card.Suit.CLUBS, Card.Rank.SEVEN, null);
-
-
-    //----------------------
-
-    private ArrayList<Hand> playersHands = new ArrayList<>(); // Array list with the hand of each player
     private Ranks tableCardRank;
+    private int numberOfPlayers;
+    private Card[] cardsOnTable;
+    private Hand[] arrayWithHands;
 
 
     /**
      * Determines which player who has the best hand.
      * @return The ID(s) of a player/players with the best hand.
      */
-    public int[] determineBestHand()
+    public int[] determineBestHand(Hand[] arrHands, Card[] tableCards)
     {
+        arrayWithHands = arrHands;
+        numberOfPlayers = arrayWithHands.length;
+        System.out.println("number of players are " + numberOfPlayers);
 
-        cardsOnTable[0] = new Card(Card.Suit.DIAMONDS, Card.Rank.JACK, null);
-        cardsOnTable[1] = new Card(Card.Suit.DIAMONDS, Card.Rank.FOUR, null);
-        cardsOnTable[2] = new Card(Card.Suit.SPADES, Card.Rank.SEVEN, null);
-        cardsOnTable[3] = new Card(Card.Suit.HEARTS, Card.Rank.SEVEN, null);
-        cardsOnTable[4] = new Card(Card.Suit.CLUBS, Card.Rank.TWO, null);
-
-        Hand hand1 = new Hand();
-        hand1.setHand(p1c1,p1c2);
-
-        Hand hand2 = new Hand();
-        hand2.setHand(p2c1,p2c2);
-
-        for(int i=0; i<numberOfPlayers; i++){
-
-            playersHands.add(hand1);
-            playersHands.add(hand2);
-        }
+        cardsOnTable = tableCards;
 
         /* Find out which poker hand there is on the table. */
         tableCardRank = determineHandRanking(cardsOnTable);
@@ -108,7 +84,7 @@ public class PokerRules {
         Ranks highestRank = Ranks.NOTHING;
         for (int iPlayer=0; iPlayer < numberOfPlayers; iPlayer++){
 
-            rankPlayer = playersHands.get(iPlayer).getRanking();
+            rankPlayer = arrayWithHands[iPlayer].getRanking();
             if (rankPlayer.ordinal() > highestRank.ordinal())
             {
                 highestRank = rankPlayer;
@@ -119,42 +95,42 @@ public class PokerRules {
             {
                 switch (rankPlayer){
                     case NOTHING:
-                        playerWithBestHand = decideHighestCard(playerWithBestHand, playersHands.get(playerWithBestHand),
-                                                               iPlayer,            playersHands.get(iPlayer)          );
+                        playerWithBestHand = decideHighestCard(playerWithBestHand, arrayWithHands[playerWithBestHand],
+                                                               iPlayer,            arrayWithHands[iPlayer]          );
                         break;
 
                     case PAIR:
 
-                        playerWithBestHand = decideBestPair( playerWithBestHand, playersHands.get(playerWithBestHand),
-                                                             iPlayer,            playersHands.get(iPlayer)            );
+                        playerWithBestHand = decideBestPair( playerWithBestHand, arrayWithHands[playerWithBestHand],
+                                                             iPlayer,            arrayWithHands[iPlayer]            );
                         break;
 
                     case TWO_PAIR:
                         playerWithBestHand = decideBestTwoPair( playerWithBestHand,
-                                                                playersHands.get(playerWithBestHand),
+                                                                arrayWithHands[playerWithBestHand],
                                                                 iPlayer,
-                                                                playersHands.get(iPlayer) );
+                                                                arrayWithHands[iPlayer] );
                         break;
 
                     case THREE_OF_A_KIND:
                         playerWithBestHand = decideBestThreeOfAKind( playerWithBestHand,
-                                                                     playersHands.get(playerWithBestHand),
+                                                                     arrayWithHands[playerWithBestHand],
                                                                      iPlayer,
-                                                                     playersHands.get(iPlayer) );
+                                                                     arrayWithHands[iPlayer] );
                         break;
 
                     case STRAIGHT:
                         playerWithBestHand = decideBestStraight( playerWithBestHand,
-                                                                 playersHands.get(playerWithBestHand),
+                                                                 arrayWithHands[playerWithBestHand],
                                                                  iPlayer,
-                                                                 playersHands.get(iPlayer) );
+                                                                 arrayWithHands[iPlayer] );
                     case FLUSH:
                     case FULL_HOUSE:
                     case FOUR_OF_A_KIND:
                     case STRAIGHT_FLUSH:
                 }
             }
-            System.out.println("player " + iPlayer + ": " + playersHands.get(iPlayer).getRanking());
+            System.out.println("player " + iPlayer + ": " + arrayWithHands[iPlayer].getRanking());
         }
 
         System.out.println("The player with the best hand is player " + playerWithBestHand);
@@ -186,16 +162,16 @@ public class PokerRules {
                     cardCombination[0] = cardsOnTable[i%5];
                     cardCombination[1] = cardsOnTable[(i+1)%5];
                     cardCombination[2] = cardsOnTable[(i+2)%5];
-                    cardCombination[3] = playersHands.get(iPlayersHand).getCard1();
-                    cardCombination[4] = playersHands.get(iPlayersHand).getCard2();
+                    cardCombination[3] = arrayWithHands[iPlayersHand].getCard1();
+                    cardCombination[4] = arrayWithHands[iPlayersHand].getCard2();
                 }
                 else if (i<10)
                 {
                     cardCombination[0] = cardsOnTable[i%5];
                     cardCombination[1] = cardsOnTable[(i+1)%5];
                     cardCombination[2] = cardsOnTable[(i+3)%5];
-                    cardCombination[3] = playersHands.get(iPlayersHand).getCard1();
-                    cardCombination[4] = playersHands.get(iPlayersHand).getCard2();
+                    cardCombination[3] = arrayWithHands[iPlayersHand].getCard1();
+                    cardCombination[4] = arrayWithHands[iPlayersHand].getCard2();
                 }
                 /* Test all combinations with the first card from the player and four cards from the table
                 *  (The number of combinations are 5 choose 4 = 5)*/
@@ -205,7 +181,7 @@ public class PokerRules {
                     cardCombination[1] = cardsOnTable[(i+1)%5];
                     cardCombination[2] = cardsOnTable[(i+2)%5];
                     cardCombination[3] = cardsOnTable[(i+3)%5];
-                    cardCombination[4] = playersHands.get(iPlayersHand).getCard1();
+                    cardCombination[4] = arrayWithHands[iPlayersHand].getCard1();
                 }
                 /* Test all combinations with the second card from the player and four cards from the table
                 *  (The number of combinations are 5 choose 4 = 5)*/
@@ -215,7 +191,7 @@ public class PokerRules {
                     cardCombination[1] = cardsOnTable[(i+1)%5];
                     cardCombination[2] = cardsOnTable[(i+2)%5];
                     cardCombination[3] = cardsOnTable[(i+3)%5];
-                    cardCombination[4] = playersHands.get(iPlayersHand).getCard2();
+                    cardCombination[4] = arrayWithHands[iPlayersHand].getCard2();
                 }
 
                 /* Save the highest combination */
@@ -226,10 +202,10 @@ public class PokerRules {
             }
 
             if (bestCombination.ordinal() > tableCardRank.ordinal()){
-                playersHands.get(iPlayersHand).setRanking(bestCombination);
+                arrayWithHands[iPlayersHand].setRanking(bestCombination);
             }
             else {
-                playersHands.get(iPlayersHand).setRanking(tableCardRank);
+                arrayWithHands[iPlayersHand].setRanking(tableCardRank);
             }
         }
 
@@ -801,9 +777,33 @@ public class PokerRules {
      */
     public static void main(String[] args) {
 
+        Card[] tableCards = new Card[5];
+        Hand[] arrHands = new Hand[2];
+
+        tableCards[0] = new Card(Card.Suit.DIAMONDS, Card.Rank.JACK, null);
+        tableCards[1] = new Card(Card.Suit.DIAMONDS, Card.Rank.FOUR, null);
+        tableCards[2] = new Card(Card.Suit.DIAMONDS, Card.Rank.SEVEN, null);
+        tableCards[3] = new Card(Card.Suit.HEARTS, Card.Rank.SEVEN, null);
+        tableCards[4] = new Card(Card.Suit.CLUBS, Card.Rank.TWO, null);
+
+        Card p1c1 = new Card(Card.Suit.DIAMONDS, Card.Rank.ACE, null);
+        Card p1c2 = new Card(Card.Suit.DIAMONDS, Card.Rank.SEVEN, null);
+
+        Card p2c1 = new Card(Card.Suit.HEARTS, Card.Rank.TEN, null);
+        Card p2c2 = new Card(Card.Suit.CLUBS, Card.Rank.SEVEN, null);
+
+        Hand hand1 = new Hand();
+        hand1.setHand(p1c1,p1c2);
+
+        Hand hand2 = new Hand();
+        hand2.setHand(p2c1,p2c2);
+
+        arrHands[0] = hand1;
+        arrHands[1] = hand2;
+
         PokerRules p = new PokerRules();
         int[] a; 
-        a = p.determineBestHand();
+        a = p.determineBestHand(arrHands, tableCards );
         System.out.println(a[0]);
 
     }
