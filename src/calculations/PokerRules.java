@@ -34,6 +34,9 @@ public class PokerRules {
 
     // TODO Write some unit tests for this module. There might be combinations of cards where the code determines the
     // TODO wrong winner.
+    // TODO Do I need to call the ordinal method in checkStraight?
+    // TODO Remove the hard coding of numberOfWinners
+    // TODO Make determineBestHand take an array of hands and the cards on the table as arguments.
 
     public enum Ranks
     {
@@ -70,9 +73,9 @@ public class PokerRules {
 
     /**
      * Determines which player who has the best hand.
-     * @return The ID of a player which has the best hand.
+     * @return The ID(s) of a player/players with the best hand.
      */
-    public void determineBestHand()
+    public int[] determineBestHand()
     {
 
         cardsOnTable[0] = new Card(Card.Suit.DIAMONDS, Card.Rank.JACK, null);
@@ -130,17 +133,21 @@ public class PokerRules {
                         playerWithBestHand = decideBestTwoPair( playerWithBestHand,
                                                                 playersHands.get(playerWithBestHand),
                                                                 iPlayer,
-                                                                playersHands.get(iPlayer)              );
+                                                                playersHands.get(iPlayer) );
                         break;
 
                     case THREE_OF_A_KIND:
                         playerWithBestHand = decideBestThreeOfAKind( playerWithBestHand,
                                                                      playersHands.get(playerWithBestHand),
                                                                      iPlayer,
-                                                                     playersHands.get(iPlayer));
+                                                                     playersHands.get(iPlayer) );
                         break;
 
                     case STRAIGHT:
+                        playerWithBestHand = decideBestStraight( playerWithBestHand,
+                                                                 playersHands.get(playerWithBestHand),
+                                                                 iPlayer,
+                                                                 playersHands.get(iPlayer) );
                     case FLUSH:
                     case FULL_HOUSE:
                     case FOUR_OF_A_KIND:
@@ -151,6 +158,14 @@ public class PokerRules {
         }
 
         System.out.println("The player with the best hand is player " + playerWithBestHand);
+
+        int numberOfWinners = 1;
+        int[] winners = new int[numberOfWinners];
+        for (int i=0; i<numberOfWinners; i++){
+            winners[i] = playerWithBestHand;
+        }
+
+        return winners;
     }
 
     private void setPlayersBestRanking(){
@@ -622,6 +637,52 @@ public class PokerRules {
 
         return -1;
     }
+
+    /**
+     * Method that decides which of two players, who both have a straight, has the best hand. The player with the
+     * highest ranked cards that makes up three of a kind wins. If two players have the same three of a kind, then the
+     * highest of the two remaining card kickers determines the winner.
+     * @param indexPlayer1 The index of the first player.
+     * @param h1 The hand the first player has.
+     * @param indexPlayer2 The index of the second player.
+     * @param h2 The hand the second player has.
+     * @return The index of the player who has the best hand. If they both have the exact same rank of the cards -1 is
+     * returned.
+     */
+    private int decideBestStraight(int indexPlayer1, Hand h1, int indexPlayer2, Hand h2){
+
+        /*
+        Card[] hand1;
+        Card[] hand2;
+
+        hand1 = makeSortedArray7cards(h1, cardsOnTable);
+        hand2 = makeSortedArray7cards(h2, cardsOnTable);
+
+        Card highestCardHand1 = hand1[0];
+        Card highestCardHand2 = hand2[0];
+
+        for (int i=0; i<3; i++){
+
+            if (hand1[i].getRank()   == hand1[i+1].getRank() &&
+                hand1[i+1].getRank() == hand1[i+2].getRank() &&
+                hand1[i+2].getRank() == hand1[i+3].getRank() &&
+                hand1[i+3].getRank() == hand1[i+4].getRank()   )
+            {
+                highestCardHand1 = hand1[i+4];
+            }
+            if (hand2[i].getRank()   == hand2[i+1].getRank() &&
+                hand2[i+1].getRank() == hand2[i+2].getRank() &&
+                hand2[i+2].getRank() == hand2[i+3].getRank() &&
+                hand2[i+3].getRank() == hand2[i+4].getRank()   )
+            {
+                highestCardHand2 = hand2[i+4];
+            }
+        }*/
+
+        return -1;
+    }
+
+
     /**
      * Method that checks if five cards make a straight. Also checking the special case with straight from ACE to FIVE.
      * @param fiveCards The hand that may or may not make up a straight.
@@ -741,7 +802,9 @@ public class PokerRules {
     public static void main(String[] args) {
 
         PokerRules p = new PokerRules();
-        p.determineBestHand();
+        int[] a; 
+        a = p.determineBestHand();
+        System.out.println(a[0]);
 
     }
 }
