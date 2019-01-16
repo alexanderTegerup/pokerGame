@@ -28,7 +28,12 @@ public class PokerRules {
     // TODO Comment the methods and create java doc.
     // TODO Go through and see if I can remove some hard coding.
     // TODO Rename some methods and enums
-    // TODO Go trough the method decideHighestPair and look for bugs. I was tired when I wrote that.
+
+    // TODO Remove some code repetition. For instance, the decideHighest... methods could be merged into one method that
+    // TODO takes an argument that determines what to do exactly.
+
+    // TODO Write some unit tests for this module. There might be combinations of cards where the code determines the
+    // TODO wrong winner.
 
     public enum Ranks
     {
@@ -50,11 +55,11 @@ public class PokerRules {
     private Deck deck = new Deck(); // stub
     private int numberOfPlayers = 2;
 
-    private Card p1c1 = new Card(Card.Suit.HEARTS, Card.Rank.NINE, null);
-    private Card p1c2 = new Card(Card.Suit.SPADES, Card.Rank.KING, null);
+    private Card p1c1 = new Card(Card.Suit.HEARTS, Card.Rank.JACK, null);
+    private Card p1c2 = new Card(Card.Suit.SPADES, Card.Rank.FOUR, null);
 
-    private Card p2c1 = new Card(Card.Suit.HEARTS, Card.Rank.EIGHT, null);
-    private Card p2c2 = new Card(Card.Suit.CLUBS, Card.Rank.NINE, null);
+    private Card p2c1 = new Card(Card.Suit.HEARTS, Card.Rank.QUEEN, null);
+    private Card p2c2 = new Card(Card.Suit.CLUBS, Card.Rank.JACK, null);
 
 
     //----------------------
@@ -70,11 +75,11 @@ public class PokerRules {
     public void determineBestHand()
     {
 
-        cardsOnTable[0] = new Card(Card.Suit.HEARTS, Card.Rank.THREE, null);
-        cardsOnTable[1] = new Card(Card.Suit.HEARTS, Card.Rank.FOUR, null);
+        cardsOnTable[0] = new Card(Card.Suit.DIAMONDS, Card.Rank.JACK, null);
+        cardsOnTable[1] = new Card(Card.Suit.DIAMONDS, Card.Rank.FOUR, null);
         cardsOnTable[2] = new Card(Card.Suit.SPADES, Card.Rank.SEVEN, null);
-        cardsOnTable[3] = new Card(Card.Suit.HEARTS, Card.Rank.NINE, null);
-        cardsOnTable[4] = new Card(Card.Suit.CLUBS, Card.Rank.ACE, null);
+        cardsOnTable[3] = new Card(Card.Suit.HEARTS, Card.Rank.SEVEN, null);
+        cardsOnTable[4] = new Card(Card.Suit.CLUBS, Card.Rank.TWO, null);
 
         Hand hand1 = new Hand();
         hand1.setHand(p1c1,p1c2);
@@ -122,7 +127,10 @@ public class PokerRules {
                         break;
 
                     case TWO_PAIR:
-                        playerWithBestHand = decideHighestTwoPair(); // Needs to be implemented
+                        playerWithBestHand = decideHighestTwoPair( playerWithBestHand,
+                                                                   playersHands.get(playerWithBestHand),
+                                                                   iPlayer,
+                                                                   playersHands.get(iPlayer)              );
                         break;
 
                     case THREE_OF_A_KIND:
@@ -397,11 +405,13 @@ public class PokerRules {
 
                 if (hand1[idxHighestCard1].getRank().ordinal() > hand2[idxHighestCard2].getRank().ordinal())
                 {
-                    return indexPlayer1;
+                    return indexPlayer1; // Player 1 wins because she/he has the same pair as player 2 but
+                                         // the highest card of the three remaining cards.
                 }
                 else if (hand1[idxHighestCard1].getRank().ordinal() < hand2[idxHighestCard2].getRank().ordinal())
                 {
-                    return indexPlayer2;
+                    return indexPlayer2; // Player 2 wins because she/he has the same pair as player 1 but
+                                         // the highest card of the three remaining cards.
                 }
                 idxHighestCard1--;
                 idxHighestCard2--;
@@ -410,10 +420,118 @@ public class PokerRules {
 
         return -1;
     }
-    
 
-    private int decideHighestTwoPair(){
-        // Needs to be implemented
+
+    /**
+     * Method that decides which of two players with both two pair, has the best hand.
+     * @param
+     * @return The index of the player who has the best hand.
+     */
+    private int decideHighestTwoPair(int indexPlayer1, Hand h1, int indexPlayer2, Hand h2){
+
+        // The player with the highest pair wins. I two players have the same two pair, then the fifth card kicker
+        // determines the winner.
+
+        Card[] hand1;
+        Card[] hand2;
+
+        hand1 = makeSortedArray7cards(h1, cardsOnTable);
+        hand2 = makeSortedArray7cards(h2, cardsOnTable);
+
+        Card.Rank highestPairHand1 = hand1[0].getRank(); // They need to be initialized.
+        Card.Rank lowestPairHand1 = hand1[0].getRank();
+
+        Card.Rank highestPairHand2 = hand2[0].getRank(); // They need to be initialized.
+        Card.Rank lowestPairHand2 = hand2[0].getRank();
+
+        boolean lowestPairFoundHand1 = false;
+        boolean lowestPairFoundHand2= false;
+
+        int idxHighestPairHand1 = 0;
+        int idxLowestPairHand1 = 0;
+
+        int idxHighestPairHand2 = 0;
+        int idxLowestPairHand2 = 0;
+
+        for(int i=0; i<6; i++)
+        {
+
+            if (hand1[i].getRank() == hand1[i+1].getRank())
+            {
+
+                if (!lowestPairFoundHand1){
+                    lowestPairHand1 = hand1[i].getRank();
+                    lowestPairFoundHand1 = true;
+                    idxLowestPairHand1 = i+1;
+
+                }
+                else {
+                    highestPairHand1 = hand1[i].getRank();
+                    idxHighestPairHand1 = i+1;
+                }
+            }
+
+            if (hand2[i].getRank() == hand2[i+1].getRank())
+            {
+
+                if (!lowestPairFoundHand2){
+                    lowestPairHand2 = hand2[i].getRank();
+                    lowestPairFoundHand2 = true;
+                    idxLowestPairHand2 = i+1;
+                }
+                else {
+                    highestPairHand2 = hand2[i].getRank();
+                    idxHighestPairHand2 = i+1;
+                }
+            }
+        }
+
+        // Return the index of the player with the highest pair.
+        if (highestPairHand1.ordinal() > highestPairHand2.ordinal())
+        {
+            return indexPlayer1;
+        }
+        else if (highestPairHand1.ordinal() < highestPairHand2.ordinal())
+        {
+            return indexPlayer2;
+        }
+        // If the two players have the same highest pair, decide which one that has the second highest pair.
+        else if ( highestPairHand1 == highestPairHand2)
+        {
+
+            if (lowestPairHand1.ordinal() > lowestPairHand2.ordinal() )
+            {
+                return indexPlayer1;
+            }
+            else if (lowestPairHand1.ordinal() < lowestPairHand2.ordinal())
+            {
+                return indexPlayer2;
+            }
+            // If the two players have the same two pairs, the player with the highest kicker wins.
+            else if(lowestPairHand1 == lowestPairHand2){
+
+                int indexContHand1 = 6;
+                int indexContHand2 = 6;
+                for (int i=6; i>3; i--){
+
+                    if ( (i == idxHighestPairHand1) || (i == idxLowestPairHand1) ){
+                        indexContHand1 -= 2;
+                    }
+                    if ( (i == idxHighestPairHand2) || (i == idxLowestPairHand2) ){
+                        indexContHand2 -= 2;
+                    }
+
+                    if (hand1[indexContHand1].getRank().ordinal() > hand2[indexContHand2].getRank().ordinal()){
+                        return indexPlayer1;
+                    }
+                    else if (hand1[indexContHand1].getRank().ordinal() < hand2[indexContHand2].getRank().ordinal()){
+                        return indexPlayer2;
+                    }
+                    indexContHand1--;
+                    indexContHand2--;
+                }
+            }
+        }
 
         return -1;
     }
