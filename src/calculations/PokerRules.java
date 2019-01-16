@@ -55,11 +55,11 @@ public class PokerRules {
     private Deck deck = new Deck(); // stub
     private int numberOfPlayers = 2;
 
-    private Card p1c1 = new Card(Card.Suit.HEARTS, Card.Rank.JACK, null);
-    private Card p1c2 = new Card(Card.Suit.SPADES, Card.Rank.FOUR, null);
+    private Card p1c1 = new Card(Card.Suit.HEARTS, Card.Rank.ACE, null);
+    private Card p1c2 = new Card(Card.Suit.SPADES, Card.Rank.SEVEN, null);
 
-    private Card p2c1 = new Card(Card.Suit.HEARTS, Card.Rank.QUEEN, null);
-    private Card p2c2 = new Card(Card.Suit.CLUBS, Card.Rank.JACK, null);
+    private Card p2c1 = new Card(Card.Suit.HEARTS, Card.Rank.TEN, null);
+    private Card p2c2 = new Card(Card.Suit.CLUBS, Card.Rank.SEVEN, null);
 
 
     //----------------------
@@ -122,18 +122,24 @@ public class PokerRules {
 
                     case PAIR:
 
-                        playerWithBestHand = decideHighestPair(playerWithBestHand, playersHands.get(playerWithBestHand),
-                                                               iPlayer,            playersHands.get(iPlayer)          );
+                        playerWithBestHand = decideBestPair( playerWithBestHand, playersHands.get(playerWithBestHand),
+                                                             iPlayer,            playersHands.get(iPlayer)            );
                         break;
 
                     case TWO_PAIR:
-                        playerWithBestHand = decideHighestTwoPair( playerWithBestHand,
-                                                                   playersHands.get(playerWithBestHand),
-                                                                   iPlayer,
-                                                                   playersHands.get(iPlayer)              );
+                        playerWithBestHand = decideBestTwoPair( playerWithBestHand,
+                                                                playersHands.get(playerWithBestHand),
+                                                                iPlayer,
+                                                                playersHands.get(iPlayer)              );
                         break;
 
                     case THREE_OF_A_KIND:
+                        playerWithBestHand = decideBestThreeOfAKind( playerWithBestHand,
+                                                                     playersHands.get(playerWithBestHand),
+                                                                     iPlayer,
+                                                                     playersHands.get(iPlayer));
+                        break;
+
                     case STRAIGHT:
                     case FLUSH:
                     case FULL_HOUSE:
@@ -318,7 +324,8 @@ public class PokerRules {
      * @param h1 The hand the first player has.
      * @param indexPlayer2 The index of the second player.
      * @param h2 The hand the second player has.
-     * @return The index of the player who has the highest card. If they both have the exact same rank of the cards -1 is returned.
+     * @return The index of the player who has the highest card. If they both have the exact same rank of the cards -1
+     * is returned.
      */
     private int decideHighestCard(int indexPlayer1, Hand h1, int indexPlayer2, Hand h2){
 
@@ -344,7 +351,7 @@ public class PokerRules {
         return -1;
     }
 
-    private int decideHighestPair(int indexPlayer1, Hand h1, int indexPlayer2, Hand h2)
+    private int decideBestPair(int indexPlayer1, Hand h1, int indexPlayer2, Hand h2)
     {
         Card[] hand1;
         Card[] hand2;
@@ -423,14 +430,16 @@ public class PokerRules {
 
 
     /**
-     * Method that decides which of two players with both two pair, has the best hand.
-     * @param
-     * @return The index of the player who has the best hand.
+     * Method that decides which of two players, who both have two pair, has the best hand. The player with the highest
+     * pair wins. If two players have the same two pair, then the fifth card kicker determines the winner.
+     * @param indexPlayer1 The index of the first player.
+     * @param h1 The hand the first player has.
+     * @param indexPlayer2 The index of the second player.
+     * @param h2 The hand the second player has.
+     * @return The index of the player who has the best hand. If they both have the exact same rank of the cards -1 is
+     * returned.
      */
-    private int decideHighestTwoPair(int indexPlayer1, Hand h1, int indexPlayer2, Hand h2){
-
-        // The player with the highest pair wins. I two players have the same two pair, then the fifth card kicker
-        // determines the winner.
+    private int decideBestTwoPair(int indexPlayer1, Hand h1, int indexPlayer2, Hand h2){
 
         Card[] hand1;
         Card[] hand2;
@@ -536,6 +545,83 @@ public class PokerRules {
         return -1;
     }
 
+    /**
+     * Method that decides which of two players, who both have three of a kind, has the best hand. The player with the
+     * highest ranked cards that makes up three of a kind wins. If two players have the same three of a kind, then the
+     * highest of the two remaining card kickers determines the winner.
+     * @param indexPlayer1 The index of the first player.
+     * @param h1 The hand the first player has.
+     * @param indexPlayer2 The index of the second player.
+     * @param h2 The hand the second player has.
+     * @return The index of the player who has the best hand. If they both have the exact same rank of the cards -1 is
+     * returned.
+     */
+    private int decideBestThreeOfAKind(int indexPlayer1, Hand h1, int indexPlayer2, Hand h2)
+    {
+
+        Card[] hand1;
+        Card[] hand2;
+
+        hand1 = makeSortedArray7cards(h1, cardsOnTable);
+        hand2 = makeSortedArray7cards(h2, cardsOnTable);
+
+        Card.Rank rankThreeOfAKindHand1 = hand1[0].getRank();
+        Card.Rank rankThreeOfAKindHand2 = hand2[0].getRank();
+
+        int indexThreeOfAKindHand1 = 0;
+        int indexThreeOfAKindHand2 = 0;
+
+        for (int i=0; i<5; i++){
+
+            if ( (hand1[i] == hand1[i+1]) && (hand1[i+1] == hand1[i+2]) )
+            {
+                rankThreeOfAKindHand1 = hand1[i].getRank();
+                indexThreeOfAKindHand1 = i+2;
+            }
+            if ( (hand2[i] == hand2[i+1]) && (hand2[i+1] == hand2[i+2]) )
+            {
+                rankThreeOfAKindHand2 = hand2[i].getRank();
+                indexThreeOfAKindHand2 = i+2;
+            }
+        }
+
+        // Return the index of the player with the highest three of a kind.
+        if (rankThreeOfAKindHand1.ordinal() > rankThreeOfAKindHand2.ordinal())
+        {
+            return indexPlayer1;
+        }
+        else if (rankThreeOfAKindHand1.ordinal() < rankThreeOfAKindHand2.ordinal())
+        {
+            return indexPlayer2;
+        }
+        // If the two players have the same three of a kind, the player with the highest kicker wins.
+        else if (rankThreeOfAKindHand1 == rankThreeOfAKindHand2){
+
+            int indexContHand1 = 6;
+            int indexContHand2 = 6;
+            for (int i=6; i>4; i--){
+
+                if (i == indexThreeOfAKindHand1){
+                    indexContHand1 -= 3;
+                }
+                if (i == indexThreeOfAKindHand2){
+                    indexContHand2 -= 3;
+                }
+
+                // Decide which player who has the highest kicker.
+                if (hand1[indexContHand1].getRank().ordinal() > hand2[indexContHand2].getRank().ordinal() ){
+                    return indexPlayer1;
+                }
+                else if ( hand1[indexContHand1].getRank().ordinal() < hand2[indexContHand2].getRank().ordinal() ){
+                    return indexPlayer2;
+                }
+                indexContHand1--;
+                indexContHand2--;
+            }
+        }
+
+        return -1;
+    }
     /**
      * Method that checks if five cards make a straight. Also checking the special case with straight from ACE to FIVE.
      * @param fiveCards The hand that may or may not make up a straight.
