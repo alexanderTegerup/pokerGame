@@ -21,11 +21,9 @@ public interface Observer {
 
     public void bet(double playerBet);
 
-    public void CurrentTurnPotRaises(double raises);
-    
     public void flipOfCardT(ArrayList<Card> tableCards);
 
-    public void updateFoldFromServer();
+    public void foldRequestFromServer();
     
     public String getUserName();
     

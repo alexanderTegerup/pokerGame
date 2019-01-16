@@ -84,7 +84,7 @@ public class GameManager {
                             e.printStackTrace();
                         }
                     } else if (!playerPlayed) {
-                        listPlayers.get((playerTurn + 1) % amountOfPlayers).updateFoldFromServer();
+                        listPlayers.get((playerTurn + 1) % amountOfPlayers).foldRequestFromServer();
                         foldedPlayers[((playerTurn + 1) % amountOfPlayers)] = true;
                         playerTurn += 1;
                     } else {
