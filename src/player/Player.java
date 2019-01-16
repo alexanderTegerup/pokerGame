@@ -1,177 +1,252 @@
 package player;
 
+import java.util.ArrayList;
+import java.util.IllegalFormatException;
 import java.util.Scanner;
 
+import common.Hand;
 import common.Observer;
 import common.States;
 import managers.GameManager;
 import table.Card;
 
+
 public class Player implements Observer {
 
-  // private Card hand;
-    private String name;
-    private double wealth;
-    private States state;
-    private boolean dealer;
-    private double bet = 0;
-    private /*static*/ GameManager gameManager;
-    private static int observerIDTracker = 0;
-        // Used to track the observers
-    private int observerID;
+	private Hand hand;
+	private String name;
+	private double wealth;
+	private States state;
+	private boolean dealer;
+	private GameManager gameManager;
+	private static int observerIDTracker = 0;
+	// Used to track the observers
+	private int observerID;
 
-    public Player(String uname, double gameStakes, GameManager gm) {
-        name = uname;
-        wealth = gameStakes;
-        state = States.WAITING;
-        this.observerID = observerIDTracker;
-        gameManager = gm;
-    }
-    
+	public Player(String playerName, double playerWealth, GameManager gm) {
+		name = playerName;
+		wealth = playerWealth;
+		state = States.WAITING;
+		observerID = observerIDTracker;
+		gameManager = gm;
+	}
+	
 
-    public String getUserName() {
-        return name;
-    }
+	/**
+	 * Get the players Hand
+	 * @return The cards in players hand
+	 */
+	public Hand getHand() {
+		return hand;
+	}
+	
 
-    
-    public double getWealth() {
-        return wealth;
-    }
+	/**
+	 * Get the players name
+	 * @return name - Player's Username
+	 */
+	public String getUserName() {
+		return name;
+	}
 
+	
+	/**
+	 * Get the players Wealth
+	 * @return wealth Amount of player's current chips 
+	 */
+	public double getWealth() {
+		return wealth;
+	}
+	
 
-    public States getState() {
-        return state;
-    }
+	/**
+	 * Get the players State
+	 * @return state - Player's current/selected move e.g. FOLD, CALL...
+	 */
+	public States getState() {
+		return state;
+	}
+	
+	
+	/**
+	 * Get the players Observer ID
+	 * @return observerID - Player's observerID used of the server to track the players in the game
+	 */
+	public int getObserverID() {
+		return observerID;
+	}
 
-
-    @Override
-    public void updateLastPlayersMove(String playerName, States move) {
-    	
-    	double callCost = 0; //callCost dummy --- TO BE Implemented  
-    	
-		Scanner raiseScan = new Scanner(System.in);
-		double raise = raiseScan.nextDouble();
-		//TO DO parseouble or throw excp. to control that input is double
-		//TO DO shutdown the scanners
+	
+	/**
+	 * Deal two cards to the player and prompt those out for the player
+	 * @param card1
+	 * @param card2 
+	 */
+	@Override
+	public void dealCards(Card card1, Card card2) {
+		hand = new Hand(card1, card2);
 		
-		Scanner stateScan = new Scanner(System.in);
-		States selectedState = States.valueOf(stateScan.next().toUpperCase());
-		
-		double bet = 0;
-		
-		switch(selectedState) {
-		
-		case FOLD:
-		case CHECK:
-			state = selectedState;
-		case CALL:
-			bet = callCost;
-			state = selectedState;
-		
-		case RAISE:
-			bet = callCost + raise;
-			state = selectedState;
+		//TODO: Make sure the whole game doesn't get prompted with players hand
+		System.out.println("Card 1: " + hand.getCard1().getRank() + " " + hand.getCard1().getSuit());
+		System.out.println("Card 2: " + hand.getCard2().getRank() + " " + hand.getCard2().getSuit());  	
+	}
+	
+
+	/**
+	 * Update the server with the player's last move
+	 * @param playerName
+	 * @param move 
+	 */
+	@Override
+	public void updateLastPlayersMove(String playerName, States move) {
+		System.out.println("Player " + playerName + " did " + move);
+	}
+	
+
+	/**
+	 * Determine the game actions dependent on the "move" player selects
+	 * @param playerID		- The players observer ID
+	 * @param minimumState	- The last move played in game, reported from the server
+	 * @param callCost		- The minimum amount of chips needed to CALL
+	 */
+	@Override
+	public void updateTurnAndOptions(int playerID, States minimumState, double callCost) {
+		if (playerID == observerID) {
+			state = minimumState;
 			
-		case ALLIN:
-			//bet = wealth;
-			state = selectedState;
+			States playerMove = States.WAITING;
 			
-		default:
+			//TODO: minimumState implementation
+			
+
+			Scanner stateScan = new Scanner(System.in);
+			try {
+			playerMove = States.valueOf(stateScan.next().toUpperCase());
+			} catch (IllegalFormatException e) {
+				System.out.println("Please use only characters when selecting your move");
+				e.printStackTrace();
 			}
 
+			Scanner raiseScan = new Scanner(System.in);
+			double raise = 0;
+			double playerBet = 0;
+
+
+			switch(playerMove) {
+
+			case FOLD:
+			case CHECK:
+				state = playerMove;
+				bet(playerBet);
+				break;
+
+			case CALL:
+				state = playerMove;
+				playerBet = callCost;
+				bet(callCost);
+				break;
+
+			case RAISE:
+				state = playerMove;
+				raise = raiseScan.nextDouble();
+				playerBet = callCost + raise;
+				bet(playerBet);
+				break;
+
+			case ALL_IN:
+				state = playerMove;
+				playerBet = wealth;
+				bet(playerBet);
+				break;
+
+			default:
+				System.out.println("Please select a valid move");
+				break;
+			}
+			
+			stateScan.close();
+			raiseScan.close();
+
+		}
+	}
+
+
+	/**
+	 * Play the big and small blinds
+	 * @param dealerID	- The player ID for the dealer for the round
+	 * @param bigID		- The player ID for the big blind for the round
+	 * @param smallID	- The player ID for the small blind for the round
+	 * @param big		- The amount of chips big blind costs for the round
+	 * @param small		- The amount of chips small blind costs for the round
+	 */
+	@Override
+	public void updateDealerBigSmalBlinds(int dealerID, int bigID, int smallID, double big, double small) {
+		dealer = false;
+
+		if(observerID == dealerID) {
+			dealer = true;
+		}
 		
-		wealth -= bet;
-		gameManager.updatePot(observerID, name, bet, state);
+		if(bigID == observerID) {
+			bet(big);
+		}
+		else if(smallID == observerID) {
+			bet(small);
+		}
+		
+	}
+	
 
-    }
-    
-/*
-    @Override
-    public void dealCards(Card card1, Card card2) {
+	/**
+	 * Add the chips won to the winning players wealth and prompt the winner of the current for the round to the game
+	 * @param playerID	 - The players observer ID
+	 * @param winningPot - The pot player have won
+	 */
+	@Override
+	public void updateWinner(int playerID, double winningPot) {
+		if (playerID == observerID)
+			wealth += winningPot;
 
-    }
-*/
-    
-    @Override
-    public void updateTurnAndOptions(int player, States minimumState, double raisedPot) {
-        if (player == observerID)
-            state = minimumState;
-        if(state == States.BIG)
-            updatePot(raisedPot);
-    }
+		System.out.println(playerID); //TODO: Game manager have to be able to return players Name instead of ObserverID
+	}
+	
 
-    @Override
-    public void updateDealerBigSmalBlinds(int dealerID, int bigID, int smallID, double big, double small) {
-        dealer = false;
+	/**
+	 * The generic function which handles chips transactions between the player and server
+	 * It also updates the server with all the actions players does
+	 * @param playerBet	 - The amount of chips player bets, when Call, Raise or All In
+	 */
+	@Override
+	public void bet(double playerBet) {
+		
+		gameManager.severUpdatePot(observerID, name, playerBet, state);
+		wealth -= playerBet;
+	}
 
-        if(observerID == dealerID) {
-            dealer = true;
-        }
-        if(bigID == observerID) {
-            state = States.BIG;
-        }
-        if(smallID == observerID) {
-            state = States.SMALL;
-        }
-        if(state == States.BIG) {
-            bet += big;
-        }
-        else if(state == States.SMALL) {
-            bet += small;
-        }
-        
-    }
-    
 
-    @Override
-    public void updateWinner(int playername, double winningPot) {
-        bet = 0;
-    }
-    
+	/**
+	 * Prompt the game with the cards on the table
+	 * @param tableCards - The game cards on the table
+	 */
+	@Override
+	public void flipOfCardT(ArrayList<Card> tableCards) {
+		for(int i = 0; i < tableCards.size(); i++)
+		{
+			System.out.println(tableCards.get(i).getRank() + " " + tableCards.get(i).getSuit());
+		}
+	}
 
-    @Override
-    public void updatePot(double currentRaisedPot) {
-        bet+=currentRaisedPot;
-        gameManager.updatePot(observerID, name, bet, state);
-        wealth -= bet;
-        bet = 0;
-    }
-    
+	
+	//TODO: Superflous functionS ?! 
+	@Override
+	public void updateFoldFromServer() {
+		state = States.FOLD;
+	}
 
-    @Override
-    public void CurrentTurnPotRaises(double raises) {
+	
+	@Override
+	public void CurrentTurnPotRaises(double raises) {
 
-    }
-    
-
-    /*
-   @Override
-   public void flipOfCardT() {
-   
-   }
- */
-
-    @Override
-    public void updateFoldFromServer() {
-        state = States.FOLD;
-    }
-    
-
-    public int getObserverID() {
-        return observerID;
-    }
-
-    @Override
-    public void dealCards(Card card1, Card card2) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+	}
 }
 
-
-//kalla på server härifrån
-
-//get winning pot
-
-//announce state and followup info - KLAR!
-
-//server måste veta om man är fold

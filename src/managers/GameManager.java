@@ -130,20 +130,20 @@ public class GameManager {
      * @param ID - of specific player
      * @param player - name of specific player who made a move
      * @param bets - bets of player who made a move
-     * @param stateOfBet - state of the player which made a move
+     * @param move - state of the player which made a move
      */
-    public void updatePot(int ID, String player, double bets, States stateOfBet) {
+    public void severUpdatePot(int ID, String player, double bets, States move) {
         pot += bets;
         playerPlayed = true;
 
-        if (stateOfBet == States.RAISE) {
+        if (move == States.RAISE) {
             if (raise < (played[ID] + bets)) {
                 raise = (played[ID] + bets);
                 pot += bets;
                 minimumState = States.RAISE;
                 played[ID] += bets;
             }
-        } else if (stateOfBet == States.CALL) {
+        } else if (move == States.CALL) {
             if (raise == (played[ID] + bets)) {
                 pot += bets;
                 int tmp = 0;
@@ -154,11 +154,11 @@ public class GameManager {
                 if(tmp == amountOfPlayers)
                     newRound = true;
             }
-        } else if (stateOfBet == States.CHECK) {
+        } else if (move == States.CHECK) {
             minimumState = States.CHECK;
         }
         for (Observer observer : listPlayers) {
-            observer.updateLastPlayersMove(player, stateOfBet);
+            observer.updateLastPlayersMove(player, move);
         }
     }
 
