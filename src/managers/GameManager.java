@@ -1,5 +1,6 @@
 package managers;
 
+import common.Hand;
 import common.Observer;
 import common.States;
 import player.Players;
@@ -31,12 +32,15 @@ public class GameManager
     private String[] playerNames;
     private Hand[] playerHands;
     private double[] playerBets;
+    private Card[] tableCards;
 
     private Players playersObj;
     private States minimumState = States.BIG;
     private Table table;
+    private PokerRules pokerRules;
 
     ArrayList<Observer> players;
+    ArrayList<Integer> playersLeftInTheGame;
 
     /**
      * Constructor for GameManager class
@@ -54,7 +58,9 @@ public class GameManager
         players = playersObj.getPlayers();
         playerNames = new String[amountOfPlayers];
         playerIDs = new int[amountOfPlayers];
-
+        playerHands = new Hand[amountOfPlayers];
+        playersLeftInTheGame = new ArrayList<>();
+        pokerRules = new PokerRules();
     }
 
     /**
@@ -64,8 +70,9 @@ public class GameManager
     {
 
         for(int p = 0; p < playerIDs.length; p++) {
-            playerIDs[p] = players.getObserverID();
-            playerNames[p] = players.getUserName();
+            playerIDs[p] = players.get(p).getObserverID();
+            playerNames[p] = players.get(p).getUserName();
+            playersLeftInTheGame.add(players.get(p).getObserverID());
         }
 
         cleanFoldedArray();
@@ -85,6 +92,11 @@ public class GameManager
             // Deal one or three cards to the table, depending on if it is the 
             // flop, turn or the river. 
             table.dealCard();
+            tableCards = table.showAllCards();
+
+            for (Observer player:players) {
+                player.flipOfCardT(tableCards);
+            }
 
             while
             (playersession)
@@ -92,12 +104,20 @@ public class GameManager
                 //dealer deals cards, the blind ones must put out money
                 //görs med index of modulus antal spelare för att se vems tur de är. 1 dealer, 2 big blind, 3 small blind.
                 //table show 3 first cards
-
-                if (playerTurn >= playerIDs.length)
-                    playerTurn = (playerTurn % playerIDs.length);
-
+                int exist = 0;
+                int incFirstPlayer = 1;
+                 do {
+                         if (!playersLeftInTheGame.contains(playerIDs[playerTurn % playerIDs.length]))
+                             playerTurn++;
+                         else if(!playersLeftInTheGame.contains(playerIDs[(playerTurn+incFirstPlayer) % playerIDs.length]))
+                             incFirstPlayer++;
+                         else {
+                             playerTurn = (playerTurn % playerIDs.length);
+                             exist = 1;
+                         }
+                 } while (exist == 0);
                 for (Observer observer : players)
-                    observer.updateTurnAndOptions(playerIDs[playerTurn + 1 % amountOfPlayers], minimumState, raise);
+                    observer.updateTurnAndOptions(playerIDs[(playerTurn + incFirstPlayer) % playerIDs.length], minimumState, raise);
 
                 dealer = playerIDs[playerTurn];
              /*   for (int i = 0; i < 10; i++) {
@@ -174,18 +194,21 @@ public class GameManager
             if(newRound == false) {
                 calculateWinnerAndPot();
             }
-            //LASTROUND
-
         }
     }
 
     private void calculateWinnerAndPot() {
 
-        for(int i = 0; i < playerBets.length; i++) {
-            if(foldedOrAllInBets[i] == States.FOLD) {
-
-            }
+        for (Observer player: players) {
+            player.getHand();
         }
+
+        int winnerId[] = pokerRules.determineBestHand(playerHands, tableCards);
+
+        for (Observer player: players) {
+            player.updateWinner(winnerId, pot);
+        }
+
     }
 
     /**
@@ -193,8 +216,21 @@ public class GameManager
      */
     private void updateDealerBigandSmall()
     {
-        if (playerTurn >= playerIDs.length)
             playerTurn = (playerTurn % playerIDs.length);
+            int exist = 0;
+            int incBig = 1;
+            int incSmall = 1;
+            do {
+                if (!playersLeftInTheGame.contains(playerTurn % playerIDs.length)) {
+                    playerTurn = ((playerTurn+1) % playerIDs.length);
+                } else if(!playersLeftInTheGame.contains((playerTurn + incBig) % playerIDs.length)) {
+                    incBig++;
+                } else if(!playersLeftInTheGame.contains((playerTurn + incBig + incSmall) % playerIDs.length)) {
+                    incSmall++;
+                } else {
+                    exist = 1;
+                }
+            } while (exist == 0);
 
         for (Observer observer : players)
         {
@@ -214,7 +250,7 @@ public class GameManager
         pot += bets;
         playerHavePlayed = true;
 
-        if (stateOfBet == States.RAISE)
+        if (move == States.RAISE)
         {
             if (raise < (playerBets[ID] + bets))
             {
@@ -224,13 +260,13 @@ public class GameManager
                 minimumState = States.RAISE;
                 playerBets[ID] += bets;
             }
-            else if(stateOfBet == States.ALLIN)
+            else if(move == States.ALL_IN)
             {
                 pot += bets;
-                foldedOrAllInBets[ID] = States.ALLIN;
+                foldedOrAllInBets[ID] = States.ALL_IN;
                 int tmp1 = 0;
                 for(int i = 0; i < playerBets.length;i++) {
-                    if(playerBets[i] == raise || foldedOrAllInBets[i] == States.FOLD || foldedOrAllInBets[i] == States.ALLIN)
+                    if(playerBets[i] == raise || foldedOrAllInBets[i] == States.FOLD || foldedOrAllInBets[i] == States.ALL_IN)
                         tmp1++;
                 }
                 if(tmp1 == amountOfPlayers)
@@ -238,15 +274,15 @@ public class GameManager
             }
         }
 
-        else if (stateOfBet == States.CALL)
+        else if (move == States.CALL)
         {
             if (raise == (playerBets[ID] + bets))
             {
                 pot += bets;
                 foldedOrAllInBets[ID] = States.CALL;
                 int tmp2 = 0;
-                for(int i = 0; i < playerBets.length;i++) {
-                    if(playerBets[i] == raise || foldedOrAllInBets[i] == States.FOLD || foldedOrAllInBets[i] == States.ALLIN)
+                for(int j = 0; j < playerBets.length;j++) {
+                    if(playerBets[j] == raise || foldedOrAllInBets[j] == States.FOLD || foldedOrAllInBets[j] == States.ALL_IN)
                         tmp2++;
                 }
                 if(tmp2 == amountOfPlayers)
@@ -255,7 +291,7 @@ public class GameManager
 
         }
 
-        else if (stateOfBet == States.CHECK)
+        else if (move == States.CHECK)
         {
             minimumState = States.CHECK;
             foldedOrAllInBets[ID] = States.CHECK;
@@ -263,7 +299,7 @@ public class GameManager
 
         for (Observer observer : players)
         {
-            observer.updateLastPlayersMove(player, stateOfBet);
+            observer.updateLastPlayersMove(player, move);
         }
     }
 
@@ -295,8 +331,12 @@ public class GameManager
     {
         for(int i = 0; i < playerIDs.length; i++)
         {
-            if(foldedOrAllInBets[playerIDs[i]] != States.ALLIN || foldedOrAllInBets[playerIDs[i]] != States.FOLD)
+            if(foldedOrAllInBets[playerIDs[i]] != States.ALL_IN || foldedOrAllInBets[playerIDs[i]] != States.FOLD)
             playerBets[playerIDs[i]] = 0;
         }
+    }
+
+    public void collectHandsFromPlayers(int ID, Hand hand) {
+        playerHands[ID] = hand;
     }
 }
