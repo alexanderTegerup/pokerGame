@@ -1,5 +1,6 @@
 package managers;
 
+import common.Hand;
 import common.Observer;
 import common.States;
 import player.Players;
@@ -44,6 +45,14 @@ public class GameManager {
         listPlayers = players.getPlayers();
     }
 
+    
+    /********************/
+    //STUBS STUBS STUBS
+    public void collectHandsFromPlayer(double observerID, Hand hand) {
+    	
+    }
+    
+    
     /**
      * The game which is being played between players through the server
      */

@@ -29,7 +29,7 @@ public interface Observer {
     
     public int getObserverID();
     
-    public Hand getHand();
+    public void getHand();
     
 }
 
