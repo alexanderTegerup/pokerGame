@@ -1,23 +1,9 @@
 package calculations;
 
+import common.Hand;
+import common.Ranks;
 import table.Card;
 
-class Hand{
-    private Card card1;
-    private Card card2;
-    private PokerRules.Ranks ranking;
-
-    public Card getCard1(){ return card1; }
-    public Card getCard2(){ return card2; }
-
-    public void setHand(Card c1, Card c2) {
-        card1 = c1;
-        card2 = c2;
-    }
-
-    public void setRanking(PokerRules.Ranks rnk) { ranking = rnk; }
-    public PokerRules.Ranks getRanking() {return ranking; }
-}
 
 public class PokerRules {
 
@@ -35,6 +21,7 @@ public class PokerRules {
     // TODO Remove the hard coding of numberOfWinners
     // TODO Make determineBestHand take an array of hands and the cards on the table as arguments.
 
+    /*
     public enum Ranks
     {
         NOTHING,
@@ -48,10 +35,10 @@ public class PokerRules {
         FOUR_OF_A_KIND,
         STRAIGHT_FLUSH,
         ROYAL_FLUSH
-    }
+    }*/
 
 
-    private Ranks tableCardRank;
+    private common.Ranks tableCardRank;
     private int numberOfPlayers;
     private Card[] cardsOnTable;
     private Hand[] arrayWithHands;
@@ -91,12 +78,12 @@ public class PokerRules {
         /* Set the best combination each player can have with their hands. */
         setPlayersBestRanking();
 
-        Ranks rankPlayer;
+        common.Ranks rankPlayer;
         int playerWithBestHand = 0;
-        Ranks highestRank = Ranks.NOTHING;
+        common.Ranks highestRank = common.Ranks.NOTHING;
         for (int iPlayer=0; iPlayer < numberOfPlayers; iPlayer++){
 
-            rankPlayer = arrayWithHands[iPlayer].getRanking();
+            rankPlayer = arrayWithHands[iPlayer].getRank();
             if (rankPlayer.ordinal() > highestRank.ordinal())
             {
                 highestRank = rankPlayer;
@@ -141,7 +128,7 @@ public class PokerRules {
                     case STRAIGHT_FLUSH:
                 }
             }
-            System.out.println("player " + iPlayer + ": " + arrayWithHands[iPlayer].getRanking());
+            System.out.println("player " + iPlayer + ": " + arrayWithHands[iPlayer].getRank());
         }
 
         System.out.println("The player with the best hand is player " + playerWithBestHand);
@@ -157,14 +144,14 @@ public class PokerRules {
 
     private void setPlayersBestRanking(){
 
-        Ranks rankPlayer;
-        Ranks bestCombination;
+        common.Ranks rankPlayer;
+        common.Ranks bestCombination;
         Card[] cardCombination = new Card[5];
 
         /* Decide the best combination each player can get */
         for (int indexPlayer=0; indexPlayer < numberOfPlayers; indexPlayer++){
 
-            bestCombination = Ranks.NOTHING;
+            bestCombination = common.Ranks.NOTHING;
             for (int i=0; i<20; i++){
 
                 /* i=0:9 tests all combinations with two cards from the player and three cards from the table
@@ -213,11 +200,11 @@ public class PokerRules {
             }
 
             if (bestCombination.ordinal() > tableCardRank.ordinal()){
-                arrayWithHands[indexPlayer].setRanking(bestCombination);
+                arrayWithHands[indexPlayer].setRank(bestCombination);
             }
             else {
-                arrayWithHands[indexPlayer].setRanking(tableCardRank);
-                if ( (Ranks.STRAIGHT == tableCardRank) &&
+                arrayWithHands[indexPlayer].setRank(tableCardRank);
+                if ( (common.Ranks.STRAIGHT == tableCardRank) &&
                      (highestCardStraight[indexPlayer].getRank().ordinal() <
                       highestCardStraight[numberOfPlayers].getRank().ordinal()) )
                 {
@@ -228,9 +215,9 @@ public class PokerRules {
 
     }
 
-    private Ranks determineHandRanking(Card[] fiveCards, int indexPlayer){
+    private common.Ranks determineHandRanking(Card[] fiveCards, int indexPlayer){
 
-        Ranks rankCards;
+        common.Ranks rankCards;
 
         /* Sort the cards so that checkStraight, checkFullHouse,
         checkThreeOfAKind, checkTwoPair and checkPair will work */
@@ -238,39 +225,39 @@ public class PokerRules {
 
         if( checkStraight(fiveCards, indexPlayer) && checkFlush(fiveCards) )
         {
-            rankCards = Ranks.STRAIGHT_FLUSH;
+            rankCards = common.Ranks.STRAIGHT_FLUSH;
         }
         else if ( checkFourOfAKind(fiveCards) )
         {
-            rankCards = Ranks.FOUR_OF_A_KIND;
+            rankCards = common.Ranks.FOUR_OF_A_KIND;
         }
         else if ( checkFullHouse(fiveCards) )
         {
-            rankCards = Ranks.FULL_HOUSE;
+            rankCards = common.Ranks.FULL_HOUSE;
         }
         else if( checkFlush(fiveCards) )
         {
-            rankCards = Ranks.FLUSH;
+            rankCards = common.Ranks.FLUSH;
         }
         else if( checkStraight(fiveCards, indexPlayer) )
         {
-            rankCards = Ranks.STRAIGHT;
+            rankCards = common.Ranks.STRAIGHT;
         }
         else if ( checkThreeOfAKind(fiveCards) )
         {
-            rankCards = Ranks.THREE_OF_A_KIND;
+            rankCards = common.Ranks.THREE_OF_A_KIND;
         }
         else if ( checkTwoPair(fiveCards) )
         {
-            rankCards = Ranks.TWO_PAIR;
+            rankCards = common.Ranks.TWO_PAIR;
         }
         else if ( checkPair(fiveCards))
         {
-            rankCards = Ranks.PAIR;
+            rankCards = common.Ranks.PAIR;
         }
         else
         {
-            rankCards = Ranks.NOTHING;
+            rankCards = common.Ranks.NOTHING;
         }
 
         return rankCards;
@@ -788,13 +775,15 @@ public class PokerRules {
     }
 
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String[] args) {
 
+    //public static void main(String[] args) {
+
+
+        /* Test case */
+
+        /*
         Card[] tableCards = new Card[5];
-        Hand[] arrHands = new Hand[2];
+        common.Hand[] arrHands = new Hand[2];
 
         tableCards[0] = new Card(Card.Suit.DIAMONDS, Card.Rank.SEVEN, null);
         tableCards[1] = new Card(Card.Suit.DIAMONDS, Card.Rank.SIX, null);
@@ -809,11 +798,11 @@ public class PokerRules {
         Card p2c1 = new Card(Card.Suit.HEARTS, Card.Rank.TEN, null);
         Card p2c2 = new Card(Card.Suit.CLUBS, Card.Rank.EIGHT, null);
 
-        Hand hand1 = new Hand();
-        hand1.setHand(p1c1,p1c2);
+        common.Hand hand1 = new Hand(p1c1, p1c2);
 
-        Hand hand2 = new Hand();
-        hand2.setHand(p2c1,p2c2);
+
+        common.Hand hand2 = new Hand(p2c1, p2c2);
+
 
         arrHands[0] = hand1;
         arrHands[1] = hand2;
@@ -821,7 +810,8 @@ public class PokerRules {
         PokerRules p = new PokerRules();
         int[] a; 
         a = p.determineBestHand(arrHands, tableCards );
-        System.out.println(a[0]);
+        System.out.println(a[0]);*/
 
-    }
+
+    //}
 }

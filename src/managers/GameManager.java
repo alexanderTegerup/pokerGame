@@ -1,5 +1,6 @@
 package managers;
 
+import calculations.PokerRules;
 import common.Hand;
 import common.Observer;
 import common.States;
