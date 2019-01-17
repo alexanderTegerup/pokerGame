@@ -63,6 +63,7 @@ public class GameManager
         pokerRules = new PokerRules();
     }
 
+    
     /**
      * The game which is being playerBets between players through the server
      */
@@ -126,9 +127,9 @@ public class GameManager
                             TimeUnit.SECONDS.sleep(1);
                         } catch (InterruptedException e) {
                             e.printStackTrace();
-                        }
+                        } 
                     } else if (!playerHavePlayed) {
-                        players.get((playerTurn + 1) % amountOfPlayers).updateFoldFromServer();
+                        players.get((playerTurn + 1) % amountOfPlayers).foldRequestFromServer();
                         foldedPlayers[((playerTurn + 1) % amountOfPlayers)] = true;
                         playerTurn += 1;
                     } else {
