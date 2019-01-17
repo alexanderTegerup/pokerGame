@@ -1,9 +1,6 @@
 package calculations;
 
 import table.Card;
-import table.Deck;
-
-import java.util.ArrayList;
 
 class Hand{
     private Card card1;
@@ -59,6 +56,12 @@ public class PokerRules {
     private Card[] cardsOnTable;
     private Hand[] arrayWithHands;
 
+    /* If a player gets a straight, the highest card that makes up that straight is saved in highestCardStraight.
+       If the cards on the table makes up a straight, the highest card of that straight is saved at the last index in
+       highestCardStraight.
+     */
+    private Card[] highestCardStraight;
+
 
     /**
      * Determines which player who has the best hand.
@@ -66,14 +69,23 @@ public class PokerRules {
      */
     public int[] determineBestHand(Hand[] arrHands, Card[] tableCards)
     {
+        /* Preparations */
         arrayWithHands = arrHands;
         numberOfPlayers = arrayWithHands.length;
         System.out.println("number of players are " + numberOfPlayers);
 
         cardsOnTable = tableCards;
 
+        highestCardStraight = new Card[numberOfPlayers+1];
+        for (int i=0; i<numberOfPlayers+1; i++){
+            highestCardStraight[i] = new Card(Card.Suit.CLUBS, Card.Rank.TWO, null);
+        }
+
+
+
+
         /* Find out which poker hand there is on the table. */
-        tableCardRank = determineHandRanking(cardsOnTable);
+        tableCardRank = determineHandRanking(cardsOnTable,numberOfPlayers);
         System.out.println("cards on table " + tableCardRank);
 
         /* Set the best combination each player can have with their hands. */
@@ -120,10 +132,9 @@ public class PokerRules {
                         break;
 
                     case STRAIGHT:
-                        playerWithBestHand = decideBestStraight( playerWithBestHand,
-                                                                 arrayWithHands[playerWithBestHand],
-                                                                 iPlayer,
-                                                                 arrayWithHands[iPlayer] );
+                        playerWithBestHand = decideBestStraight( playerWithBestHand, iPlayer);
+                        break;
+
                     case FLUSH:
                     case FULL_HOUSE:
                     case FOUR_OF_A_KIND:
@@ -151,7 +162,7 @@ public class PokerRules {
         Card[] cardCombination = new Card[5];
 
         /* Decide the best combination each player can get */
-        for (int iPlayersHand=0; iPlayersHand < numberOfPlayers; iPlayersHand++){
+        for (int indexPlayer=0; indexPlayer < numberOfPlayers; indexPlayer++){
 
             bestCombination = Ranks.NOTHING;
             for (int i=0; i<20; i++){
@@ -162,16 +173,16 @@ public class PokerRules {
                     cardCombination[0] = cardsOnTable[i%5];
                     cardCombination[1] = cardsOnTable[(i+1)%5];
                     cardCombination[2] = cardsOnTable[(i+2)%5];
-                    cardCombination[3] = arrayWithHands[iPlayersHand].getCard1();
-                    cardCombination[4] = arrayWithHands[iPlayersHand].getCard2();
+                    cardCombination[3] = arrayWithHands[indexPlayer].getCard1();
+                    cardCombination[4] = arrayWithHands[indexPlayer].getCard2();
                 }
                 else if (i<10)
                 {
                     cardCombination[0] = cardsOnTable[i%5];
                     cardCombination[1] = cardsOnTable[(i+1)%5];
                     cardCombination[2] = cardsOnTable[(i+3)%5];
-                    cardCombination[3] = arrayWithHands[iPlayersHand].getCard1();
-                    cardCombination[4] = arrayWithHands[iPlayersHand].getCard2();
+                    cardCombination[3] = arrayWithHands[indexPlayer].getCard1();
+                    cardCombination[4] = arrayWithHands[indexPlayer].getCard2();
                 }
                 /* Test all combinations with the first card from the player and four cards from the table
                 *  (The number of combinations are 5 choose 4 = 5)*/
@@ -181,7 +192,7 @@ public class PokerRules {
                     cardCombination[1] = cardsOnTable[(i+1)%5];
                     cardCombination[2] = cardsOnTable[(i+2)%5];
                     cardCombination[3] = cardsOnTable[(i+3)%5];
-                    cardCombination[4] = arrayWithHands[iPlayersHand].getCard1();
+                    cardCombination[4] = arrayWithHands[indexPlayer].getCard1();
                 }
                 /* Test all combinations with the second card from the player and four cards from the table
                 *  (The number of combinations are 5 choose 4 = 5)*/
@@ -191,27 +202,33 @@ public class PokerRules {
                     cardCombination[1] = cardsOnTable[(i+1)%5];
                     cardCombination[2] = cardsOnTable[(i+2)%5];
                     cardCombination[3] = cardsOnTable[(i+3)%5];
-                    cardCombination[4] = arrayWithHands[iPlayersHand].getCard2();
+                    cardCombination[4] = arrayWithHands[indexPlayer].getCard2();
                 }
 
                 /* Save the highest combination */
-                rankPlayer = determineHandRanking(cardCombination);
+                rankPlayer = determineHandRanking(cardCombination, indexPlayer);
                 if (rankPlayer.ordinal() > bestCombination.ordinal()){
                     bestCombination = rankPlayer;
                 }
             }
 
             if (bestCombination.ordinal() > tableCardRank.ordinal()){
-                arrayWithHands[iPlayersHand].setRanking(bestCombination);
+                arrayWithHands[indexPlayer].setRanking(bestCombination);
             }
             else {
-                arrayWithHands[iPlayersHand].setRanking(tableCardRank);
+                arrayWithHands[indexPlayer].setRanking(tableCardRank);
+                if ( (Ranks.STRAIGHT == tableCardRank) &&
+                     (highestCardStraight[indexPlayer].getRank().ordinal() <
+                      highestCardStraight[numberOfPlayers].getRank().ordinal()) )
+                {
+                    highestCardStraight[indexPlayer] = highestCardStraight[numberOfPlayers];
+                }
             }
         }
 
     }
 
-    private Ranks determineHandRanking(Card[] fiveCards){
+    private Ranks determineHandRanking(Card[] fiveCards, int indexPlayer){
 
         Ranks rankCards;
 
@@ -219,7 +236,7 @@ public class PokerRules {
         checkThreeOfAKind, checkTwoPair and checkPair will work */
         fiveCards = insertionSort(fiveCards);
 
-        if( checkStraight(fiveCards) && checkFlush(fiveCards) )
+        if( checkStraight(fiveCards, indexPlayer) && checkFlush(fiveCards) )
         {
             rankCards = Ranks.STRAIGHT_FLUSH;
         }
@@ -235,7 +252,7 @@ public class PokerRules {
         {
             rankCards = Ranks.FLUSH;
         }
-        else if( checkStraight(fiveCards) )
+        else if( checkStraight(fiveCards, indexPlayer) )
         {
             rankCards = Ranks.STRAIGHT;
         }
@@ -616,44 +633,24 @@ public class PokerRules {
 
     /**
      * Method that decides which of two players, who both have a straight, has the best hand. The player with the
-     * highest ranked cards that makes up three of a kind wins. If two players have the same three of a kind, then the
-     * highest of the two remaining card kickers determines the winner.
+     * highest ranked card wins.
      * @param indexPlayer1 The index of the first player.
-     * @param h1 The hand the first player has.
      * @param indexPlayer2 The index of the second player.
-     * @param h2 The hand the second player has.
      * @return The index of the player who has the best hand. If they both have the exact same rank of the cards -1 is
      * returned.
      */
-    private int decideBestStraight(int indexPlayer1, Hand h1, int indexPlayer2, Hand h2){
+    private int decideBestStraight(int indexPlayer1, int indexPlayer2){
 
-        /*
-        Card[] hand1;
-        Card[] hand2;
-
-        hand1 = makeSortedArray7cards(h1, cardsOnTable);
-        hand2 = makeSortedArray7cards(h2, cardsOnTable);
-
-        Card highestCardHand1 = hand1[0];
-        Card highestCardHand2 = hand2[0];
-
-        for (int i=0; i<3; i++){
-
-            if (hand1[i].getRank()   == hand1[i+1].getRank() &&
-                hand1[i+1].getRank() == hand1[i+2].getRank() &&
-                hand1[i+2].getRank() == hand1[i+3].getRank() &&
-                hand1[i+3].getRank() == hand1[i+4].getRank()   )
-            {
-                highestCardHand1 = hand1[i+4];
-            }
-            if (hand2[i].getRank()   == hand2[i+1].getRank() &&
-                hand2[i+1].getRank() == hand2[i+2].getRank() &&
-                hand2[i+2].getRank() == hand2[i+3].getRank() &&
-                hand2[i+3].getRank() == hand2[i+4].getRank()   )
-            {
-                highestCardHand2 = hand2[i+4];
-            }
-        }*/
+        if ( highestCardStraight[indexPlayer1].getRank().ordinal() >
+             highestCardStraight[indexPlayer2].getRank().ordinal()   )
+        {
+            return indexPlayer1;
+        }
+        else if ( highestCardStraight[indexPlayer1].getRank().ordinal() <
+                highestCardStraight[indexPlayer2].getRank().ordinal()   )
+        {
+            return indexPlayer2;
+        }
 
         return -1;
     }
@@ -664,18 +661,37 @@ public class PokerRules {
      * @param fiveCards The hand that may or may not make up a straight.
      * @return A boolean that is true if the cards make a straight and is false otherwise.
      */
-    private boolean checkStraight(Card[] fiveCards) {
+    private boolean checkStraight(Card[] fiveCards, int indexPlayer) {
 
         /* Check if the cards make a straight. Also checking the special case with a straight from ACE to FIVE. */
-        boolean gotStraight =  (fiveCards[4].getRank().ordinal() == fiveCards[3].getRank().ordinal()+1 &&
-                                fiveCards[3].getRank().ordinal() == fiveCards[2].getRank().ordinal()+1 &&
-                                fiveCards[2].getRank().ordinal() == fiveCards[1].getRank().ordinal()+1 &&
-                                fiveCards[1].getRank().ordinal() == fiveCards[0].getRank().ordinal()+1 ||
-                                Card.Rank.TWO                    == fiveCards[0].getRank()             &&
-                                Card.Rank.THREE                  == fiveCards[1].getRank()             &&
-                                Card.Rank.FOUR                   == fiveCards[2].getRank()             &&
-                                Card.Rank.FIVE                   == fiveCards[3].getRank()             &&
-                                Card.Rank.ACE                    == fiveCards[4].getRank()               );
+        boolean gotStraight = false;
+
+        if ( fiveCards[4].getRank().ordinal() == fiveCards[3].getRank().ordinal()+1 &&
+             fiveCards[3].getRank().ordinal() == fiveCards[2].getRank().ordinal()+1 &&
+             fiveCards[2].getRank().ordinal() == fiveCards[1].getRank().ordinal()+1 &&
+             fiveCards[1].getRank().ordinal() == fiveCards[0].getRank().ordinal()+1   )
+        {
+            gotStraight = true;
+            if (highestCardStraight[indexPlayer].getRank().ordinal() < fiveCards[4].getRank().ordinal())
+            {
+                highestCardStraight[indexPlayer] = fiveCards[4];
+            }
+
+        }
+        else if ( Card.Rank.TWO   == fiveCards[0].getRank() &&
+                  Card.Rank.THREE == fiveCards[1].getRank() &&
+                  Card.Rank.FOUR  == fiveCards[2].getRank() &&
+                  Card.Rank.FIVE  == fiveCards[3].getRank() &&
+                  Card.Rank.ACE   == fiveCards[4].getRank()   )
+        {
+            gotStraight = true;
+            if (highestCardStraight[indexPlayer].getRank().ordinal() < fiveCards[4].getRank().ordinal())
+            {
+                highestCardStraight[indexPlayer] = fiveCards[3];
+            }
+        }
+
+
         return gotStraight;
     }
 
@@ -780,17 +796,18 @@ public class PokerRules {
         Card[] tableCards = new Card[5];
         Hand[] arrHands = new Hand[2];
 
-        tableCards[0] = new Card(Card.Suit.DIAMONDS, Card.Rank.JACK, null);
-        tableCards[1] = new Card(Card.Suit.DIAMONDS, Card.Rank.FOUR, null);
-        tableCards[2] = new Card(Card.Suit.DIAMONDS, Card.Rank.SEVEN, null);
-        tableCards[3] = new Card(Card.Suit.HEARTS, Card.Rank.SEVEN, null);
-        tableCards[4] = new Card(Card.Suit.CLUBS, Card.Rank.TWO, null);
+        tableCards[0] = new Card(Card.Suit.DIAMONDS, Card.Rank.SEVEN, null);
+        tableCards[1] = new Card(Card.Suit.DIAMONDS, Card.Rank.SIX, null);
+        tableCards[2] = new Card(Card.Suit.DIAMONDS, Card.Rank.FIVE, null);
+        tableCards[3] = new Card(Card.Suit.HEARTS, Card.Rank.FOUR, null);
+        tableCards[4] = new Card(Card.Suit.CLUBS, Card.Rank.THREE, null);
 
-        Card p1c1 = new Card(Card.Suit.DIAMONDS, Card.Rank.ACE, null);
-        Card p1c2 = new Card(Card.Suit.DIAMONDS, Card.Rank.SEVEN, null);
+
+        Card p1c1 = new Card(Card.Suit.DIAMONDS, Card.Rank.NINE, null);
+        Card p1c2 = new Card(Card.Suit.CLUBS, Card.Rank.EIGHT, null);
 
         Card p2c1 = new Card(Card.Suit.HEARTS, Card.Rank.TEN, null);
-        Card p2c2 = new Card(Card.Suit.CLUBS, Card.Rank.SEVEN, null);
+        Card p2c2 = new Card(Card.Suit.CLUBS, Card.Rank.EIGHT, null);
 
         Hand hand1 = new Hand();
         hand1.setHand(p1c1,p1c2);
