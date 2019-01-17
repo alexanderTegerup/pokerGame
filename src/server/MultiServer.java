@@ -26,10 +26,10 @@ public class MultiServer {
         //user = loginManager.loginFunction();
         loginManager.loginFunction("Mario");
         loginManager.loginFunction("jonathan");
-        //loginManager.loginFunction("Aziz");
-        //loginManager.loginFunction("alex");
+        loginManager.loginFunction("Aziz");
+        loginManager.loginFunction("alex");
         //players.setGameManager(gameManager);
-        //gameManager.playingTheGame();
+        gameManager.playingTheGame();
     }
 
 }
