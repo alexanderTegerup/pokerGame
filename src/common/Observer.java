@@ -17,11 +17,11 @@ public interface Observer {
 
     public void updateDealerBigSmalBlinds(int dealerID, int bigID, int smallID, double big, double small);
 
-    public void updateWinner(int playername, double winningPot);
+    public void updateWinner(int[] playername, double winningPot);
 
     public void bet(double playerBet);
-
-    public void flipOfCardT(ArrayList<Card> tableCards);
+    
+    public void flipOfCardT(Card[] tableCards);
 
     public void foldRequestFromServer();
     

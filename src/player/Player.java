@@ -37,7 +37,7 @@ public class Player implements Observer {
 	 * @return The cards in players hand
 	 */
 	public void getHand() {
-		gameManager.collectHandsFromPlayer(observerID,hand);
+		gameManager.collectHandsFromPlayers(observerID,hand);
 	}
 
 
@@ -154,10 +154,10 @@ public class Player implements Observer {
 
 
 				case CALL:
-					if ((minReqState == States.BIG)   ||
-						(minReqState == States.CALL)  ||
-						(minReqState == States.RAISE) ||
-						(minReqState == States.ALL_IN))
+					if ((minReqState == States.BIG)   	  ||
+							(minReqState == States.CALL)  ||
+							(minReqState == States.RAISE) ||
+							(minReqState == States.ALL_IN))
 					{
 						state = playerMove;
 						playerBet = callCost;
@@ -168,114 +168,114 @@ public class Player implements Observer {
 					}
 					break;
 
-					case RAISE:
-						state = playerMove;
-						raise = raiseScan.nextDouble();
-						playerBet = callCost + raise;
-						bet(playerBet);
-						break;
+				case RAISE:
+					state = playerMove;
+					raise = raiseScan.nextDouble();
+					playerBet = callCost + raise;
+					bet(playerBet);
+					break;
 
-					case ALL_IN:
-						state = playerMove;
-						playerBet = wealth;
-						bet(playerBet);
-						break;
+				case ALL_IN:
+					state = playerMove;
+					playerBet = wealth;
+					bet(playerBet);
+					break;
 
-					default:
-						System.out.println("Please select a valid move");
-						break;
-					}
-
-					stateScan.close();
-					raiseScan.close();
+				default:
+					System.out.println("Please select a valid move");
+					break;
 				}
 
-			}
-		}
-
-
-		/**
-		 * Play the big and small blinds
-		 * @param dealerID	- The player ID for the dealer for the round
-		 * @param bigID		- The player ID for the big blind for the round
-		 * @param smallID	- The player ID for the small blind for the round
-		 * @param big		- The amount of chips big blind costs for the round
-		 * @param small		- The amount of chips small blind costs for the round
-		 */
-		@Override
-		public void updateDealerBigSmalBlinds(int dealerID, int bigID, int smallID, double big, double small) {
-			dealer = false;
-
-			if(observerID == dealerID) {
-				dealer = true;
-			}
-
-			if(bigID == observerID) {
-				bet(big);
-			}
-			else if(smallID == observerID) {
-				bet(small);
+				stateScan.close();
+				raiseScan.close();
 			}
 
 		}
+	}
 
 
-		/**
-		 * Add the chips won to the winning players wealth and prompt the winner of the current for the round to the game
-		 * @param playerID	 - The players observer ID
-		 * @param winningPot - The pot player have won
-		 */
-		@Override
-		public void updateWinner(int playerID, double winningPot) {
-			if (playerID == observerID)
-				wealth += winningPot;
+	/**
+	 * Play the big and small blinds
+	 * @param dealerID	- The player ID for the dealer for the round
+	 * @param bigID		- The player ID for the big blind for the round
+	 * @param smallID	- The player ID for the small blind for the round
+	 * @param big		- The amount of chips big blind costs for the round
+	 * @param small		- The amount of chips small blind costs for the round
+	 */
+	@Override
+	public void updateDealerBigSmalBlinds(int dealerID, int bigID, int smallID, double big, double small) {
+		dealer = false;
 
-			System.out.println(playerID); //TODO: Game manager have to be able to return players Name instead of ObserverID
+		if(observerID == dealerID) {
+			dealer = true;
 		}
 
-
-		/**
-		 * The generic function which handles chips transactions between the player and server
-		 * It also updates the server with all the actions players does
-		 * @param playerBet	 - The amount of chips player bets, when Call, Raise or All In
-		 */
-		@Override
-		public void bet(double playerBet) {
-
-			if (wealth >= playerBet) {
-				gameManager.severUpdatePot(observerID, name, playerBet, state);
-				wealth -= playerBet;
-			} 
-			else {
-				//Player goes ALL_IN if chips(wealth) are not enough to call or raise
-				gameManager.severUpdatePot(observerID, name, wealth, States.ALL_IN);
-				wealth = 0;
-			}
-		}	
-
-
-		/**
-		 * Prompt the game with the cards on the table
-		 * @param tableCards - The game cards on the table
-		 */
-		@Override
-		public void flipOfCardT(ArrayList<Card> tableCards) {
-			for(int i = 0; i < tableCards.size(); i++)
-			{
-				System.out.println(tableCards.get(i).getRank() + " " + tableCards.get(i).getSuit());
-			}
+		if(bigID == observerID) {
+			bet(big);
 		}
-
-
-		/**
-		 * Fold as per requested from the server
-		 */
-		@Override
-		public void foldRequestFromServer() {
-			state = States.FOLD;
+		else if(smallID == observerID) {
+			bet(small);
 		}
 
 	}
 
-	//TODO: Let the server know when a player have no chips left, 
-	//so that server can unsubscribe him from the game
+
+	/**
+	 * Add the chips won to the winning players wealth and prompt the winner of the current for the round to the game
+	 * @param playername - The players username
+	 * @param winningPot - The pot player have won
+	 */
+	@Override
+	public void updateWinner(int[] playername, double winningPot) {
+		for (int i = 0; i < playername.length;  i++ ) {
+			if (playername[i] == observerID)
+				wealth += winningPot;
+			System.out.println(playername[i]);
+		}
+	}
+
+	/**
+	 * The generic function which handles chips transactions between the player and server
+	 * It also updates the server with all the actions players does
+	 * @param playerBet	 - The amount of chips player bets, when Call, Raise or All In
+	 */
+	@Override
+	public void bet(double playerBet) {
+
+		if (wealth >= playerBet) {
+			gameManager.severUpdatePot(observerID, name, playerBet, state);
+			wealth -= playerBet;
+		} 
+		else {
+			//Player goes ALL_IN if chips(wealth) are not enough to call or raise
+			gameManager.severUpdatePot(observerID, name, wealth, States.ALL_IN);
+			wealth = 0;
+		}
+	}	
+
+
+	/**
+	 * Prompt the game with the cards on the table
+	 * @param tableCards - The game cards on the table
+	 */
+	@Override
+	public void flipOfCardT(Card[] tableCards) {
+		for(int i = 0; i < tableCards.length; i++)
+		{
+			System.out.println(tableCards[i].getRank() + " " + tableCards[i].getSuit());
+		}
+	}
+
+
+	/**
+	 * Fold as per requested from the server
+	 */
+	@Override
+	public void foldRequestFromServer() {
+		state = States.FOLD;
+	}
+
+}
+
+//TODO: Let the server know when a player have no chips left, 
+//so that server can unsubscribe him from the game

@@ -6,6 +6,7 @@ import managers.GameManager;
 
 import java.util.ArrayList;
 
+//make this static instead
 public class Players implements Subject {
 
 	private int MaxAmountOfPlayers;
@@ -14,7 +15,6 @@ public class Players implements Subject {
 	private static int AmountOfPlayers = 0;
 	private /*static*/ boolean goodToGo;
 	private /*static*/ GameManager gameManager;
-
 
 	public Players(int playerAmount, double playerWealth) {
 		MaxAmountOfPlayers = playerAmount;

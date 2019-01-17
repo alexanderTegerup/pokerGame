@@ -55,12 +55,12 @@ public class LoginManager {
 
             ArrayList<Observer> listPlayers = players.getPlayers();
 
-            System.out.println("Listing all players");
-          /*  for (int i = 0; i < listPlayers.size(); i++) {
-                System.out.println(listPlayers.get(i).getUserName());
-            }*/
-
-            while (true) {
+        if (!players.isGoodToGo()) {
+            System.out.println("Waiting");
+        } else {
+            System.out.println("Its time");
+        }
+/*            while (true) {
                 if (!players.isGoodToGo()) {
                     System.out.println("Waiting");
                    // outputLine = "Waiting";
@@ -76,7 +76,7 @@ public class LoginManager {
                   //  out.println(outputLine);
                     break;
                 }
-            }
+            }*/
      //   } catch (InterruptedException e) {
        //     e.printStackTrace();
         //} catch (IOException e) {
