@@ -28,6 +28,7 @@ public class Table {
     private Card[] turnedCards;
     private Players players; 
     private Card burnedCard;
+    private int amountOfCards = 0;
     
     /**
      * A no argument constructor.
@@ -70,23 +71,34 @@ public class Table {
                 turnedCards[1] = deck.getTopCard();
                 turnedCards[2] = deck.getTopCard();
                 upcomingCards  = UpcomingCards.TURN;
+                amountOfCards = 3;
                 break;
                 
             case TURN: 
                 burnCard();
-                turnedCards[4] = deck.getTopCard();
+                turnedCards[3] = deck.getTopCard();
                 upcomingCards  = UpcomingCards.RIVER;
+                amountOfCards++;
                 break;
                 
             case RIVER: 
                 burnCard();
-                turnedCards[5] = deck.getTopCard();
+                turnedCards[4] = deck.getTopCard();
                 upcomingCards  = UpcomingCards.FLOP;
+                amountOfCards++;
                 break;
             default: 
                 // The state machine should never be in this state. 
                 break;
         }
+
+       for(int i = 0; i < amountOfCards; i++)
+           System.out.println("Rank: " + turnedCards[i].getRank() + " Suit: " + turnedCards[i].getSuit());
+
+   }
+
+   public int returnNrOfCards() {
+       return amountOfCards;
    }
    
     /**

@@ -16,6 +16,8 @@ public class Player implements Observer {
 	private Hand hand;
 	private String name;
 	private double wealth;
+	private double smallB = 0, bigB = 0;
+
 	private States state;
 	private boolean dealer;
 	private GameManager gameManager;
@@ -27,7 +29,7 @@ public class Player implements Observer {
 		name = playerName;
 		wealth = playerWealth;
 		state = States.WAITING;
-		observerID = observerIDTracker;
+		observerID = observerIDTracker++;
 		gameManager = gm;
 	}
 
@@ -86,8 +88,9 @@ public class Player implements Observer {
 	public void dealCards(Card card1, Card card2) {
 		hand = new Hand(card1, card2);
 
+		System.out.println(name);
 		System.out.println("Card 1: " + hand.getCard1().getRank() + " " + hand.getCard1().getSuit());
-		System.out.println("Card 2: " + hand.getCard2().getRank() + " " + hand.getCard2().getSuit());  	
+		System.out.println("Card 2: " + hand.getCard2().getRank() + " " + hand.getCard2().getSuit() + "\n");
 	}
 
 
@@ -110,86 +113,105 @@ public class Player implements Observer {
 	 * @param callCost		- The minimum amount of chips needed to CALL
 	 */
 	@Override
-	public void updateTurnAndOptions(int playerID, States minReqState, double callCost) {
+	public void updateTurnAndOptions(int playerID, String playerName, States minReqState, double callCost) {
+
+		Scanner stateScan = new Scanner(System.in);
+		Scanner raiseScan = new Scanner(System.in);
+
+		double playerBet = 0;
+
+		if(state == States.BIG)
+			playerBet = bigB;
+		if(state == States.SMALL)
+			playerBet = smallB;
+
 		if (playerID == observerID) {
 
-			System.out.println(name + "'s turn now! Please make a move");
+			int i = 0;
+			System.out.println(name + "s turn now! Please make a move");
 
-			while (true) {
-				System.out.println("Enter your move:");
+			String playerMove = "";
+			int rightResponse = 0;
 
-				Scanner stateScan = new Scanner(System.in);
+			if(minReqState != States.BIG && minReqState != States.SMALL) {
+				while(rightResponse == 0) {
+					//System.out.println("Enter your move:");
 
-				States playerMove;
-				try {
-					playerMove = States.valueOf(stateScan.next().toUpperCase());
-				} catch (IllegalFormatException e) {
-					System.out.println("Please use a valid move");
-					e.printStackTrace();
-					break;
+					try {
+						if(stateScan.hasNextLine()) {
+							playerMove = stateScan.nextLine();
+							playerMove = playerMove.toUpperCase();
+						}
+
+					} catch (IllegalFormatException e) {
+						//System.out.println("Please use a valid move");
+						break;
+					}
+
+					double raise = 0;
+
+					// (minReqState == (States.FOLD)
+					// (minReqState == (States.CHECK)
+
+					switch (playerMove) {
+
+						case "FOLD":
+							state = States.FOLD;
+							bet(playerBet);
+							rightResponse = 1;
+							break;
+
+						case "CHECK":
+							if (minReqState == States.CHECK) {
+								state = States.CHECK;
+								bet(playerBet);
+								rightResponse = 1;
+							} else {
+								System.out.println("You cannot Check!");
+							}
+							break;
+
+
+						case "CALL":
+							if ((minReqState == States.BIG) ||
+									(minReqState == States.CALL) ||
+									(minReqState == States.RAISE) ||
+									(minReqState == States.ALL_IN)) {
+								state = States.CALL;
+								playerBet = callCost;
+								bet(callCost);
+								rightResponse = 1;
+							} else {
+								System.out.println("You cannot Call!");
+							}
+							break;
+
+						case "RAISE":
+							state = States.RAISE;
+							raise = raiseScan.nextDouble();
+							playerBet = callCost + raise;
+							bet(playerBet);
+							rightResponse = 1;
+							break;
+
+						case "ALL_IN":
+							state = States.ALL_IN;
+							playerBet = wealth;
+							bet(playerBet);
+							rightResponse = 1;
+							break;
+
+						default:
+							System.out.println("Please select a valid move");
+							break;
+					}
 				}
+				//stateScan.close();
+				//raiseScan.close();
 
-				Scanner raiseScan = new Scanner(System.in);
-				double raise = 0;
-				double playerBet = 0;
-
-				// (minReqState == (States.FOLD)
-				// (minReqState == (States.CHECK)
-
-				switch(playerMove) {
-
-				case FOLD:
-					state = playerMove;
-					bet(playerBet);
-					break;
-
-				case CHECK:
-					if (minReqState == States.CHECK) {
-						state = playerMove;
-						bet(playerBet);
-					} else {
-						System.out.println("You cannot Check!");
-					}
-					break;
-
-
-				case CALL:
-					if ((minReqState == States.BIG)   	  ||
-							(minReqState == States.CALL)  ||
-							(minReqState == States.RAISE) ||
-							(minReqState == States.ALL_IN))
-					{
-						state = playerMove;
-						playerBet = callCost;
-						bet(callCost);
-					}
-					else {
-						System.out.println("You cannot Call!");
-					}
-					break;
-
-				case RAISE:
-					state = playerMove;
-					raise = raiseScan.nextDouble();
-					playerBet = callCost + raise;
-					bet(playerBet);
-					break;
-
-				case ALL_IN:
-					state = playerMove;
-					playerBet = wealth;
-					bet(playerBet);
-					break;
-
-				default:
-					System.out.println("Please select a valid move");
-					break;
-				}
-
-				stateScan.close();
-				raiseScan.close();
+			} else {
+				bet(playerBet);
 			}
-
 		}
 	}
 
@@ -203,18 +225,24 @@ public class Player implements Observer {
 	 * @param small		- The amount of chips small blind costs for the round
 	 */
 	@Override
-	public void updateDealerBigSmalBlinds(int dealerID, int bigID, int smallID, double big, double small) {
+	public void updateDealerBigSmalBlinds(int dealerID, int smallID, int bigID, double small, double big) {
 		dealer = false;
+
+		System.out.println("big i player är " + big);
 
 		if(observerID == dealerID) {
 			dealer = true;
 		}
 
 		if(bigID == observerID) {
-			bet(big);
+			state = States.BIG;
+			bigB = big;
+//			bet(big);
 		}
 		else if(smallID == observerID) {
-			bet(small);
+			smallB = small;
+			state = States.SMALL;
+//			bet(small);
 		}
 
 	}
@@ -226,11 +254,11 @@ public class Player implements Observer {
 	 * @param winningPot - The pot player have won
 	 */
 	@Override
-	public void updateWinner(int[] playername, double winningPot) {
-		for (int i = 0; i < playername.length;  i++ ) {
-			if (playername[i] == observerID)
+	public void updateWinner(int[] playerIds, String[] playerNames, double winningPot) {
+		for (int i = 0; i < playerIds.length;  i++ ) {
+			if (playerIds[i] == observerID && playerNames[i] == name)
 				wealth += winningPot;
-			System.out.println(playername[i]);
+			System.out.println("Winner is " + playerNames[i] + " and won " + winningPot);
 		}
 	}
 
@@ -239,9 +267,7 @@ public class Player implements Observer {
 	 * It also updates the server with all the actions players does
 	 * @param playerBet	 - The amount of chips player bets, when Call, Raise or All In
 	 */
-	@Override
 	public void bet(double playerBet) {
-
 		if (wealth >= playerBet) {
 			gameManager.severUpdatePot(observerID, name, playerBet, state);
 			wealth -= playerBet;
@@ -259,13 +285,11 @@ public class Player implements Observer {
 	 * @param tableCards - The game cards on the table
 	 */
 	@Override
-	public void flipOfCardT(Card[] tableCards) {
-		for(int i = 0; i < tableCards.length; i++)
-		{
-			System.out.println(tableCards[i].getRank() + " " + tableCards[i].getSuit());
+	public void flipOfCardT(Card[] tableCards, int amountOfCards) {
+		for(int i = 0; i < amountOfCards; i++) {
+			//System.out.println(tableCards[i].getRank() + " " + tableCards[i].getSuit());
 		}
 	}
-
 
 	/**
 	 * Fold as per requested from the server

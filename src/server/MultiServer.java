@@ -14,14 +14,16 @@ public class MultiServer {
         //Create a player instance
         Player user;
 
-        //Initiate players instance with amount of players on table and the stakes of the players to be able to register and derefister players
         Players players = new Players(4, 200);
 
+        GameManager gameManager = new GameManager(/*out, in, */players);
+
+        //Initiate players instance with amount of players on table and the stakes of the players to be able to register and derefister players
+        players.setGameManager(gameManager);
         //Perform a login session for a player
         LoginManager loginManager = new LoginManager(/*out, in, */players);
 
         //Initiate a gamemanager instance for playing the game
-        GameManager gameManager = new GameManager(/*out, in, */players);
 
         //user = loginManager.loginFunction();
         loginManager.loginFunction("Mario");
@@ -29,6 +31,7 @@ public class MultiServer {
         loginManager.loginFunction("Aziz");
         loginManager.loginFunction("alex");
         //players.setGameManager(gameManager);
+        gameManager.initilizePlayersObj();
         gameManager.playingTheGame();
     }
 
