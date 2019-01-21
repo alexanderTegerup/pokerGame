@@ -12,7 +12,8 @@ import java.util.concurrent.TimeUnit;
 /**
  * Manager creating a login session for players (users) to register to a table for playing poker
  */
-public class LoginManager {
+public class LoginManager
+{
 
     private String outputLine, inputLine;
     private PrintWriter out;
@@ -22,9 +23,11 @@ public class LoginManager {
 
     /**
      * Constructor for LoginManager class
+     *
      * @param players instance of playerclass
      */
-    public LoginManager(/*PrintWriter o, BufferedReader i, */Players players) {
+    public LoginManager(/*PrintWriter o, BufferedReader i, */Players players)
+    {
         //out = o;
         //in = i;
         this.players = players;
@@ -32,32 +35,39 @@ public class LoginManager {
 
     /**
      * Log in function for registering a player to be an observer as long as the amount of players is not filled
+     *
      * @param username string input from user used as a username when trying to log in.
      * @return player object
      */
-    public Player loginFunction(String username) {
-       // String username = "";
+    public Player loginFunction(String username)
+    {
+        // String username = "";
         //try {
-         //   outputLine = "Vänligen skriv ett gästnamn";
-         //   out.println(outputLine);
+        //   outputLine = "Vänligen skriv ett gästnamn";
+        //   out.println(outputLine);
 
-         //   if ((inputLine = in.readLine()) != null) {
-              //  username = inputLine;
+        //   if ((inputLine = in.readLine()) != null) {
+        //  username = inputLine;
 
-                if (players.addPlayerToTable(username)) {
-                    System.out.println("Lyckat");
-                }
-                else {
-                    System.out.println("tyvärr nåt fel");
-                    return null;
-                }
-           // }
+        if (players.addPlayerToTable(username))
+        {
+            System.out.println("Lyckat");
+        }
+        else
+        {
+            System.out.println("tyvärr nåt fel");
+            return null;
+        }
+        // }
 
-            ArrayList<Observer> listPlayers = players.getPlayers();
+        ArrayList<Observer> listPlayers = players.getPlayers();
 
-        if (!players.isGoodToGo()) {
+        if (!players.isGoodToGo())
+        {
             System.out.println("Waiting");
-        } else {
+        }
+        else
+        {
             System.out.println("Its time");
         }
 /*            while (true) {
@@ -77,11 +87,11 @@ public class LoginManager {
                     break;
                 }
             }*/
-     //   } catch (InterruptedException e) {
-       //     e.printStackTrace();
+        //   } catch (InterruptedException e) {
+        //     e.printStackTrace();
         //} catch (IOException e) {
         //    e.printStackTrace();
-       // }
+        // }
         return player;
     }
 }

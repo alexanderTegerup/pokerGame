@@ -8,29 +8,28 @@ import player.Players;
 import java.io.IOException;
 import java.net.ServerSocket;
 
-public class MultiServer {
-    public static void main(String[] args) throws IOException {
-
-        //Create a player instance
-        Player user;
-
-        Players players = new Players(4, 200);
-
-        GameManager gameManager = new GameManager(/*out, in, */players);
+public class MultiServer
+{
+    public static void main(String[] args) throws IOException
+    {
 
         //Initiate players instance with amount of players on table and the stakes of the players to be able to register and derefister players
+        Players players = new Players(4, 200);
+
+        //Initiate a gamemanager instance for playing the game
+        GameManager gameManager = new GameManager(/*out, in, */players);
+
         players.setGameManager(gameManager);
+
         //Perform a login session for a player
         LoginManager loginManager = new LoginManager(/*out, in, */players);
 
-        //Initiate a gamemanager instance for playing the game
-
-        //user = loginManager.loginFunction();
+        //create four users who will play the game
         loginManager.loginFunction("Mario");
         loginManager.loginFunction("jonathan");
         loginManager.loginFunction("Aziz");
         loginManager.loginFunction("alex");
-        //players.setGameManager(gameManager);
+
         gameManager.initilizePlayersObj();
         gameManager.playingTheGame();
     }

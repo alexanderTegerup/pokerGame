@@ -8,105 +8,122 @@ package table;
 
 import java.util.ArrayList;
 import java.util.Collections;
+
 /**
  * <h1> Class which generates a deck </h1>
- * Each card in the deck has a reference to the card below in the deck. This 
- * means that the deck is a linked list of cards. 
+ * Each card in the deck has a reference to the card below in the deck. This
+ * means that the deck is a linked list of cards.
  */
-public class Deck {
-    
+public class Deck
+{
+
     private Card topCard;
     private Card cardBelow;
     private Card.Suit suit;
     private Card.Rank rank;
     private int numCardsInDeck = 52;
-    
+
     private ArrayList<Integer> randomNumbers;
-    
-     /**
+
+    /**
      * A no argument constructor.
      */
-    public Deck() {
-        generateDeck();   
+    public Deck()
+    {
+        generateDeck();
     }
-    
+
     /**
-    * Returns the card at the top of the deck. 
-    * @return The card at the top of the deck. 
-    */
-    public Card getTopCard(){
-        
+     * Returns the card at the top of the deck.
+     *
+     * @return The card at the top of the deck.
+     */
+    public Card getTopCard()
+    {
+
         Card removedCard = topCard;
-        topCard = topCard.getReference(); 
+        topCard = topCard.getReference();
         return removedCard;
     }
-    
-    /** 
-    * Method that shuffles the deck. 
-    */
-    public void shuffleDeck(){
-       
-    }
-    
+
     /**
-     * Method that removes card objects from the heap. 
+     * Method that shuffles the deck.
      */
-    public void resetDeck() {
-        
+    public void shuffleDeck()
+    {
+
     }
-    
+
     /**
-    * Generates an array list with the numbers 0-51 placed in a random order. 
-    * Each number in the array list maps to a unique combination of a suit and 
-    * rank of a card. 
-    */
-    private void generateRandomNumers() {
-        
+     * Method that removes card objects from the heap.
+     */
+    public void resetDeck()
+    {
+
+    }
+
+    /**
+     * Generates an array list with the numbers 0-51 placed in a random order.
+     * Each number in the array list maps to a unique combination of a suit and
+     * rank of a card.
+     */
+    private void generateRandomNumers()
+    {
+
         randomNumbers = new ArrayList<Integer>();
-        for(int i=0; i<numCardsInDeck; i++) {
+        for (int i = 0; i < numCardsInDeck; i++)
+        {
             randomNumbers.add(i);
         }
         Collections.shuffle(randomNumbers);
     }
-    
+
     /**
-    * Generates a deck where its cards are a linked list. 
-    */
-    private void generateDeck() {
-        
+     * Generates a deck where its cards are a linked list.
+     */
+    private void generateDeck()
+    {
+
         generateRandomNumers();
         topCard = null;
-        for(int index=0; index<numCardsInDeck; index++){
-            
+        for (int index = 0; index < numCardsInDeck; index++)
+        {
+
             randomizeSuitAndRank(index);
             cardBelow = topCard;
             topCard = new Card(suit, rank, cardBelow);
         }
     }
-    
+
     /**
-    * Generates a random combination of suit and rank which has not been 
-    * generated before. 
-    * @param index The index in the array with random numbers.
-    */
-    private void randomizeSuitAndRank(int index) {
-        
+     * Generates a random combination of suit and rank which has not been
+     * generated before.
+     *
+     * @param index The index in the array with random numbers.
+     */
+    private void randomizeSuitAndRank(int index)
+    {
+
         int randomNumber = randomNumbers.get(index);
-        if (randomNumber < 13){
+        if (randomNumber < 13)
+        {
             suit = Card.Suit.CLUBS;
-            rank = Card.Rank.values()[randomNumber];            
+            rank = Card.Rank.values()[randomNumber];
         }
-        else if (13 <= randomNumber && randomNumber <= 25){
+        else if (13 <= randomNumber && randomNumber <= 25)
+        {
             suit = Card.Suit.DIAMONDS;
-            rank = Card.Rank.values()[randomNumber-13];       
+            rank = Card.Rank.values()[randomNumber - 13];
         }
-        else if (26 <= randomNumber && randomNumber <= 38){
+        else if (26 <= randomNumber && randomNumber <= 38)
+        {
             suit = Card.Suit.HEARTS;
-            rank = Card.Rank.values()[randomNumber-26];    
+            rank = Card.Rank.values()[randomNumber - 26];
         }
-        else{
+        else
+        {
             suit = Card.Suit.SPADES;
-            rank = Card.Rank.values()[randomNumber-39];
-        }  
+            rank = Card.Rank.values()[randomNumber - 39];
+        }
     }
 }

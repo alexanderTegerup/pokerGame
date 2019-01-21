@@ -3,7 +3,8 @@ package common;
 /**
  * Enum of different States in a pokergame
  */
-public enum States {
+public enum States
+{
     WAITING,
     GO,
     SMALL,
@@ -11,6 +12,6 @@ public enum States {
     FOLD,
     CHECK,
     CALL,
-    RAISE, 
+    RAISE,
     ALL_IN
 }

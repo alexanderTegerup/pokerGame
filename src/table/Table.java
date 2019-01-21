@@ -9,169 +9,182 @@ import player.Players;
 
 
 /**
- *<h1> The poker table </h1>
- * Handles the flop, turn and river. Keeps track on big and small blind and the 
- * dealer button. Keeps track of the players around the table. 
- * 
- * @author Alexander Tegerup 
+ * <h1> The poker table </h1>
+ * Handles the flop, turn and river. Keeps track on big and small blind and the
+ * dealer button. Keeps track of the players around the table.
+ *
+ * @author Alexander Tegerup
  */
-public class Table {
+public class Table
+{
 
-    private enum UpcomingCards {
+    private enum UpcomingCards
+    {
         FLOP,
         TURN,
         RIVER;
     }
-    
+
     private UpcomingCards upcomingCards;
     private Deck deck;
     private Card[] turnedCards;
-    private Players players; 
+    private Players players;
     private Card burnedCard;
     private int amountOfCards = 0;
-    
+
     /**
      * A no argument constructor.
      */
-    public Table() {
+    public Table()
+    {
         upcomingCards = UpcomingCards.FLOP;
         deck = new Deck();
         turnedCards = new Card[5];
     }
-    
-     /**
-     * A parameterized constructor which populates the table. 
+
+    /**
+     * A parameterized constructor which populates the table.
+     *
      * @param pPlayers The players participating in the poker game.
      */
-    public Table(Players pPlayers) {
+    public Table(Players pPlayers)
+    {
         upcomingCards = UpcomingCards.FLOP;
         deck = new Deck();
         turnedCards = new Card[5];
         players = pPlayers;
     }
-    
+
     /**
-    * Burns the card at the top of the deck.  
-    */
+     * Burns the card at the top of the deck.
+     */
     private void burnCard()
     {
         burnedCard = deck.getTopCard();
     }
-    
-   /**
-    * Deals the flop, the turn and the river to the table. 
-    */
-   public void dealCard()
-   {   
-        switch(upcomingCards)
+
+    /**
+     * Deals the flop, the turn and the river to the table.
+     */
+    public void dealCard()
+    {
+        switch (upcomingCards)
         {
-            case FLOP: 
+            case FLOP:
                 burnCard();
                 turnedCards[0] = deck.getTopCard();
                 turnedCards[1] = deck.getTopCard();
                 turnedCards[2] = deck.getTopCard();
-                upcomingCards  = UpcomingCards.TURN;
+                upcomingCards = UpcomingCards.TURN;
                 amountOfCards = 3;
                 break;
-                
-            case TURN: 
+
+            case TURN:
                 burnCard();
                 turnedCards[3] = deck.getTopCard();
-                upcomingCards  = UpcomingCards.RIVER;
+                upcomingCards = UpcomingCards.RIVER;
                 amountOfCards++;
                 break;
-                
-            case RIVER: 
+
+            case RIVER:
                 burnCard();
                 turnedCards[4] = deck.getTopCard();
-                upcomingCards  = UpcomingCards.FLOP;
+                upcomingCards = UpcomingCards.FLOP;
                 amountOfCards++;
                 break;
-            default: 
+            default:
                 // The state machine should never be in this state. 
                 break;
         }
 
-       for(int i = 0; i < amountOfCards; i++)
-           System.out.println("Rank: " + turnedCards[i].getRank() + " Suit: " + turnedCards[i].getSuit());
+        for (int i = 0; i < amountOfCards; i++)
+        {
+            System.out.println("Rank: " + turnedCards[i].getRank() + " Suit: " + turnedCards[i].getSuit());
+        }
 
-   }
+    }
 
-   public int returnNrOfCards() {
-       return amountOfCards;
-   }
-   
+    public int returnNrOfCards()
+    {
+        return amountOfCards;
+    }
+
     /**
-    * Get the cards which are shown on the table. 
-    * @return The all flopped cards. 
-    */
-   public Card[] showAllCards()
-   {
-       return turnedCards;
-   }
-   
-   /**
-    * Get one of the cards on the table. 
-    * @return A flopped card. 
-    * @param index Which one of the five cards (0 - 4) that will be returned.
-    */
-   public Card showCard(int index)
-   {
-       try{
-           return turnedCards[index];
-       }
-       catch(ArrayIndexOutOfBoundsException e)
-       {
-           System.out.println("Warning: ArrayIndexOutOfBoundsException");
-       }
-       return null;
-   }
-           
+     * Get the cards which are shown on the table.
+     *
+     * @return The all flopped cards.
+     */
+    public Card[] showAllCards()
+    {
+        return turnedCards;
+    }
+
     /**
-    * Move the big and small blind to the next players. 
-    */
-   public void moveBlinds()
-   {
-       /*players.moveBlinds();*/
-   }
-   
+     * Get one of the cards on the table.
+     *
+     * @param index Which one of the five cards (0 - 4) that will be returned.
+     * @return A flopped card.
+     */
+    public Card showCard(int index)
+    {
+        try
+        {
+            return turnedCards[index];
+        }
+        catch (ArrayIndexOutOfBoundsException e)
+        {
+            System.out.println("Warning: ArrayIndexOutOfBoundsException");
+        }
+        return null;
+    }
+
     /**
-    * Move the dealer button to the next player. 
-    */
-   public void moveDealerButton()
-   {
-       /*players.moveDealerButton();*/
-   }
-   
+     * Move the big and small blind to the next players.
+     */
+    public void moveBlinds()
+    {
+        /*players.moveBlinds();*/
+    }
+
     /**
-    * Populating players to the poker table. 
-    * @param pPlayers The players participating in the poker game.
-    */
-   public void populateTable(Players pPlayers)
-   {
-       players = pPlayers;
-   }
-      
+     * Move the dealer button to the next player.
+     */
+    public void moveDealerButton()
+    {
+        /*players.moveDealerButton();*/
+    }
+
     /**
-    * Remove the flop, turn and river from the table. This is simulated by 
-    * assigning all those cards to cards to null. 
-    */
-   public void removeCardsFromTable()
-   {
-       for(int i=0; i<5; i++)
-       {
-           turnedCards[i] = null;
-       }
-   }
-   
+     * Populating players to the poker table.
+     *
+     * @param pPlayers The players participating in the poker game.
+     */
+    public void populateTable(Players pPlayers)
+    {
+        players = pPlayers;
+    }
+
     /**
-    * Returns the card at the top of the deck on the table. 
-    * @return The card at the top of the deck on the table. 
-    */
-   public Card getCardFromDeck()
-   {
-       return deck.getTopCard();
-   }
-   
+     * Remove the flop, turn and river from the table. This is simulated by
+     * assigning all those cards to cards to null.
+     */
+    public void removeCardsFromTable()
+    {
+        for (int i = 0; i < 5; i++)
+        {
+            turnedCards[i] = null;
+        }
+    }
+
+    /**
+     * Returns the card at the top of the deck on the table.
+     *
+     * @return The card at the top of the deck on the table.
+     */
+    public Card getCardFromDeck()
+    {
+        return deck.getTopCard();
+    }
+
 
 }

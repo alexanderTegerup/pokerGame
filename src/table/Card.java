@@ -8,12 +8,13 @@ package table;
 
 
 /**
- *<h1> Class that creates Card objects </h1>
- * Each card has a suit, rank and a reference 
- * to an other card. 
+ * <h1> Class that creates Card objects </h1>
+ * Each card has a suit, rank and a reference
+ * to an other card.
  */
-public class Card {
-    
+public class Card
+{
+
     public enum Suit
     {
         SPADES,
@@ -21,7 +22,7 @@ public class Card {
         DIAMONDS,
         CLUBS;
     }
-    
+
     public enum Rank
     {
         TWO,
@@ -36,48 +37,56 @@ public class Card {
         JACK,
         QUEEN,
         KING,
-        ACE;   
+        ACE;
     }
-    
+
     private Suit suit;
     private Rank rank;
-    private Card reference; 
-    
+    private Card reference;
+
     /**
-    * A parameterized constructor which generates a card. 
-    * @param suit_ The suit of the card.
-    * @param rank_ The rank of the card.
-    * @param reference_ A reference to another card. 
-    */
-    public Card(Suit suit_, Rank rank_, Card reference_){
-        
-        suit      = suit_;
-        rank      = rank_; 
-        reference = reference_; 
+     * A parameterized constructor which generates a card.
+     *
+     * @param suit_      The suit of the card.
+     * @param rank_      The rank of the card.
+     * @param reference_ A reference to another card.
+     */
+    public Card(Suit suit_, Rank rank_, Card reference_)
+    {
+
+        suit = suit_;
+        rank = rank_;
+        reference = reference_;
     }
-    
-    /** 
-     * Method which returns the reference of the card object. 
+
+    /**
+     * Method which returns the reference of the card object.
+     *
      * @return The reference of the card object
      */
-    public Card getReference(){
+    public Card getReference()
+    {
         return reference;
     }
-    
-    /** 
-     * Method which returns the suit of the card object. 
+
+    /**
+     * Method which returns the suit of the card object.
+     *
      * @return The suit of the card object
      */
-    public Suit getSuit(){
+    public Suit getSuit()
+    {
         return suit;
     }
-    
-    /** 
-     * Method which returns the rank of the card object. 
+
+    /**
+     * Method which returns the rank of the card object.
+     *
      * @return The rank of the card object
-     */    
-    public Rank getRank(){
+     */
+    public Rank getRank()
+    {
         return rank;
     }
-    
+
 }
