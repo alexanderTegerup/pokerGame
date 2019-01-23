@@ -72,6 +72,7 @@ public class Table
         {
             case FLOP:
                 burnCard();
+                System.out.println("---The FLOP---");
                 turnedCards[0] = deck.getTopCard();
                 turnedCards[1] = deck.getTopCard();
                 turnedCards[2] = deck.getTopCard();
@@ -80,6 +81,7 @@ public class Table
                 break;
 
             case TURN:
+            	System.out.println("---The TURN---");
                 burnCard();
                 turnedCards[3] = deck.getTopCard();
                 upcomingCards = UpcomingCards.RIVER;
@@ -87,6 +89,7 @@ public class Table
                 break;
 
             case RIVER:
+            	System.out.println("---The RIVER---");
                 burnCard();
                 turnedCards[4] = deck.getTopCard();
                 upcomingCards = UpcomingCards.FLOP;
@@ -99,7 +102,7 @@ public class Table
 
         for (int i = 0; i < amountOfCards; i++)
         {
-            System.out.println("Rank: " + turnedCards[i].getRank() + " Suit: " + turnedCards[i].getSuit());
+            System.out.println(turnedCards[i].getRank() + " " +  turnedCards[i].getSuit());
         }
 
     }

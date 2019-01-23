@@ -211,10 +211,10 @@ public class Player implements Observer
 
 
                         case "CALL":
-                            if ((minReqState == States.BIG) ||
-                                    (minReqState == States.CALL) ||
-                                    (minReqState == States.RAISE) ||
-                                    (minReqState == States.ALL_IN))
+                            if ((minReqState == States.BIG)    ||
+                                (minReqState == States.CALL)   ||
+                                (minReqState == States.RAISE)  ||
+                                (minReqState == States.ALL_IN) )
                             {
 
                                 if (wealth > callCost)
