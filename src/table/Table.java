@@ -1,18 +1,8 @@
 package table;
 
-import player.Players;
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
-
 /**
  * <h1> The poker table </h1>
- * Handles the flop, turn and river. Keeps track on big and small blind and the
- * dealer button. Keeps track of the players around the table.
- *
+ * Handles the flop, the turn and the river. Those cards are kept in the array 'turnedCards'.
  * @author Alexander Tegerup
  */
 public class Table
@@ -28,7 +18,6 @@ public class Table
     private UpcomingCards upcomingCards;
     private Deck deck;
     private Card[] turnedCards;
-    private Players players;
     private Card burnedCard;
     private int amountOfCards = 0;
 
@@ -40,19 +29,6 @@ public class Table
         upcomingCards = UpcomingCards.FLOP;
         deck = new Deck();
         turnedCards = new Card[5];
-    }
-
-    /**
-     * A parameterized constructor which populates the table.
-     *
-     * @param pPlayers The players participating in the poker game.
-     */
-    public Table(Players pPlayers)
-    {
-        upcomingCards = UpcomingCards.FLOP;
-        deck = new Deck();
-        turnedCards = new Card[5];
-        players = pPlayers;
     }
 
     /**
@@ -72,7 +48,7 @@ public class Table
         {
             case FLOP:
                 burnCard();
-                System.out.println("---The FLOP---");
+                System.out.println("--- The FLOP ---");
                 turnedCards[0] = deck.getTopCard();
                 turnedCards[1] = deck.getTopCard();
                 turnedCards[2] = deck.getTopCard();
@@ -81,7 +57,7 @@ public class Table
                 break;
 
             case TURN:
-            	System.out.println("---The TURN---");
+            	System.out.println("--- The TURN ---");
                 burnCard();
                 turnedCards[3] = deck.getTopCard();
                 upcomingCards = UpcomingCards.RIVER;
@@ -89,7 +65,7 @@ public class Table
                 break;
 
             case RIVER:
-            	System.out.println("---The RIVER---");
+            	System.out.println("--- The RIVER ---");
                 burnCard();
                 turnedCards[4] = deck.getTopCard();
                 upcomingCards = UpcomingCards.FLOP;
@@ -107,6 +83,11 @@ public class Table
 
     }
 
+    /**
+     * Get the number of cards that are shown on the table.
+     *
+     * @return The number of cards that are shown on the table.
+     */
     public int returnNrOfCards()
     {
         return amountOfCards;
@@ -142,32 +123,6 @@ public class Table
     }
 
     /**
-     * Move the big and small blind to the next players.
-     */
-    public void moveBlinds()
-    {
-        /*players.moveBlinds();*/
-    }
-
-    /**
-     * Move the dealer button to the next player.
-     */
-    public void moveDealerButton()
-    {
-        /*players.moveDealerButton();*/
-    }
-
-    /**
-     * Populating players to the poker table.
-     *
-     * @param pPlayers The players participating in the poker game.
-     */
-    public void populateTable(Players pPlayers)
-    {
-        players = pPlayers;
-    }
-
-    /**
      * Remove the flop, turn and river from the table. This is simulated by
      * assigning all those cards to cards to null.
      */
@@ -188,6 +143,5 @@ public class Table
     {
         return deck.getTopCard();
     }
-
 
 }
