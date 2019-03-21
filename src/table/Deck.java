@@ -11,10 +11,15 @@ import java.util.Collections;
 public class Deck
 {
 
+    /** The card at the top of the deck */
     private Card topCard;
+    /** The card below the card at the top of the deck */
     private Card cardBelow;
+    /** Random suit used when creating a new card */
     private Card.Suit suit;
+    /** Random rank used when creating a new card */
     private Card.Rank rank;
+    /** The number of carts a deck has */
     private int numCardsInDeck = 52;
 
     private ArrayList<Integer> randomNumbers;
@@ -63,6 +68,7 @@ public class Deck
 
         generateRandomNumbers();
         topCard = null;
+        /* Generate all the 52 cards. */
         for (int index = 0; index < numCardsInDeck; index++)
         {
 

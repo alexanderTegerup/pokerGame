@@ -15,10 +15,15 @@ public class Table
         RIVER;
     }
 
+    /** Indicates if it is the flop, the turn or the river that will come up next on the table. */
     private UpcomingCards upcomingCards;
+    /** The shuffled deck from which the cards in the game come from. */
     private Deck deck;
+    /** The cards that are shown on the table. */
     private Card[] turnedCards;
+    /** The card that is thrown away before new cards are shown on the table (this is how it is done in a real poker game).*/
     private Card burnedCard;
+    /** Number of cards that are shown on the table. */
     private int amountOfCards = 0;
 
     /**
