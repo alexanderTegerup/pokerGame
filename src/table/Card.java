@@ -40,8 +40,11 @@ public class Card
         ACE;
     }
 
+    /** The suit of the card */
     private Suit suit;
+    /** The rank of the card */
     private Rank rank;
+    /** A reference to the card below in the deck */
     private Card reference;
 
     /**

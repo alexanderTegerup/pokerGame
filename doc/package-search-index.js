@@ -1,1 +1,1 @@
-packageSearchIndex = [{"l":"common"},{"l":"managers"},{"l":"player"},{"l":"server"},{"l":"table"}]
+packageSearchIndex = [{"l":"calculations"},{"l":"common"},{"l":"managers"},{"l":"player"},{"l":"server"},{"l":"table"}]

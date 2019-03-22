@@ -4,7 +4,9 @@ import common.Hand;
 import common.Ranks;
 import table.Card;
 
-
+/**
+ * <h1> Class that determines which player who has the best poker hand </h1>
+ */
 public class PokerRules
 {
 
@@ -39,14 +41,18 @@ public class PokerRules
     }*/
 
 
+    /** The rank of the cards that are on the table. */
     private common.Ranks tableCardRank;
+    /** The number of players participating in the game. */
     private int numberOfPlayers;
+    /** The cards that lie on the table. */
     private Card[] cardsOnTable;
+    /** An array where every element consist of the two unique cards that are given to each player. */
     private Hand[] arrayWithHands;
 
-    /* If a player gets a straight, the highest card that makes up that straight is saved in highestCardStraight.
-       If the cards on the table makes up a straight, the highest card of that straight is saved at the last index in
-       highestCardStraight.
+    /** If a player gets a straight, the highest card that makes up that straight is saved in highestCardStraight. If
+     * the cards on the table makes up a straight, the highest card of that straight is saved at the last index in
+     * highestCardStraight.
      */
     private Card[] highestCardStraight;
 
@@ -72,23 +78,22 @@ public class PokerRules
         }
 
 
-
-
         /* Find out which poker hand there is on the table. */
         tableCardRank = determineHandRanking(cardsOnTable, numberOfPlayers);
-        System.out.println("cards on table " + tableCardRank);
+        System.out.println("Cards on table " + tableCardRank);
 
         /* Set the best combination each player can have with their hands. */
         setPlayersBestRanking();
 
         common.Ranks rankPlayer;
-        int playerWithBestHand = -1; // Make sure we dont get null at player zero
+        int playerWithBestHand = -1; // Make sure we don't get null at player zero
         common.Ranks highestRank = common.Ranks.NOTHING;
         for (int iPlayer = 0; iPlayer < numberOfPlayers; iPlayer++)
         {
             if (arrayWithHands[iPlayer] != null)
             {
                 rankPlayer = arrayWithHands[iPlayer].getRank();
+                /* Save the player with the highest rank this far in the for-loop */
                 if (rankPlayer.ordinal() > highestRank.ordinal())
                 {
                     highestRank = rankPlayer;
@@ -150,6 +155,10 @@ public class PokerRules
         return winners;
     }
 
+    /**
+     * Method that computes the rank of each possible combination of the five cards on the table plus the two cards a
+     * player has. The highest of those ranks is saved in the attribute 'rank' in the hand those two cards belong to.
+     */
     private void setPlayersBestRanking()
     {
 
@@ -231,9 +240,14 @@ public class PokerRules
                 }
             }
         }
-
     }
 
+    /**
+     * Determines the highest possible rank of the five cards given as an input.
+     * @param fiveCards An array containing five cards.
+     * @param indexPlayer The index of the player the five cards belongs to.
+     * @return The highest ranking of the five cards given as an input.
+     */
     private common.Ranks determineHandRanking(Card[] fiveCards, int indexPlayer)
     {
 
@@ -340,7 +354,7 @@ public class PokerRules
     }
 
     /**
-     * Method that determines which of two players have the highest card, including the cards on the table.
+     * Method that determines which one of two players who has the highest card, including the cards on the table.
      *
      * @param indexPlayer1 The index of the first player.
      * @param h1           The hand the first player has.
@@ -374,6 +388,16 @@ public class PokerRules
         return -1;
     }
 
+    /**
+     * Method that decides which of two players, who both have two pair, has the best hand. If both players have the
+     * same pair, the player with the highest of the three remaining cards will have the best hand.
+     *
+     * @param indexPlayer1 The index of the first player.
+     * @param h1           The hand the first player has.
+     * @param indexPlayer2 The index of the second player.
+     * @param h2           The hand the second player has.
+     * @return The index of the player who has the best hand. If both hands have the exact same rank, -1 is returned.
+     */
     private int decideBestPair(int indexPlayer1, Hand h1, int indexPlayer2, Hand h2)
     {
         Card[] hand1;
@@ -754,6 +778,12 @@ public class PokerRules
         return gotFlush;
     }
 
+    /**
+     * Method that checks if five cards have four of a kind.
+     *
+     * @param fiveCards The hand that may or may not have four of a kind.
+     * @return A boolean that is true if the cards have four of a kind and is false otherwise.
+     */
     private boolean checkFourOfAKind(Card[] fiveCards)
     {
 
@@ -773,6 +803,12 @@ public class PokerRules
         return gotFourOfAKind;
     }
 
+    /**
+     * Method that checks if five cards make up a full house.
+     *
+     * @param fiveCards The hand that may or may not make up a full house.
+     * @return A boolean that is true if the cards make up a full house and is false otherwise.
+     */
     private boolean checkFullHouse(Card[] fiveCards)
     {
 
@@ -790,6 +826,12 @@ public class PokerRules
         return gotFullHouse;
     }
 
+    /**
+     * Method that checks if five cards have three of a kind.
+     *
+     * @param fiveCards The hand that may or may not have three of a kind.
+     * @return A boolean that is true if the cards have three of a kind and is false otherwise.
+     */
     private boolean checkThreeOfAKind(Card[] fiveCards)
     {
 
@@ -810,6 +852,12 @@ public class PokerRules
         return gotThreeOfAKind;
     }
 
+    /**
+     * Method that checks if there are two pairs among five cards.
+     *
+     * @param fiveCards The hand that may or may not contain two pairs.
+     * @return A boolean that is true if the cards contain two pairs and is false otherwise.
+     */
     private boolean checkTwoPair(Card[] fiveCards)
     {
 
@@ -825,6 +873,12 @@ public class PokerRules
         return gotTwoPair;
     }
 
+    /**
+     * Method that checks if there is a pair among five cards.
+     *
+     * @param fiveCards The hand that may or may not contain a pair.
+     * @return A boolean that is true if the cards contain a pair and is false otherwise.
+     */
     private boolean checkPair(Card[] fiveCards)
     {
 

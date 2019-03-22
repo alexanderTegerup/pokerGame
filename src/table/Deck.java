@@ -1,11 +1,5 @@
 package table;
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -17,10 +11,15 @@ import java.util.Collections;
 public class Deck
 {
 
+    /** The card at the top of the deck */
     private Card topCard;
+    /** The card below the card at the top of the deck */
     private Card cardBelow;
+    /** Random suit used when creating a new card */
     private Card.Suit suit;
+    /** Random rank used when creating a new card */
     private Card.Rank rank;
+    /** The number of carts a deck has */
     private int numCardsInDeck = 52;
 
     private ArrayList<Integer> randomNumbers;
@@ -40,26 +39,9 @@ public class Deck
      */
     public Card getTopCard()
     {
-
         Card removedCard = topCard;
         topCard = topCard.getReference();
         return removedCard;
-    }
-
-    /**
-     * Method that shuffles the deck.
-     */
-    public void shuffleDeck()
-    {
-
-    }
-
-    /**
-     * Method that removes card objects from the heap.
-     */
-    public void resetDeck()
-    {
-
     }
 
     /**
@@ -67,7 +49,7 @@ public class Deck
      * Each number in the array list maps to a unique combination of a suit and
      * rank of a card.
      */
-    private void generateRandomNumers()
+    private void generateRandomNumbers()
     {
 
         randomNumbers = new ArrayList<Integer>();
@@ -84,8 +66,9 @@ public class Deck
     private void generateDeck()
     {
 
-        generateRandomNumers();
+        generateRandomNumbers();
         topCard = null;
+        /* Generate all the 52 cards. */
         for (int index = 0; index < numCardsInDeck; index++)
         {
 
