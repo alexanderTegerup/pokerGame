@@ -93,6 +93,7 @@ public class PokerRules
             if (arrayWithHands[iPlayer] != null)
             {
                 rankPlayer = arrayWithHands[iPlayer].getRank();
+                /* Save the player with the highest rank this far in the for-loop */
                 if (rankPlayer.ordinal() > highestRank.ordinal())
                 {
                     highestRank = rankPlayer;

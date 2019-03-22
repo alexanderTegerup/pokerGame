@@ -134,7 +134,8 @@ public class GameManager
                     {
                         playerTurn++;
                     }
-                    else if (stateOfPlayersArr[playerIDs[(playerTurn % playerIDs.length)]] == States.FOLD || stateOfPlayersArr[playerIDs[(playerTurn % playerIDs.length)]] == States.ALL_IN)
+                    else if (stateOfPlayersArr[playerIDs[(playerTurn % playerIDs.length)]] == States.FOLD ||
+                             stateOfPlayersArr[playerIDs[(playerTurn % playerIDs.length)]] == States.ALL_IN)
                     {
                         playerTurn++;
                     }
@@ -142,7 +143,8 @@ public class GameManager
                     {
                         incFirstPlayer++;
                     }
-                    else if (stateOfPlayersArr[playerIDs[((playerTurn + incFirstPlayer) % playerIDs.length)]] == States.FOLD || stateOfPlayersArr[playerIDs[((playerTurn + incFirstPlayer) % playerIDs.length)]] == States.ALL_IN)
+                    else if (stateOfPlayersArr[playerIDs[((playerTurn + incFirstPlayer) % playerIDs.length)]] == States.FOLD ||
+                             stateOfPlayersArr[playerIDs[((playerTurn + incFirstPlayer) % playerIDs.length)]] == States.ALL_IN)
                     {
                         incFirstPlayer++;
                     }
@@ -156,14 +158,18 @@ public class GameManager
 
                 if (minimumState != States.BIG && minimumState != States.SMALL)
                 {
-                    if (playerBets[playerIDs[(playerTurn + incFirstPlayer) % playerIDs.length]] == raise && playerBets[playerIDs[playerTurn % playerIDs.length]] == raise)
+                    if (playerBets[playerIDs[(playerTurn + incFirstPlayer) % playerIDs.length]] == raise &&
+                        playerBets[playerIDs[playerTurn % playerIDs.length]]                    == raise )
                     {
                         minimumState = States.CHECK;
                     }
                 }
                 for (Observer observer : players)
                 {
-                    observer.updateTurnAndOptions(playerIDs[playerTurn % playerIDs.length], playerNames[playerIDs[playerTurn % playerIDs.length]], minimumState, (raise - (playerBets[playerIDs[playerTurn % playerIDs.length]])));
+                    observer.updateTurnAndOptions(playerIDs[playerTurn % playerIDs.length],
+                                                  playerNames[playerIDs[playerTurn % playerIDs.length]],
+                                                  minimumState,
+                                                  (raise - (playerBets[playerIDs[playerTurn % playerIDs.length]])));
                 }
                 //saved for implementation of client-server solution
                 /*   for (int i = 0; i < 10; i++) {
