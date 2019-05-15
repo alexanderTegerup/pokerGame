@@ -1,12 +1,9 @@
-package managers;
+package remove_later;
 
-import calculations.PokerRules;
-import common.Hand;
-import common.Observer;
+import common.Card;
 import common.States;
-import player.Players;
-import table.Card;
-import table.Table;
+import game.PokerRules;
+import player.Hand;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -17,10 +14,18 @@ import java.util.Arrays;
 
 public class GameManager
 {
-    private boolean playersession = true, playerHavePlayed = false, newRound;
+    private boolean playersession = true;
 
-    private double bigblind, smallblind;
-    private double pot = 0, round = 0, raise = 0;
+	private static boolean playerHavePlayed = false;
+
+	private boolean newRound;
+
+    public static double bigblind;
+
+	public static double smallblind;
+    private double pot = 0, round = 0;
+
+	private static double raise = 0;
     //private PrintWriter out;
     //private BufferedReader in;
     private int amountOfPlayers, dealer;
@@ -29,10 +34,10 @@ public class GameManager
     private int initialSmallID = 0;
 
     private int[] playerIDs;
-    private States[] stateOfPlayersArr;
+    private static States[] stateOfPlayersArr;
     private String[] playerNames;
-    private Hand[] playerHands;
-    private double[] playerBets;
+    private static Hand[] playerHands;
+    private static double[] playerBets;
     private Card[] tableCards;
 
     private Players playersObj;
@@ -352,7 +357,7 @@ public class GameManager
      * @param bets   - bets of player who made a move
      * @param move   - state of the player which made a move
      */
-    public void severUpdatePot(int ID, String player, double bets, States move)
+    public static void severUpdatePot(int ID, String player, double bets, States move)
     {
         //pot += bets;
 
@@ -538,7 +543,7 @@ public class GameManager
      */
     private void dealHandsToPlayers()
     {
-        for (common.Observer observer : players)
+        for (remove_later.Observer observer : players)
         {
             observer.dealCards(table.getCardFromDeck(), table.getCardFromDeck());
         }
@@ -593,7 +598,7 @@ public class GameManager
      * @param ID
      * @param hand
      */
-    public void collectHandsFromPlayers(int ID, Hand hand)
+    public static void collectHandsFromPlayers(int ID, Hand hand)
     {
         if (stateOfPlayersArr[ID] != States.FOLD)
         {

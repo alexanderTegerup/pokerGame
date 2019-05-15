@@ -1,8 +1,6 @@
-package player;
+package remove_later;
 
-import common.Observer;
-import common.Subject;
-import managers.GameManager;
+import player.Player;
 
 import java.util.ArrayList;
 

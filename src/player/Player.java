@@ -1,46 +1,40 @@
 package player;
 
-import java.util.ArrayList;
 import java.util.IllegalFormatException;
 import java.util.Scanner;
 
-import common.Hand;
-import common.Observer;
+import common.Card;
 import common.States;
-import managers.GameManager;
-import table.Card;
+import remove_later.GameManager;
 
 
-public class Player implements Observer
+public class Player
 {
 
     private Hand hand;
     private String name;
     private double wealth;
-    private double smallB = 0, bigB = 0;
-
+    private int iD;
     private States state;
-    private boolean dealer;
-    private GameManager gameManager;
-    private static int observerIDTracker = 0;
-    // Used to track the observers
-    private int observerID;
+    
+    
+    
 
-    public Player(String playerName, double playerWealth, GameManager gm)
+    public Player(String playerName, double playerWealth, int playerID)
     {
         name = playerName;
         wealth = playerWealth;
-        state = States.WAITING;
-        observerID = observerIDTracker++;
-        gameManager = gm;
+        iD = playerID;
+        state = States.WAITING; // Ta bort denna state?
+        
     }
 
     /**
      * Calls the function collectHandsFromPlayers to show it's hand to the game manager
      */
-    public void getHand()
+    public Hand getHand()
     {
-        gameManager.collectHandsFromPlayers(observerID, hand);
+    	return hand;
     }
 
 
@@ -84,7 +78,7 @@ public class Player implements Observer
      */
     public int getObserverID()
     {
-        return observerID;
+        return iD;
     }
 
     /**
@@ -93,7 +87,6 @@ public class Player implements Observer
      * @param card1
      * @param card2
      */
-    @Override
     public void dealCards(Card card1, Card card2)
     {
         hand = new Hand(card1, card2);
@@ -109,7 +102,6 @@ public class Player implements Observer
      * @param playerName
      * @param move
      */
-    @Override
     public void updateLastPlayersMove(String playerName, States move)
     {
         System.out.println("Player " + playerName + " did " + move);
@@ -124,7 +116,6 @@ public class Player implements Observer
      *                    player, reported from the server
      * @param callCost    - The minimum amount of chips needed to CALL
      */
-    @Override
     public void updateTurnAndOptions(int playerID, String playerName, States minReqState, double callCost)
     {
 
@@ -135,14 +126,14 @@ public class Player implements Observer
 
         if (state == States.BIG)
         {
-            playerBet = bigB;
+            playerBet = GameManager.bigblind;
         }
         if (state == States.SMALL)
         {
-            playerBet = smallB;
+            playerBet = GameManager.smallblind;
         }
 
-        if (playerID == observerID)
+        if (playerID == iD)
         {
 
             int i = 0;
@@ -286,25 +277,17 @@ public class Player implements Observer
      * @param big      - The amount of chips big blind costs for the round
      * @param small    - The amount of chips small blind costs for the round
      */
-    @Override
     public void updateDealerBigSmalBlinds(int dealerID, int smallID, int bigID, double small, double big)
     {
-        dealer = false;
-
-        if (observerID == dealerID)
-        {
-            dealer = true;
-        }
-
-        if (bigID == observerID)
+        if (bigID == iD)
         {
             state = States.BIG;
-            bigB = big;
+//            Gamemanager.big = big;
 //			bet(big);
         }
-        else if (smallID == observerID)
+        else if (smallID == iD)
         {
-            smallB = small;
+ //           smallB = small;
             state = States.SMALL;
 //			bet(small);
         }
@@ -319,12 +302,11 @@ public class Player implements Observer
      * @param playerNames - The players username
      * @param winningPot  - The pot player have won
      */
-    @Override
     public void updateWinner(int[] playerIds, String[] playerNames, double winningPot)
     {
         for (int i = 0; i < playerIds.length; i++)
         {
-            if (playerIds[i] == observerID && playerNames[i] == name)
+            if (playerIds[i] == iD && playerNames[i] == name)
             {
                 wealth += winningPot;
             }
@@ -342,13 +324,13 @@ public class Player implements Observer
     {
         if (wealth >= playerBet)
         {
-            gameManager.severUpdatePot(observerID, name, playerBet, state);
+            GameManager.severUpdatePot(iD, name, playerBet, state);
             wealth -= playerBet;
         }
         else
         {
             //Player goes ALL_IN if chips(wealth) are not enough to call or raise
-            gameManager.severUpdatePot(observerID, name, wealth, States.ALL_IN);
+            GameManager.severUpdatePot(iD, name, wealth, States.ALL_IN);
             wealth = 0;
         }
     }
@@ -359,7 +341,6 @@ public class Player implements Observer
      *
      * @param tableCards - The game cards on the table
      */
-    @Override
     public void flipOfCardT(Card[] tableCards, int amountOfCards)
     {
         // for (int i = 0; i < amountOfCards; i++) {
@@ -370,7 +351,6 @@ public class Player implements Observer
     /**
      * Fold as per requested from the server
      */
-    @Override
     public void foldRequestFromServer()
     {
         state = States.FOLD;

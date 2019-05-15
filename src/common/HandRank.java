@@ -3,7 +3,7 @@
  */
 package common;
 
-public enum Ranks
+public enum HandRank
 {
     NOTHING,
     HIGH_CARD,

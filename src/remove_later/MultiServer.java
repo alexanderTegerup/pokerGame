@@ -1,9 +1,6 @@
-package server;
+package remove_later;
 
-import managers.GameManager;
-import managers.LoginManager;
 import player.Player;
-import player.Players;
 
 import java.io.IOException;
 import java.net.ServerSocket;

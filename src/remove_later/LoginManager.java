@@ -1,8 +1,6 @@
-package managers;
+package remove_later;
 
-import common.Observer;
 import player.Player;
-import player.Players;
 
 import java.io.BufferedReader;
 import java.io.PrintWriter;

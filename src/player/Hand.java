@@ -1,20 +1,21 @@
-package common;
+package player;
 
-import table.Card;
+import common.Card;
+import common.HandRank;
 
 public class Hand
 {
 
     private Card card1;
     private Card card2;
-    private Ranks rank;
+    private HandRank rank;
 
 
     public Hand(Card c1, Card c2)
     {
         card1 = c1;
         card2 = c2;
-        rank = Ranks.NOTHING;
+        rank = HandRank.NOTHING;
     }
 
 
@@ -30,13 +31,13 @@ public class Hand
     }
 
 
-    public void setRank(Ranks playerRank)
+    public void setRank(HandRank playerRank)
     {
         rank = playerRank;
     }
 
 
-    public Ranks getRank()
+    public HandRank getRank()
     {
         return rank;
     }

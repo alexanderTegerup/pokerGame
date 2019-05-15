@@ -1,4 +1,4 @@
-package common;
+package remove_later;
 
 /**
  * subject interface implemented for adding and removing players (observers) from the poker game
