@@ -1,8 +1,8 @@
-package game;
+package calculations;
 
-import common.Card;
-import common.HandRank;
-import player.Hand;
+import common.Hand;
+import common.Ranks;
+import table.Card;
 
 /**
  * <h1> Class that determines which player who has the best poker hand </h1>
@@ -42,7 +42,7 @@ public class PokerRules
 
 
     /** The rank of the cards that are on the table. */
-    private common.HandRank tableCardRank;
+    private common.Ranks tableCardRank;
     /** The number of players participating in the game. */
     private int numberOfPlayers;
     /** The cards that lie on the table. */
@@ -85,9 +85,9 @@ public class PokerRules
         /* Set the best combination each player can have with their hands. */
         setPlayersBestRanking();
 
-        common.HandRank rankPlayer;
+        common.Ranks rankPlayer;
         int playerWithBestHand = -1; // Make sure we don't get null at player zero
-        common.HandRank highestRank = common.HandRank.NOTHING;
+        common.Ranks highestRank = common.Ranks.NOTHING;
         for (int iPlayer = 0; iPlayer < numberOfPlayers; iPlayer++)
         {
             if (arrayWithHands[iPlayer] != null)
@@ -162,8 +162,8 @@ public class PokerRules
     private void setPlayersBestRanking()
     {
 
-        common.HandRank rankPlayer;
-        common.HandRank bestCombination;
+        common.Ranks rankPlayer;
+        common.Ranks bestCombination;
         Card[] cardCombination = new Card[5];
 
         /* Decide the best combination each player can get */
@@ -171,7 +171,7 @@ public class PokerRules
         {
             if (arrayWithHands[indexPlayer] != null)
             {
-                bestCombination = common.HandRank.NOTHING;
+                bestCombination = common.Ranks.NOTHING;
                 for (int i = 0; i < 20; i++)
                 {
 
@@ -231,7 +231,7 @@ public class PokerRules
                 else
                 {
                     arrayWithHands[indexPlayer].setRank(tableCardRank);
-                    if ((common.HandRank.STRAIGHT == tableCardRank) &&
+                    if ((common.Ranks.STRAIGHT == tableCardRank) &&
                             (highestCardStraight[indexPlayer].getRank().ordinal() <
                                     highestCardStraight[numberOfPlayers].getRank().ordinal()))
                     {
@@ -248,10 +248,10 @@ public class PokerRules
      * @param indexPlayer The index of the player the five cards belongs to.
      * @return The highest ranking of the five cards given as an input.
      */
-    private common.HandRank determineHandRanking(Card[] fiveCards, int indexPlayer)
+    private common.Ranks determineHandRanking(Card[] fiveCards, int indexPlayer)
     {
 
-        common.HandRank rankCards;
+        common.Ranks rankCards;
 
         /* Sort the cards so that checkStraight, checkFullHouse,
         checkThreeOfAKind, checkTwoPair and checkPair will work */
@@ -259,39 +259,39 @@ public class PokerRules
 
         if (checkStraight(fiveCards, indexPlayer) && checkFlush(fiveCards))
         {
-            rankCards = common.HandRank.STRAIGHT_FLUSH;
+            rankCards = common.Ranks.STRAIGHT_FLUSH;
         }
         else if (checkFourOfAKind(fiveCards))
         {
-            rankCards = common.HandRank.FOUR_OF_A_KIND;
+            rankCards = common.Ranks.FOUR_OF_A_KIND;
         }
         else if (checkFullHouse(fiveCards))
         {
-            rankCards = common.HandRank.FULL_HOUSE;
+            rankCards = common.Ranks.FULL_HOUSE;
         }
         else if (checkFlush(fiveCards))
         {
-            rankCards = common.HandRank.FLUSH;
+            rankCards = common.Ranks.FLUSH;
         }
         else if (checkStraight(fiveCards, indexPlayer))
         {
-            rankCards = common.HandRank.STRAIGHT;
+            rankCards = common.Ranks.STRAIGHT;
         }
         else if (checkThreeOfAKind(fiveCards))
         {
-            rankCards = common.HandRank.THREE_OF_A_KIND;
+            rankCards = common.Ranks.THREE_OF_A_KIND;
         }
         else if (checkTwoPair(fiveCards))
         {
-            rankCards = common.HandRank.TWO_PAIR;
+            rankCards = common.Ranks.TWO_PAIR;
         }
         else if (checkPair(fiveCards))
         {
-            rankCards = common.HandRank.PAIR;
+            rankCards = common.Ranks.PAIR;
         }
         else
         {
-            rankCards = common.HandRank.NOTHING;
+            rankCards = common.Ranks.NOTHING;
         }
 
         return rankCards;

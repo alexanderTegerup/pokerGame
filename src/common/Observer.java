@@ -1,10 +1,9 @@
-package remove_later;
+package common;
 
 import java.io.BufferedReader;
 import java.util.ArrayList;
 
-import common.Card;
-import common.States;
+import table.Card;
 
 /**
  * Observer interface for notifying observers when a change occurs

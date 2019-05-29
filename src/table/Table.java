@@ -1,7 +1,4 @@
-package remove_later;
-
-import common.Card;
-import game.Deck;
+package table;
 
 /**
  * <h1> The poker table </h1>

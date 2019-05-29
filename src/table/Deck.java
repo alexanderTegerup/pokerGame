@@ -1,11 +1,7 @@
-package game;
+package table;
 
 import java.util.ArrayList;
 import java.util.Collections;
-
-import common.Card;
-import common.Card.Rank;
-import common.Card.Suit;
 
 /**
  * <h1> Class which generates a deck </h1>
