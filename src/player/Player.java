@@ -4,7 +4,7 @@ import java.util.IllegalFormatException;
 import java.util.Scanner;
 
 import common.Card;
-import common.States;
+import common.Moves;
 import remove_later.GameManager;
 
 
@@ -15,17 +15,15 @@ public class Player
     private String name;
     private double wealth;
     private int iD;
-    private States state;
-    
-    
-    
+    private Moves move;
+
 
     public Player(String playerName, double playerWealth, int playerID)
     {
         name = playerName;
         wealth = playerWealth;
         iD = playerID;
-        state = States.WAITING; // Ta bort denna state?
+        move = Moves.WAITING; // Ta bort denna state?
         
     }
 
@@ -65,9 +63,9 @@ public class Player
      *
      * @return state - Player's current/selected move e.g. FOLD, CALL...
      */
-    public States getState()
+    public Moves getMove()
     {
-        return state;
+        return move;
     }
 
 
@@ -76,25 +74,11 @@ public class Player
      *
      * @return observerID - Player's observerID used of the server to track the players in the game
      */
-    public int getObserverID()
+    public int getID()
     {
         return iD;
     }
-
-    /**
-     * receives two cards from the game manager to build a playing hand
-     *
-     * @param card1
-     * @param card2
-     */
-    public void dealCards(Card card1, Card card2)
-    {
-        hand = new Hand(card1, card2);
-
-        System.out.println(name);
-        System.out.println("Card 1: " + hand.getCard1().getRank() + " " + hand.getCard1().getSuit());
-        System.out.println("Card 2: " + hand.getCard2().getRank() + " " + hand.getCard2().getSuit() + "\n");
-    }
+    
 
     /**
      * receive information on which player played what move
@@ -102,7 +86,7 @@ public class Player
      * @param playerName
      * @param move
      */
-    public void updateLastPlayersMove(String playerName, States move)
+    public void logPlayersMove(String playerName, Moves move)
     {
         System.out.println("Player " + playerName + " did " + move);
     }
@@ -116,7 +100,7 @@ public class Player
      *                    player, reported from the server
      * @param callCost    - The minimum amount of chips needed to CALL
      */
-    public void updateTurnAndOptions(int playerID, String playerName, States minReqState, double callCost)
+    public void updateTurnAndOptions(int playerID, String playerName, Moves minReqState, double callCost)
     {
 
         Scanner stateScan = new Scanner(System.in);
@@ -124,11 +108,11 @@ public class Player
 
         double playerBet = 0;
 
-        if (state == States.BIG)
+        if (move == Moves.BIG)
         {
             playerBet = GameManager.bigblind;
         }
-        if (state == States.SMALL)
+        if (move == Moves.SMALL)
         {
             playerBet = GameManager.smallblind;
         }
@@ -142,19 +126,19 @@ public class Player
             switch (minReqState)
             {
                 case CHECK:
-                    System.out.println("You can " + States.FOLD + " " + States.CHECK + " " + States.RAISE + " " + States.ALL_IN);
+                    System.out.println("You can " + Moves.FOLD + " " + Moves.CHECK + " " + Moves.RAISE + " " + Moves.ALL_IN);
                     break;
                 case RAISE:
-                    System.out.println("You can " + States.FOLD + " " + States.CALL + " " + States.RAISE + " " + States.ALL_IN);
+                    System.out.println("You can " + Moves.FOLD + " " + Moves.CALL + " " + Moves.RAISE + " " + Moves.ALL_IN);
                     break;
                 case ALL_IN:
-                    System.out.println("You can " + States.FOLD + " " + States.CALL + " " + States.RAISE + " " + States.ALL_IN);
+                    System.out.println("You can " + Moves.FOLD + " " + Moves.CALL + " " + Moves.RAISE + " " + Moves.ALL_IN);
             }
 
             String playerMove = "";
             int rightResponse = 0;
 
-            if (minReqState != States.BIG && minReqState != States.SMALL)
+            if (minReqState != Moves.BIG && minReqState != Moves.SMALL)
             {
                 while (rightResponse == 0)
                 {
@@ -182,15 +166,15 @@ public class Player
                     {
 
                         case "FOLD":
-                            state = States.FOLD;
+                            move = Moves.FOLD;
                             bet(playerBet);
                             rightResponse = 1;
                             break;
 
                         case "CHECK":
-                            if (minReqState == States.CHECK)
+                            if (minReqState == Moves.CHECK)
                             {
-                                state = States.CHECK;
+                                move = Moves.CHECK;
                                 bet(playerBet);
                                 rightResponse = 1;
                             }
@@ -202,20 +186,20 @@ public class Player
 
 
                         case "CALL":
-                            if ((minReqState == States.BIG)    ||
-                                (minReqState == States.CALL)   ||
-                                (minReqState == States.RAISE)  ||
-                                (minReqState == States.ALL_IN) )
+                            if ((minReqState == Moves.BIG)    ||
+                                (minReqState == Moves.CALL)   ||
+                                (minReqState == Moves.RAISE)  ||
+                                (minReqState == Moves.ALL_IN) )
                             {
 
                                 if (wealth > callCost)
                                 {
-                                    state = States.CALL;
+                                    move = Moves.CALL;
                                     playerBet = callCost;
                                 }
                                 else if (wealth <= callCost)
                                 {
-                                    state = States.ALL_IN;
+                                    move = Moves.ALL_IN;
                                     playerBet = wealth;
                                 }
                                 bet(callCost);
@@ -228,7 +212,7 @@ public class Player
                             break;
 
                         case "RAISE":
-                            state = States.RAISE;
+                            move = Moves.RAISE;
                             System.out.println("How much do you want to bet?");
                             raise = raiseScan.nextDouble();
                             if (wealth > (callCost + raise))
@@ -237,7 +221,7 @@ public class Player
                             }
                             else if (wealth <= (callCost + raise))
                             {
-                                state = States.ALL_IN;
+                                move = Moves.ALL_IN;
                                 playerBet = wealth;
                             }
                             bet(playerBet);
@@ -245,7 +229,7 @@ public class Player
                             break;
 
                         case "ALL_IN":
-                            state = States.ALL_IN;
+                            move = Moves.ALL_IN;
                             playerBet = wealth;
                             bet(playerBet);
                             rightResponse = 1;
@@ -281,14 +265,14 @@ public class Player
     {
         if (bigID == iD)
         {
-            state = States.BIG;
+            move = Moves.BIG;
 //            Gamemanager.big = big;
 //			bet(big);
         }
         else if (smallID == iD)
         {
  //           smallB = small;
-            state = States.SMALL;
+            move = Moves.SMALL;
 //			bet(small);
         }
 
@@ -324,13 +308,13 @@ public class Player
     {
         if (wealth >= playerBet)
         {
-            GameManager.severUpdatePot(iD, name, playerBet, state);
+            GameManager.severUpdatePot(iD, name, playerBet, move);
             wealth -= playerBet;
         }
         else
         {
             //Player goes ALL_IN if chips(wealth) are not enough to call or raise
-            GameManager.severUpdatePot(iD, name, wealth, States.ALL_IN);
+            GameManager.severUpdatePot(iD, name, wealth, Moves.ALL_IN);
             wealth = 0;
         }
     }
@@ -353,7 +337,7 @@ public class Player
      */
     public void foldRequestFromServer()
     {
-        state = States.FOLD;
+        move = Moves.FOLD;
     }
 
 }

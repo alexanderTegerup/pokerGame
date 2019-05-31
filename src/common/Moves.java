@@ -1,9 +1,9 @@
 package common;
 
 /**
- * Enum of different States in a pokergame
+ * Enum of different Moves player can do
  */
-public enum States
+public enum Moves
 {
     WAITING,
     GO,

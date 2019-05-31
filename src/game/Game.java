@@ -3,12 +3,15 @@ package game;
 import player.Hand;
 //import common.*;
 import player.Player;
+import remove_later.Observer;
+import remove_later.Table;
 
 import java.util.ArrayList;
 //import java.util.Arrays;
 import java.util.Scanner;
 
 import common.Card;
+import common.Moves;
 
 public class Game
 {
@@ -39,11 +42,215 @@ public class Game
 
     }
 
+    
+    /**
+     * receives two cards from the game manager to build a playing hand
+     * Should maybe be a part of play method?
+     * @param card1
+     * @param card2
+     */
+    public void dealCards(Card card1, Card card2)
+    {
+        hand = new Hand(card1, card2);
+
+        System.out.println(name);
+        System.out.println("Card 1: " + hand.getCard1().getRank() + " " + hand.getCard1().getSuit());
+        System.out.println("Card 2: " + hand.getCard2().getRank() + " " + hand.getCard2().getSuit() + "\n");
+    }
+    
+    
 
     private void play() 
     {
         // TODO Auto-generated method stub
-    }
+        // TO DO move "playingTheGame" into here
+
+
+        /**
+         * The game which is being playerBets between players through the server**/
+
+            boolean foldedWinner = false;
+            int foldedWinnerID = 999;
+
+            for (int p = 0; p < playerIDs.length; p++)
+            {
+                playerIDs[p] = players.get(p).getObserverID();
+                playerNames[p] = players.get(p).getUserName();
+                playersLeftInTheGame.add(players.get(p).getObserverID());
+            }
+
+            cleanStateArray();
+            cleanPlayedArray();
+
+            raise = smallblind;
+            table = new Table();
+
+            updateDealerBigandSmall();
+            //dealHandsToPlayers();
+
+            while (round < 5)
+            {
+                newRound = false;
+
+                // Deal one or three cards to the table, depending on if it is the 
+                // flop, turn or the river.
+                if (round >= 2)
+                {
+                    table.dealCard();
+                    tableCards = table.showAllCards();
+                    int tmpAmount = table.returnNrOfCards();
+                    for (Observer player : players)
+                    {
+                        player.flipOfCardT(tableCards, tmpAmount);
+                    }
+                }
+                while
+                (playersession)
+                {
+
+                    if (allAreFoldedOrAllIn())
+                    {
+                        round++;
+                        break;
+                    }
+
+                    int exist = 0;
+                    int incFirstPlayer = 1;
+                    do
+                    {
+                        if (!playersLeftInTheGame.contains(playerIDs[(playerTurn % playerIDs.length)]))
+                        {
+                            playerTurn++;
+                        }
+                        else if (stateOfPlayersArr[playerIDs[(playerTurn % playerIDs.length)]] == Moves.FOLD ||
+                                 stateOfPlayersArr[playerIDs[(playerTurn % playerIDs.length)]] == Moves.ALL_IN)
+                        {
+                            playerTurn++;
+                        }
+                        else if (!playersLeftInTheGame.contains(playerIDs[((playerTurn + incFirstPlayer) % playerIDs.length)]))
+                        {
+                            incFirstPlayer++;
+                        }
+                        else if (stateOfPlayersArr[playerIDs[((playerTurn + incFirstPlayer) % playerIDs.length)]] == Moves.FOLD ||
+                                 stateOfPlayersArr[playerIDs[((playerTurn + incFirstPlayer) % playerIDs.length)]] == Moves.ALL_IN)
+                        {
+                            incFirstPlayer++;
+                        }
+                        else
+                        {
+                            playerTurn = (playerTurn % playerIDs.length);
+                            exist = 1;
+                        }
+                    }
+                    while (exist == 0);
+
+                    if (minimumState != Moves.BIG && minimumState != Moves.SMALL)
+                    {
+                        if (playerBets[playerIDs[(playerTurn + incFirstPlayer) % playerIDs.length]] == raise &&
+                            playerBets[playerIDs[playerTurn % playerIDs.length]]                    == raise )
+                        {
+                            minimumState = Moves.CHECK;
+                        }
+                    }
+                    for (Observer observer : players)
+                    {
+                        observer.updateTurnAndOptions(playerIDs[playerTurn % playerIDs.length],
+                                                      playerNames[playerIDs[playerTurn % playerIDs.length]],
+                                                      minimumState,
+                                                      (raise - (playerBets[playerIDs[playerTurn % playerIDs.length]])));
+                    }
+                    //saved for implementation of client-server solution
+                    /*   for (int i = 0; i < 10; i++) {
+                        if (!playerHavePlayed && i < 10) {
+                            try {
+                                TimeUnit.SECONDS.sleep(1);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            } 
+                        } else if (!playerHavePlayed) {
+                            players.get((playerTurn + 1) % amountOfPlayers).foldRequestFromServer();
+                            foldedPlayers[((playerTurn + 1) % amountOfPlayers)] = true;
+                            playerTurn += 1;
+                        } else {
+                            if (minimumState == States.BIG) {
+                                minimumState = States.SMALL;
+                                playerTurn += 1;
+                            } else if (minimumState == States.SMALL) {
+                                minimumState = States.RAISE;
+                                dealHandsToPlayers();
+                            } else {
+                                playerTurn += 1;
+                            }
+                            break;
+                        }
+                    }*/
+
+                    if (playerHavePlayed)
+                    {
+                        if (minimumState == Moves.SMALL)
+                        {
+                            minimumState = Moves.BIG;
+                            playerTurn += 1;
+                        }
+                        else if (minimumState == Moves.BIG)
+                        {
+                            minimumState = Moves.RAISE;
+                            dealHandsToPlayers();
+                            playerTurn += 1;
+                        }
+                        else
+                        {
+                            playerTurn += 1;
+                        }
+
+                        playerHavePlayed = false;
+
+                        if (newRound)
+                        {
+                            round++;
+                            if (round == 5)
+                            {
+                                newRound = false;
+                            }
+                            else
+                            {
+                                int notFolded = 0;
+                                for (int j = 0; j < playerIDs.length; j++)
+                                {
+                                    if (stateOfPlayersArr[playerIDs[j]] != Moves.FOLD)
+                                    {
+                                        notFolded++;
+                                        foldedWinnerID = playerIDs[j];
+                                    }
+                                }
+                                if (notFolded == 1)
+                                {
+                                    newRound = false;
+                                    round = 5;
+                                    foldedWinner = true;
+                                }
+                            }
+                            if (round > 1)
+                            {
+                                playerTurn = initialSmallID;
+                            }
+
+                            resetNotFoldedOrAllInArray();
+                            break;
+                        }
+                    }
+                }
+            }
+            if (newRound == false && foldedWinner == false)
+            {
+                calculateWinnerAndPot();
+            }
+            else if (newRound == false && foldedWinner == true)
+            {
+                calculateWinnerFoldPot(foldedWinnerID);
+            }
+        }
+        
 
 
     /**
@@ -232,7 +439,253 @@ public class Game
         }
     }
 
+
+    
+    
+    /**
+     * Decide who wins and how much if rest of players have folded
+     *
+     * @param ID
+     */
+    private void calculateWinnerFoldPot(int ID)
+    {
+        String[] winnerName = new String[1];
+        int[] winnerId = new int[1];
+        winnerId[0] = ID;
+        winnerName[0] = playerNames[winnerId[0]];
+
+        for (Observer player : players)
+        {
+            player.updateWinner(winnerId, winnerName, pot);
+        }
+    }
+    
+    
+    /**
+     * Calculation of who wins and how much based on the information sent to the PokerRules class
+     */
+    private void calculateWinnerAndPot()
+    {
+
+        for (Observer player : players)
+        {
+            player.getHand();
+        }
+
+        int winnerId[] = pokerRules.determineBestHand(playerHands, tableCards);
+        String[] winnerNames = new String[winnerId.length];
+
+        for (int i = 0; i < winnerId.length; i++)
+        {
+            winnerNames[i] = playerNames[winnerId[i]];
+        }
+
+        for (Observer player : players)
+        {
+            player.updateWinner(winnerId, winnerNames, pot);
+        }
+    }
+    
+    
+    /**
+     * Notify players at the beginning of the round who will act as dealer, small blind or big blind
+     */
+    private void notifyPlayerMoves(){
+        //TO DO
+    }
+    
+    /**
+     * Update the collected pot and minimum required state with bets collected from a players move
+     *
+     * @param ID     - of specific player
+     * @param player - name of specific player who made a move
+     * @param bets   - bets of player who made a move
+     * @param move   - state of the player which made a move
+     */
+    public static void severUpdatePot(int ID, String player, double bets, Moves move)
+    {
+        //pot += bets;
+
+        System.out.println(ID + " " + player + " " + bets + " " + move);
+
+        playerHavePlayed = true;
+
+        //if player choose to raise
+        if (move == Moves.RAISE)
+        {
+            if (raise < (playerBets[ID] + bets))
+            {
+                raise = (playerBets[ID] + bets);
+                pot += bets;
+                stateOfPlayersArr[ID] = Moves.RAISE;
+                minimumState = Moves.RAISE;
+                playerBets[ID] += bets;
+            }
+
+            if (initialBigID == ID)
+            {
+                initialBigID = 999;
+            }
+            //if player choose to go allin
+        }
+        else if (move == Moves.ALL_IN)
+        {
+            pot += bets;
+            playerBets[ID] += bets;
+            stateOfPlayersArr[ID] = Moves.ALL_IN;
+            raise = (playerBets[ID] + bets);
+            int count = 0;
+            for (int i = 0; i < playerBets.length; i++)
+            {
+                if (playerBets[i] == raise || stateOfPlayersArr[i] == Moves.FOLD || stateOfPlayersArr[i] == Moves.ALL_IN)
+                {
+                    if (stateOfPlayersArr[i] != Moves.GO)
+                    {
+                        count++;
+                    }
+                }
+            }
+
+            if (count == amountOfPlayers)
+            {
+                newRound = true;
+            }
+
+            if (initialBigID == ID)
+            {
+                initialBigID = 999;
+            }
+            //if player choose to call
+        }
+        else if (move == Moves.CALL)
+        {
+            if (raise == (playerBets[ID] + bets))
+            {
+                pot += bets;
+                playerBets[ID] += bets;
+                stateOfPlayersArr[ID] = Moves.CALL;
+                int count = 0;
+                for (int j = 0; j < playerBets.length; j++)
+                {
+                    if (playerBets[j] == raise || stateOfPlayersArr[j] == Moves.FOLD || stateOfPlayersArr[j] == Moves.ALL_IN)
+                    {
+                        if (stateOfPlayersArr[j] != Moves.GO)
+                        {
+                            count++;
+                        }
+                    }
+                }
+
+                if (count == amountOfPlayers)
+                {
+                    newRound = true;
+                }
+
+                if (initialBigID == ID)
+                {
+                    initialBigID = 999;
+                }
+            }
+
+            //if player choose to check
+        }
+        else if (move == Moves.CHECK)
+        {
+            int count = 0;
+            minimumState = Moves.CHECK;
+            stateOfPlayersArr[ID] = Moves.CHECK;
+            if (initialBigID == ID)
+            {
+                initialBigID = 999;
+                newRound = true;
+            }
+            for (int j = 0; j < playerBets.length; j++)
+            {
+                if (stateOfPlayersArr[j] == Moves.GO)
+                {
+                    //do nothing
+                }
+                else if (playerBets[j] == raise || stateOfPlayersArr[j] == Moves.FOLD || stateOfPlayersArr[j] == Moves.ALL_IN)
+                {
+                    if (stateOfPlayersArr[j] != Moves.GO)
+                    {
+                        count++;
+                    }
+                }
+            }
+            if (count == amountOfPlayers)
+            {
+                newRound = true;
+            }
+
+            ////if player choose to fold
+        }
+        else if (move == Moves.FOLD)
+        {
+            int count = 0;
+            stateOfPlayersArr[ID] = Moves.FOLD;
+            if (initialBigID == ID)
+            {
+                initialBigID = 999;
+            }
+            for (int j = 0; j < playerBets.length; j++)
+            {
+                if (playerBets[j] == raise || stateOfPlayersArr[j] == Moves.FOLD || stateOfPlayersArr[j] == Moves.ALL_IN)
+                {
+                    if (stateOfPlayersArr[j] != Moves.GO)
+                    {
+                        count++;
+                    }
+                }
+                System.out.println(playerBets[j] + " " + stateOfPlayersArr[j] + " " + raise);
+            }
+
+            if (count == amountOfPlayers)
+            {
+                newRound = true;
+            }
+            //if the player is bigblind and bets for the first time
+        }
+        else if (move == Moves.BIG)
+        {
+            pot += bets;
+            playerBets[ID] += bets;
+            raise = bets;
+            newRound = true;
+
+            //if the player is smallblind and bets for the first time
+        }
+        else if (move == Moves.SMALL)
+        {
+            pot += bets;
+            playerBets[ID] += bets;
+            initialSmallID = ID;
+        }
+
+        for (Observer observer : players)
+        {
+            observer.updateLastPlayersMove(player, move);
+        }
+
+        int count = 1;
+
+        for (int i = 0; i < playerBets.length; i++)
+        {
+            if (stateOfPlayersArr[i] == Moves.FOLD)
+            {
+                count++;
+            }
+        }
+
+        if (count == amountOfPlayers)
+        {
+            newRound = true;
+        }
+    }
+
 }
+
+
 
 
 public static void main(String[] args)
