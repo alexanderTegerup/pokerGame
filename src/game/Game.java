@@ -1,6 +1,7 @@
 package game;
 
-import player.Hand;
+import common.PlayerMove;
+import player.HoleCards;
 //import common.*;
 import player.Player;
 import remove_later.Observer;
@@ -11,7 +12,6 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 import common.Card;
-import common.Moves;
 
 public class Game
 {
@@ -51,7 +51,7 @@ public class Game
      */
     public void dealCards(Card card1, Card card2)
     {
-        hand = new Hand(card1, card2);
+        hand = new HoleCards(card1, card2);
 
         System.out.println(name);
         System.out.println("Card 1: " + hand.getCard1().getRank() + " " + hand.getCard1().getSuit());
@@ -75,7 +75,7 @@ public class Game
             for (int p = 0; p < playerIDs.length; p++)
             {
                 playerIDs[p] = players.get(p).getObserverID();
-                playerNames[p] = players.get(p).getUserName();
+                playerNames[p] = players.get(p).getName();
                 playersLeftInTheGame.add(players.get(p).getObserverID());
             }
 
@@ -122,8 +122,8 @@ public class Game
                         {
                             playerTurn++;
                         }
-                        else if (stateOfPlayersArr[playerIDs[(playerTurn % playerIDs.length)]] == Moves.FOLD ||
-                                 stateOfPlayersArr[playerIDs[(playerTurn % playerIDs.length)]] == Moves.ALL_IN)
+                        else if (stateOfPlayersArr[playerIDs[(playerTurn % playerIDs.length)]] == PlayerMove.FOLD ||
+                                 stateOfPlayersArr[playerIDs[(playerTurn % playerIDs.length)]] == PlayerMove.ALL_IN)
                         {
                             playerTurn++;
                         }
@@ -131,8 +131,8 @@ public class Game
                         {
                             incFirstPlayer++;
                         }
-                        else if (stateOfPlayersArr[playerIDs[((playerTurn + incFirstPlayer) % playerIDs.length)]] == Moves.FOLD ||
-                                 stateOfPlayersArr[playerIDs[((playerTurn + incFirstPlayer) % playerIDs.length)]] == Moves.ALL_IN)
+                        else if (stateOfPlayersArr[playerIDs[((playerTurn + incFirstPlayer) % playerIDs.length)]] == PlayerMove.FOLD ||
+                                 stateOfPlayersArr[playerIDs[((playerTurn + incFirstPlayer) % playerIDs.length)]] == PlayerMove.ALL_IN)
                         {
                             incFirstPlayer++;
                         }
@@ -144,12 +144,12 @@ public class Game
                     }
                     while (exist == 0);
 
-                    if (minimumState != Moves.BIG && minimumState != Moves.SMALL)
+                    if (minimumState != PlayerMove.BIG && minimumState != PlayerMove.SMALL)
                     {
                         if (playerBets[playerIDs[(playerTurn + incFirstPlayer) % playerIDs.length]] == raise &&
                             playerBets[playerIDs[playerTurn % playerIDs.length]]                    == raise )
                         {
-                            minimumState = Moves.CHECK;
+                            minimumState = PlayerMove.CHECK;
                         }
                     }
                     for (Observer observer : players)
@@ -187,14 +187,14 @@ public class Game
 
                     if (playerHavePlayed)
                     {
-                        if (minimumState == Moves.SMALL)
+                        if (minimumState == PlayerMove.SMALL)
                         {
-                            minimumState = Moves.BIG;
+                            minimumState = PlayerMove.BIG;
                             playerTurn += 1;
                         }
-                        else if (minimumState == Moves.BIG)
+                        else if (minimumState == PlayerMove.BIG)
                         {
-                            minimumState = Moves.RAISE;
+                            minimumState = PlayerMove.RAISE;
                             dealHandsToPlayers();
                             playerTurn += 1;
                         }
@@ -217,7 +217,7 @@ public class Game
                                 int notFolded = 0;
                                 for (int j = 0; j < playerIDs.length; j++)
                                 {
-                                    if (stateOfPlayersArr[playerIDs[j]] != Moves.FOLD)
+                                    if (stateOfPlayersArr[playerIDs[j]] != PlayerMove.FOLD)
                                     {
                                         notFolded++;
                                         foldedWinnerID = playerIDs[j];
@@ -258,7 +258,7 @@ public class Game
      *
      * @return The ID(s) of a player/players with the best hand.
      */
-    public int[] determineBestHand(Hand[] arrHands, Card[] tableCards)
+    public int[] determineBestHand(HoleCards[] arrHands, Card[] tableCards)
     {
         /* Preparations */
         cardsOnTable = tableCards;
@@ -282,7 +282,7 @@ public class Game
         common.HandRank highestRank = common.HandRank.NOTHING;
         for (int iPlayer = 0; iPlayer < numberOfPlayers; iPlayer++)
         {
-                rankPlayer = players.get(iPlayer).getHand().getRank();
+                rankPlayer = players.get(iPlayer).getHoleCards().getRank();
                 /* Save the player with the highest rank this far in the for-loop */
                 if (rankPlayer.ordinal() > highestRank.ordinal())
                 {
@@ -296,31 +296,31 @@ public class Game
                     {
                     case NOTHING:
                         playerWithBestHand = decideHighestCard(playerWithBestHand, 
-                                                               players.get(playerWithBestHand).getHand(),
+                                                               players.get(playerWithBestHand).getHoleCards(),
                                                                iPlayer, 
-                                                               players.get(iPlayer).getHand());
+                                                               players.get(iPlayer).getHoleCards());
                         break;
 
                     case PAIR:
 
                         playerWithBestHand = decideBestPair(playerWithBestHand, 
-                                                            players.get(playerWithBestHand).getHand(),
+                                                            players.get(playerWithBestHand).getHoleCards(),
                                                             iPlayer, 
-                                                            players.get(iPlayer).getHand());
+                                                            players.get(iPlayer).getHoleCards());
                         break;
 
                     case TWO_PAIR:
                         playerWithBestHand = decideBestTwoPair(playerWithBestHand,
-                                                               players.get(playerWithBestHand).getHand(),
+                                                               players.get(playerWithBestHand).getHoleCards(),
                                                                iPlayer, 
-                                                               players.get(iPlayer).getHand());
+                                                               players.get(iPlayer).getHoleCards());
                         break;
 
                     case THREE_OF_A_KIND:
                         playerWithBestHand = decideBestThreeOfAKind(playerWithBestHand,
-                                                                    players.get(playerWithBestHand).getHand(),
+                                                                    players.get(playerWithBestHand).getHoleCards(),
                                                                     iPlayer, 
-                                                                    players.get(iPlayer).getHand());
+                                                                    players.get(iPlayer).getHoleCards());
                         break;
 
                     case STRAIGHT:
@@ -336,7 +336,7 @@ public class Game
                         break;
                     }
                 }
-                System.out.println("player " + iPlayer + ": " + players.get(iPlayer).getHand().getRank());
+                System.out.println("player " + iPlayer + ": " + players.get(iPlayer).getHoleCards().getRank());
         }
 
         System.out.println("The player with the best hand is player " + playerWithBestHand);
@@ -502,7 +502,7 @@ public class Game
      * @param bets   - bets of player who made a move
      * @param move   - state of the player which made a move
      */
-    public static void severUpdatePot(int ID, String player, double bets, Moves move)
+    public static void severUpdatePot(int ID, String player, double bets, PlayerMove move)
     {
         //pot += bets;
 
@@ -511,14 +511,14 @@ public class Game
         playerHavePlayed = true;
 
         //if player choose to raise
-        if (move == Moves.RAISE)
+        if (move == PlayerMove.RAISE)
         {
             if (raise < (playerBets[ID] + bets))
             {
                 raise = (playerBets[ID] + bets);
                 pot += bets;
-                stateOfPlayersArr[ID] = Moves.RAISE;
-                minimumState = Moves.RAISE;
+                stateOfPlayersArr[ID] = PlayerMove.RAISE;
+                minimumState = PlayerMove.RAISE;
                 playerBets[ID] += bets;
             }
 
@@ -528,18 +528,18 @@ public class Game
             }
             //if player choose to go allin
         }
-        else if (move == Moves.ALL_IN)
+        else if (move == PlayerMove.ALL_IN)
         {
             pot += bets;
             playerBets[ID] += bets;
-            stateOfPlayersArr[ID] = Moves.ALL_IN;
+            stateOfPlayersArr[ID] = PlayerMove.ALL_IN;
             raise = (playerBets[ID] + bets);
             int count = 0;
             for (int i = 0; i < playerBets.length; i++)
             {
-                if (playerBets[i] == raise || stateOfPlayersArr[i] == Moves.FOLD || stateOfPlayersArr[i] == Moves.ALL_IN)
+                if (playerBets[i] == raise || stateOfPlayersArr[i] == PlayerMove.FOLD || stateOfPlayersArr[i] == PlayerMove.ALL_IN)
                 {
-                    if (stateOfPlayersArr[i] != Moves.GO)
+                    if (stateOfPlayersArr[i] != PlayerMove.GO)
                     {
                         count++;
                     }
@@ -557,19 +557,19 @@ public class Game
             }
             //if player choose to call
         }
-        else if (move == Moves.CALL)
+        else if (move == PlayerMove.CALL)
         {
             if (raise == (playerBets[ID] + bets))
             {
                 pot += bets;
                 playerBets[ID] += bets;
-                stateOfPlayersArr[ID] = Moves.CALL;
+                stateOfPlayersArr[ID] = PlayerMove.CALL;
                 int count = 0;
                 for (int j = 0; j < playerBets.length; j++)
                 {
-                    if (playerBets[j] == raise || stateOfPlayersArr[j] == Moves.FOLD || stateOfPlayersArr[j] == Moves.ALL_IN)
+                    if (playerBets[j] == raise || stateOfPlayersArr[j] == PlayerMove.FOLD || stateOfPlayersArr[j] == PlayerMove.ALL_IN)
                     {
-                        if (stateOfPlayersArr[j] != Moves.GO)
+                        if (stateOfPlayersArr[j] != PlayerMove.GO)
                         {
                             count++;
                         }
@@ -589,11 +589,11 @@ public class Game
 
             //if player choose to check
         }
-        else if (move == Moves.CHECK)
+        else if (move == PlayerMove.CHECK)
         {
             int count = 0;
-            minimumState = Moves.CHECK;
-            stateOfPlayersArr[ID] = Moves.CHECK;
+            minimumState = PlayerMove.CHECK;
+            stateOfPlayersArr[ID] = PlayerMove.CHECK;
             if (initialBigID == ID)
             {
                 initialBigID = 999;
@@ -601,13 +601,13 @@ public class Game
             }
             for (int j = 0; j < playerBets.length; j++)
             {
-                if (stateOfPlayersArr[j] == Moves.GO)
+                if (stateOfPlayersArr[j] == PlayerMove.GO)
                 {
                     //do nothing
                 }
-                else if (playerBets[j] == raise || stateOfPlayersArr[j] == Moves.FOLD || stateOfPlayersArr[j] == Moves.ALL_IN)
+                else if (playerBets[j] == raise || stateOfPlayersArr[j] == PlayerMove.FOLD || stateOfPlayersArr[j] == PlayerMove.ALL_IN)
                 {
-                    if (stateOfPlayersArr[j] != Moves.GO)
+                    if (stateOfPlayersArr[j] != PlayerMove.GO)
                     {
                         count++;
                     }
@@ -620,19 +620,19 @@ public class Game
 
             ////if player choose to fold
         }
-        else if (move == Moves.FOLD)
+        else if (move == PlayerMove.FOLD)
         {
             int count = 0;
-            stateOfPlayersArr[ID] = Moves.FOLD;
+            stateOfPlayersArr[ID] = PlayerMove.FOLD;
             if (initialBigID == ID)
             {
                 initialBigID = 999;
             }
             for (int j = 0; j < playerBets.length; j++)
             {
-                if (playerBets[j] == raise || stateOfPlayersArr[j] == Moves.FOLD || stateOfPlayersArr[j] == Moves.ALL_IN)
+                if (playerBets[j] == raise || stateOfPlayersArr[j] == PlayerMove.FOLD || stateOfPlayersArr[j] == PlayerMove.ALL_IN)
                 {
-                    if (stateOfPlayersArr[j] != Moves.GO)
+                    if (stateOfPlayersArr[j] != PlayerMove.GO)
                     {
                         count++;
                     }
@@ -646,7 +646,7 @@ public class Game
             }
             //if the player is bigblind and bets for the first time
         }
-        else if (move == Moves.BIG)
+        else if (move == PlayerMove.BIG)
         {
             pot += bets;
             playerBets[ID] += bets;
@@ -655,7 +655,7 @@ public class Game
 
             //if the player is smallblind and bets for the first time
         }
-        else if (move == Moves.SMALL)
+        else if (move == PlayerMove.SMALL)
         {
             pot += bets;
             playerBets[ID] += bets;
@@ -671,7 +671,7 @@ public class Game
 
         for (int i = 0; i < playerBets.length; i++)
         {
-            if (stateOfPlayersArr[i] == Moves.FOLD)
+            if (stateOfPlayersArr[i] == PlayerMove.FOLD)
             {
                 count++;
             }

@@ -1,8 +1,7 @@
 package game;
 
 import common.Card;
-import common.HandRank;
-import player.Hand;
+import player.HoleCards;
 
 /**
  * <h1> Class that determines which player who has the best poker hand </h1>
@@ -48,7 +47,7 @@ public class PokerRules
     /** The cards that lie on the table. */
     private Card[] cardsOnTable;
     /** An array where every element consist of the two unique cards that are given to each player. */
-    private Hand[] arrayWithHands;
+    private HoleCards[] arrayWithHands;
 
     /** If a player gets a straight, the highest card that makes up that straight is saved in highestCardStraight. If
      * the cards on the table makes up a straight, the highest card of that straight is saved at the last index in
@@ -150,7 +149,7 @@ public class PokerRules
      * @param cardsOnTable The five cards that are on the table.
      * @return The sorted array of seven cards.
      */
-    private Card[] makeSortedArray7cards(Hand playersHand, Card[] cardsOnTable)
+    private Card[] makeSortedArray7cards(HoleCards playersHand, Card[] cardsOnTable)
     {
 
         Card[] hand = new Card[7];
@@ -178,7 +177,7 @@ public class PokerRules
      * @return The index of the player who has the highest card. If they both have the exact same rank of the cards -1
      * is returned.
      */
-    private int decideHighestCard(int indexPlayer1, Hand h1, int indexPlayer2, Hand h2)
+    private int decideHighestCard(int indexPlayer1, HoleCards h1, int indexPlayer2, HoleCards h2)
     {
 
         Card[] hand1;
@@ -213,7 +212,7 @@ public class PokerRules
      * @param h2           The hand the second player has.
      * @return The index of the player who has the best hand. If both hands have the exact same rank, -1 is returned.
      */
-    private int decideBestPair(int indexPlayer1, Hand h1, int indexPlayer2, Hand h2)
+    private int decideBestPair(int indexPlayer1, HoleCards h1, int indexPlayer2, HoleCards h2)
     {
         Card[] hand1;
         Card[] hand2;
@@ -305,7 +304,7 @@ public class PokerRules
      * @return The index of the player who has the best hand. If they both have the exact same rank of the cards -1 is
      * returned.
      */
-    private int decideBestTwoPair(int indexPlayer1, Hand h1, int indexPlayer2, Hand h2)
+    private int decideBestTwoPair(int indexPlayer1, HoleCards h1, int indexPlayer2, HoleCards h2)
     {
 
         Card[] hand1;
@@ -434,7 +433,7 @@ public class PokerRules
      * @return The index of the player who has the best hand. If they both have the exact same rank of the cards -1 is
      * returned.
      */
-    private int decideBestThreeOfAKind(int indexPlayer1, Hand h1, int indexPlayer2, Hand h2)
+    private int decideBestThreeOfAKind(int indexPlayer1, HoleCards h1, int indexPlayer2, HoleCards h2)
     {
 
         Card[] hand1;
@@ -713,7 +712,7 @@ public class PokerRules
 
         /*
         Card[] tableCards = new Card[5];
-        common.Hand[] arrHands = new Hand[2];
+        common.HoleCards[] arrHands = new HoleCards[2];
 
         tableCards[0] = new Card(Card.Suit.DIAMONDS, Card.Rank.SEVEN, null);
         tableCards[1] = new Card(Card.Suit.DIAMONDS, Card.Rank.SIX, null);
@@ -728,10 +727,10 @@ public class PokerRules
         Card p2c1 = new Card(Card.Suit.HEARTS, Card.Rank.TEN, null);
         Card p2c2 = new Card(Card.Suit.CLUBS, Card.Rank.EIGHT, null);
 
-        common.Hand hand1 = new Hand(p1c1, p1c2);
+        common.HoleCards hand1 = new HoleCards(p1c1, p1c2);
 
 
-        common.Hand hand2 = new Hand(p2c1, p2c2);
+        common.HoleCards hand2 = new HoleCards(p2c1, p2c2);
 
 
         arrHands[0] = hand1;

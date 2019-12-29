@@ -20,7 +20,7 @@ public class Card
         SPADES,
         HEARTS,
         DIAMONDS,
-        CLUBS;
+        CLUBS
     }
 
     public enum Rank
@@ -37,7 +37,7 @@ public class Card
         JACK,
         QUEEN,
         KING,
-        ACE;
+        ACE
     }
 
     /** The suit of the card */
