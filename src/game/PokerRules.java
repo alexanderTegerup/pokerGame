@@ -1,7 +1,7 @@
 package game;
 
 import common.Card;
-import player.HoleCards;
+import common.HoleCards;
 
 /**
  * <h1> Class that determines which player who has the best poker hand </h1>

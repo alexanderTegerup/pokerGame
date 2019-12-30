@@ -2,6 +2,7 @@ package player;
 
 import common.Blind;
 import common.Card;
+import common.HoleCards;
 
 
 public class Player {
@@ -21,23 +22,23 @@ public class Player {
     }
 
     /**
-     * Returns the hole cards of the player
+     * Returns the hole cards of the player.
      */
     public HoleCards getHoleCards() {
         return holeCards;
     }
 
     /**
-     * Sets the hole cards of the player
+     * Sets the hole cards of the player.
      */
     public void setHoleCards(Card card1, Card card2){
         holeCards = new HoleCards(card1, card2);
     }
 
     /**
-     * Get the players name
+     * Get the players name.
      *
-     * @return name - Player's Username
+     * @return name - Player's Username.
      */
     public String getName() {
         return name;
@@ -45,14 +46,17 @@ public class Player {
 
 
     /**
-     * Get the players Wealth
+     * Get the number of chips the player has.
      *
-     * @return chips Amount of player's current chips
+     * @return chips Amount of player's current chips.
      */
     public double getChips() {
         return chips;
     }
 
+    /**
+     * Give chips to the player.
+     */
     public void addChips(int newChips) {
 
         try {
@@ -65,6 +69,9 @@ public class Player {
         }
     }
 
+    /**
+     * Remove chips from the player.
+     */
     public void removeChips (int lostChips){
 
         try {
@@ -76,9 +83,9 @@ public class Player {
             System.out.println("Error: " + exc.getMessage());
         }
     }
-    
+
     /**
-     * Get the ID of the player
+     * Get the ID of the player.
      *
      * @return ID - Player's ID
      */
@@ -87,7 +94,7 @@ public class Player {
     }
 
     /**
-     * Get the blind of the player
+     * Get the blind of the player.
      *
      * @return blind - Player's blind
      */
@@ -95,7 +102,7 @@ public class Player {
         return blind;
     }
     /**
-     * Set the blind of the player
+     * Set the blind of the player.
      */
     public void setBlind (Blind playerBlind){
         blind = playerBlind;
