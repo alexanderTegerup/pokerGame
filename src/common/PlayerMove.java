@@ -9,5 +9,5 @@ public enum PlayerMove
     CHECK,
     CALL,
     RAISE,
-    ALL_IN
+    GO_ALL_IN
 }

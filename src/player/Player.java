@@ -1,24 +1,30 @@
 package player;
 
-import common.Blind;
-import common.Card;
-import common.HoleCards;
+import common.*;
 
 
 public class Player {
+
+    public Hand hand;
 
     private HoleCards holeCards;
     private String name;
     private int chips;
     private int id;
     private Blind blind;
+    private boolean dealer;
+    private PlayerState state;
 
 
     public Player(String playerName, int initChips, int playerID) {
         name = playerName;
         chips = initChips;
         id = playerID;
+        hand = new Hand();
+
         blind = Blind.NONE;
+        dealer = false;
+        state = PlayerState.MUST_MAKE_MOVE;
     }
 
     /**
@@ -50,7 +56,7 @@ public class Player {
      *
      * @return chips Amount of player's current chips.
      */
-    public double getChips() {
+    public double showChips() {
         return chips;
     }
 
@@ -107,5 +113,11 @@ public class Player {
     public void setBlind (Blind playerBlind){
         blind = playerBlind;
     }
+
+    public boolean isDealer(){ return dealer; }
+    public void setDealer(boolean deal){ dealer = deal; }
+
+    public PlayerState getState(){ return state; }
+    public void setState(PlayerState newState){ state = newState; }
 
 }
