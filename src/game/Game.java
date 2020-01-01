@@ -37,7 +37,7 @@ public class Game {
     int pot;
     int sidePot;
     private boolean gameFinished = false;
-    private boolean roundFinished = false;
+
 
     Deck deck;
     private PokerRules pokerRules;
@@ -94,6 +94,8 @@ public class Game {
             numberOfPlayers = players.size();
             dealHoleCards();
             dealCommunityCards();
+            moveBlinds();
+            updateDealer();
 
             /* Start a new round */
             playRound();
@@ -107,28 +109,47 @@ public class Game {
      */
     private void playRound() {
 
+        boolean roundFinished = false;
+        int[] winnerId;
+
         while (!roundFinished) {
 
             switch (stateOfPlayers) {
 
                 case PLAYERS_MAKING_MOVES:
                     makeMoves();
+                    stateOfPlayers = StateOfPlayers.MOVES_DONE;
                     break;
 
                 case MOVES_DONE:
                     showCommunityCards();
                     updateBettingRound();
+
+                    if (BettingRound.SHOWDOWN == bettingRound){
+                        stateOfPlayers = StateOfPlayers.ALL_PLAYERS_FINISHED;
+                    }
+                    else {
+                        stateOfPlayers = StateOfPlayers.PLAYERS_MAKING_MOVES;
+                    }
                     break;
 
                 case ALL_PLAYERS_FINISHED:
-                    pokerRules.setHandRank();
+
+                    for( Player player : players ){
+                        if( player.getState() == PlayerState.IN    ||
+                            player.getState() == PlayerState.ALL_IN )
+                        {
+                            setHand( player );
+                        }
+                    }
+
+                    winnerId = determineWinner();
+                    System.out.println("The winner is: " + winnerId[0]);
+                    roundFinished = true;
+
                     break;
-
             }
-
-            roundFinished = true;
         }
-
     }
 
 
@@ -140,14 +161,14 @@ public class Game {
         Card card1;
         Card card2;
         HoleCards cards;
-        for(int player=0; player < numberOfPlayers; player++)
+        for(Player player : players)
         {
             card1 = deck.getTopCard();
             card2 = deck.getTopCard();
-            players.get(player).setHoleCards(card1, card2);
+            player.setHoleCards(card1, card2);
 
-            cards = players.get(player).getHoleCards();
-            System.out.println("Player " + players.get(player).getName() + " has the cards: ");
+            cards = player.getHoleCards();
+            System.out.println("Player " + player.getName() + " has the cards: ");
             System.out.println("Card 1: " + cards.getCard1().getRank() + " " + cards.getCard1().getSuit());
             System.out.println("Card 2: " + cards.getCard2().getRank() + " " + cards.getCard2().getSuit() + "\n");
         }
@@ -169,27 +190,30 @@ public class Game {
         switch (bettingRound)
         {
             case FLOP:
-                System.out.println("--- The FLOP ---");
-                System.out.println("Cards on table: " );
+                System.out.println("\n--- The FLOP ---\n");
+                System.out.println("Cards on table: \n" );
                 for(int i=0; i<3; i++){
                     System.out.println(communityCards[i].getRank() + " " + communityCards[i].getSuit());
                 }
+                System.out.println( "\n");
                 break;
 
             case TURN:
-                System.out.println("--- The TURN ---");
-                System.out.println("Cards on table: " );
+                System.out.println("\n--- The TURN ---\n");
+                System.out.println("Cards on table: \n" );
                 for(int i=0; i<4; i++){
                     System.out.println(communityCards[i].getRank() + " " + communityCards[i].getSuit());
                 }
+                System.out.println( "\n");
                 break;
 
             case RIVER:
-                System.out.println("--- The RIVER ---");
-                System.out.println("Cards on table: " );
+                System.out.println("\n--- The RIVER ---\n");
+                System.out.println("Cards on table: \n" );
                 for(int i=0; i<5; i++){
                     System.out.println(communityCards[i].getRank() + " " + communityCards[i].getSuit());
                 }
+                System.out.println( "\n");
                 break;
 
             default:
@@ -214,7 +238,6 @@ public class Game {
                 break;
 
             case RIVER:
-
                 bettingRound = BettingRound.SHOWDOWN;
                 break;
 
@@ -253,6 +276,10 @@ public class Game {
         bigBlind = big;
     }
 
+    private void updateDealer(){
+
+    }
+
     /**
      * Read in the move a player want to make.
      *
@@ -277,36 +304,162 @@ public class Game {
      * Make the moves of the players.
      */
     private void makeMoves(){
-        PlayerMove move;
-        for(int player=0; player < numberOfPlayers; player++){
 
+        PlayerMove move;
+        for(Player player : players){
 
             move = getNextMoveFromPlayer();
             switch (move){
 
                 case CALL:
-                    players.get(player).setState(PlayerState.IN);
+                    player.setState(PlayerState.IN);
                     break;
                 case FOLD:
-                    players.get(player).setState(PlayerState.FOLD);
+                    player.setState(PlayerState.FOLD);
                     break;
                 case CHECK:
-                    players.get(player).setState(PlayerState.IN);
+                    player.setState(PlayerState.IN);
                     break;
                 case RAISE:
-                    players.get(player).setState(PlayerState.IN);
+                    player.setState(PlayerState.IN);
                     break;
                 case GO_ALL_IN:
-                    players.get(player).setState(PlayerState.ALL_IN);
+                    player.setState(PlayerState.ALL_IN);
                     break;
 
             }
 
-            System.out.println("Player " + players.get(0).getName() + " did the move " + move);
-
+            System.out.println("Player " + player.getName() + " did the move " + move);
 
         }
 
+    }
+
+    /**
+     * Method that computes the rank of each possible combination of the five cards on the table plus the two cards a
+     * player has. The highest of those ranks is saved in the attribute 'rank' in the hand those two cards belong to.
+     */
+    public void setHand(Player player)
+    {
+        HoleCards holeCards = player.getHoleCards();
+        Card[] cardCombination = new Card[5];
+
+        common.HandRank handRank;
+        common.HandRank bestHandRank = common.HandRank.NOTHING;
+        Card[] bestCards = communityCards;
+
+        // Looping through all the possible combinations of the seven cards to find the best combination.
+        for (int i = 0; i < 21; i++)
+        {
+
+            /* i=0:9 tests all combinations with two cards from the player and three cards from the table
+             *  (The number of combinations are 5 choose 3 = 10) */
+            if (i < 5)
+            {
+                cardCombination[0] = communityCards[i % 5];
+                cardCombination[1] = communityCards[(i + 1) % 5];
+                cardCombination[2] = communityCards[(i + 2) % 5];
+                cardCombination[3] = holeCards.getCard1();
+                cardCombination[4] = holeCards.getCard2();
+            }
+            else if (i < 10)
+            {
+                cardCombination[0] = communityCards[i % 5];
+                cardCombination[1] = communityCards[(i + 1) % 5];
+                cardCombination[2] = communityCards[(i + 3) % 5];
+                cardCombination[3] = holeCards.getCard1();
+                cardCombination[4] = holeCards.getCard2();
+            }
+            /* Test all combinations with the first card from the player and four cards from the table
+             *  (The number of combinations are 5 choose 4 = 5)*/
+            else if (i < 15)
+            {
+                cardCombination[0] = communityCards[i % 5];
+                cardCombination[1] = communityCards[(i + 1) % 5];
+                cardCombination[2] = communityCards[(i + 2) % 5];
+                cardCombination[3] = communityCards[(i + 3) % 5];
+                cardCombination[4] = holeCards.getCard1();
+            }
+            /* Test all combinations with the second card from the player and four cards from the table
+             *  (The number of combinations are 5 choose 4 = 5)*/
+            else if(i < 20)
+            {
+                cardCombination[0] = communityCards[i % 5];
+                cardCombination[1] = communityCards[(i + 1) % 5];
+                cardCombination[2] = communityCards[(i + 2) % 5];
+                cardCombination[3] = communityCards[(i + 3) % 5];
+                cardCombination[4] = holeCards.getCard2();
+            }
+            /* Test only the community cards. */
+            else
+            {
+                cardCombination[0] = communityCards[0];
+                cardCombination[1] = communityCards[1];
+                cardCombination[2] = communityCards[2];
+                cardCombination[3] = communityCards[3];
+                cardCombination[4] = communityCards[4];
+            }
+
+            handRank = pokerRules.determineHandRank(cardCombination);
+
+            /* Save the highest combination */
+            if (handRank.ordinal() > bestHandRank.ordinal())
+            {
+                bestHandRank = handRank;
+                bestCards = cardCombination;
+            }
+            else if(handRank.ordinal() == bestHandRank.ordinal()){
+                bestCards = pokerRules.getBestCardsSameRank(bestCards, cardCombination,handRank);
+            }
+        }
+
+        player.hand.setRank(bestHandRank);
+        player.hand.setCards(bestCards);
+    }
+
+    /**
+     * Determines which player who has the best hand.
+     *
+     * @return The ID(s) of a player/players with the best hand.
+     */
+
+
+    public int[] determineWinner()
+    {
+
+        common.HandRank handRank;
+        common.HandRank highestRank = common.HandRank.NOTHING;
+        Card[] bestCards = communityCards;
+        int playerWithBestHand = players.get(0).getID();
+
+        for ( Player player : players)
+        {
+            handRank = player.hand.getRank();
+
+            /* Save the player with the highest rank this far in the for-loop */
+            if (handRank.ordinal() > highestRank.ordinal())
+            {
+                highestRank = handRank;
+                bestCards = player.hand.getCards();
+                playerWithBestHand = player.getID();
+            }
+
+            /* If several players have the same hand */
+            else if ( handRank == highestRank )
+            {
+                bestCards = pokerRules.getBestCardsSameRank(bestCards, player.hand.getCards(), handRank);
+            }
+
+        }
+
+        int numberOfWinners = 1;
+        int[] winners = new int[numberOfWinners];
+        for (int i = 0; i < numberOfWinners; i++)
+        {
+            winners[i] = playerWithBestHand;
+        }
+
+        return winners;
     }
 
 }
