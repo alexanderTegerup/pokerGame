@@ -57,6 +57,8 @@ public class Game {
         players = new ArrayList();
         deck = new Deck();
         communityCards = new Card[5];
+        pokerRules = new PokerRules();
+
         playedRounds = 0;
         bettingRound = BettingRound.PRE_FLOP;
         stateOfPlayers = StateOfPlayers.PLAYERS_MAKING_MOVES;
