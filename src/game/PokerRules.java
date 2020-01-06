@@ -26,19 +26,6 @@ public class PokerRules
     // TODO Make determineWinner take an array of hands and the cards on the table as arguments.
 
 
-
-    /** The rank of the cards that are on the table. */
-    private common.HandRank tableCardRank;
-    /** The number of players participating in the game. */
-    private int numberOfPlayers;
-    /** The cards that lie on the table. */
-    private Card[] cardsOnTable;
-    /** An array where every element consist of the two unique cards that are given to each player. */
-    private HoleCards[] arrayWithHands;
-
-
-
-    
     /**
      * Determines the highest possible rank of the five cards given as an input.
      * @param fiveCards An array containing five cards.
@@ -369,31 +356,39 @@ public class PokerRules
             else if (lowestPairHand1 == lowestPairHand2)
             {
 
-                int indexContHand1 = 4;
-                int indexContHand2 = 4;
-                for (int i = 4; i > 1; i--)
-                {
+                // The indices of the kickers in the hands.
+                int kickerIndexHand1 = 4;
+                int kickerIndexHand2 = 4;
 
-                    if ((i == idxHighestPairHand1) || (i == idxLowestPairHand1))
-                    {
-                        indexContHand1 -= 2;
-                    }
-                    if ((i == idxHighestPairHand2) || (i == idxLowestPairHand2))
-                    {
-                        indexContHand2 -= 2;
+                // Temporary indices used for finding the indices of the kickers.
+                int indexHand1 = 4;
+                int indexHand2 = 4;
+
+                for (int i = 0; i < 3; i++) {
+
+                    if ((indexHand1 == idxHighestPairHand1) || (indexHand1 == idxLowestPairHand1)) {
+                        indexHand1 -= 2;
+                    } else {
+                        kickerIndexHand1 = indexHand1;
                     }
 
-                    if (hand1[indexContHand1].getRank().ordinal() > hand2[indexContHand2].getRank().ordinal())
-                    {
-                        return hand1;
+                    if ((indexHand2 == idxHighestPairHand2) || (indexHand2 == idxLowestPairHand2)) {
+                        indexHand2 -= 2;
+                    } else {
+                        kickerIndexHand2 = indexHand2;
                     }
-                    else if (hand1[indexContHand1].getRank().ordinal() < hand2[indexContHand2].getRank().ordinal())
-                    {
-                        return hand2;
-                    }
-                    indexContHand1--;
-                    indexContHand2--;
+
                 }
+
+                if (hand1[kickerIndexHand1].getRank().ordinal() > hand2[kickerIndexHand2].getRank().ordinal())
+                {
+                    return hand1;
+                }
+                else if (hand1[kickerIndexHand1].getRank().ordinal() < hand2[kickerIndexHand2].getRank().ordinal())
+                {
+                    return hand2;
+                }
+
             }
         }
 
@@ -590,15 +585,15 @@ public class PokerRules
     {
 
 
-        boolean gotFullHouse = ((fiveCards[0].getRank() == fiveCards[1].getRank() &&
-                fiveCards[1].getRank() == fiveCards[2].getRank() &&
-                fiveCards[2].getRank() != fiveCards[3].getRank() &&
-                fiveCards[3].getRank() == fiveCards[4].getRank()) ||
+        boolean gotFullHouse = ( (fiveCards[0].getRank() == fiveCards[1].getRank()  &&
+                                  fiveCards[1].getRank() == fiveCards[2].getRank()  &&
+                                  fiveCards[2].getRank() != fiveCards[3].getRank()  &&
+                                  fiveCards[3].getRank() == fiveCards[4].getRank()) ||
 
-                (fiveCards[0].getRank() == fiveCards[1].getRank() &&
-                        fiveCards[1].getRank() != fiveCards[2].getRank() &&
-                        fiveCards[2].getRank() == fiveCards[3].getRank() &&
-                        fiveCards[3].getRank() == fiveCards[4].getRank()));
+                                 (fiveCards[0].getRank() == fiveCards[1].getRank()  &&
+                                  fiveCards[1].getRank() != fiveCards[2].getRank()  &&
+                                  fiveCards[2].getRank() == fiveCards[3].getRank()  &&
+                                  fiveCards[3].getRank() == fiveCards[4].getRank()) );
 
         return gotFullHouse;
     }
@@ -667,43 +662,36 @@ public class PokerRules
         return gotPair;
     }
 
+/*
+    // This code is for testing purposes:
+    public static void main(String[] args) {
 
-    //public static void main(String[] args) {
-
-
-    /* Test case */
-
-        /*
-        Card[] tableCards = new Card[5];
-        common.HoleCards[] arrHands = new HoleCards[2];
-
-        tableCards[0] = new Card(Card.Suit.DIAMONDS, Card.Rank.SEVEN, null);
-        tableCards[1] = new Card(Card.Suit.DIAMONDS, Card.Rank.SIX, null);
-        tableCards[2] = new Card(Card.Suit.DIAMONDS, Card.Rank.FIVE, null);
-        tableCards[3] = new Card(Card.Suit.HEARTS, Card.Rank.FOUR, null);
-        tableCards[4] = new Card(Card.Suit.CLUBS, Card.Rank.THREE, null);
+        Card[] testHand1 = new Card[5];
+        Card[] testHand2 = new Card[5];
+        Card[] returnHand = new Card[5];
 
 
-        Card p1c1 = new Card(Card.Suit.DIAMONDS, Card.Rank.NINE, null);
-        Card p1c2 = new Card(Card.Suit.CLUBS, Card.Rank.EIGHT, null);
+        testHand1[0] = new Card(Card.Suit.DIAMONDS, Card.Rank.SIX, null);
+        testHand1[1] = new Card(Card.Suit.SPADES, Card.Rank.ACE, null);
+        testHand1[2] = new Card(Card.Suit.DIAMONDS, Card.Rank.ACE, null);
+        testHand1[3] = new Card(Card.Suit.SPADES, Card.Rank.TEN, null);
+        testHand1[4] = new Card(Card.Suit.DIAMONDS, Card.Rank.TEN, null);
 
-        Card p2c1 = new Card(Card.Suit.HEARTS, Card.Rank.TEN, null);
-        Card p2c2 = new Card(Card.Suit.CLUBS, Card.Rank.EIGHT, null);
-
-        common.HoleCards hand1 = new HoleCards(p1c1, p1c2);
-
-
-        common.HoleCards hand2 = new HoleCards(p2c1, p2c2);
-
-
-        arrHands[0] = hand1;
-        arrHands[1] = hand2;
+        testHand2[0] = new Card(Card.Suit.HEARTS, Card.Rank.NINE, null);
+        testHand2[1] = new Card(Card.Suit.CLUBS, Card.Rank.ACE, null);
+        testHand2[2] = new Card(Card.Suit.HEARTS, Card.Rank.ACE, null);
+        testHand2[3] = new Card(Card.Suit.CLUBS, Card.Rank.TEN, null);
+        testHand2[4] = new Card(Card.Suit.HEARTS, Card.Rank.TEN, null);
 
         PokerRules p = new PokerRules();
-        int[] a; 
-        a = p.determineWinner(arrHands, tableCards );
-        System.out.println(a[0]);*/
+        System.out.println("Hand rank 1 " + p.determineHandRank(testHand1));
+        System.out.println("Hand rank 2 " + p.determineHandRank(testHand2));
+        returnHand = p.decideBestTwoPair(testHand1,testHand2);
+        System.out.println("Best hand: ");
+        for(Card card : returnHand){
+            System.out.println(card.getRank() + " " + card.getSuit());
+        }
 
 
-    //}
+    } */
 }

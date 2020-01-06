@@ -145,6 +145,12 @@ public class Game {
                         }
                     }
 
+
+                    for (Player player : players){
+                        System.out.println("Player " + player.getName() + " has cards " + player.getHoleCards().getCard1().getRank() + " " + player.getHoleCards().getCard1().getSuit());
+                        System.out.println(player.getHoleCards().getCard2().getRank() + " " + player.getHoleCards().getCard2().getSuit());
+                        System.out.println("The player has hand " + player.hand.getRank());
+                    }
                     winnerId = determineWinner();
                     System.out.println("The winner is: " + winnerId[0]);
                     roundFinished = true;
