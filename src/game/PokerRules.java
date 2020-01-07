@@ -410,24 +410,26 @@ public class PokerRules
         hand1 = insertionSort(hand1);
         hand2 = insertionSort(hand2);
 
+        Card[] kickersHand1 = new Card[2];
+        Card[] kickersHand2 = new Card[2];
+
         Card.Rank rankThreeOfAKindHand1 = hand1[0].getRank();
         Card.Rank rankThreeOfAKindHand2 = hand2[0].getRank();
-
-        int indexThreeOfAKindHand1 = 0;
-        int indexThreeOfAKindHand2 = 0;
 
         for (int i = 0; i < 3; i++)
         {
 
-            if ((hand1[i] == hand1[i + 1]) && (hand1[i + 1] == hand1[i + 2]))
+            if ((hand1[i].getRank() == hand1[i + 1].getRank()) && (hand1[i + 1].getRank() == hand1[i + 2].getRank()))
             {
                 rankThreeOfAKindHand1 = hand1[i].getRank();
-                indexThreeOfAKindHand1 = i + 2;
+                kickersHand1[0] = hand1[(i+3)%5];
+                kickersHand1[1] = hand1[(i+4)%5];
             }
-            if ((hand2[i] == hand2[i + 1]) && (hand2[i + 1] == hand2[i + 2]))
+            if ((hand2[i].getRank() == hand2[i + 1].getRank()) && (hand2[i + 1].getRank() == hand2[i + 2].getRank()))
             {
                 rankThreeOfAKindHand2 = hand2[i].getRank();
-                indexThreeOfAKindHand2 = i + 2;
+                kickersHand2[0] = hand2[(i+3)%5];
+                kickersHand2[1] = hand2[(i+4)%5];
             }
         }
 
@@ -443,33 +445,25 @@ public class PokerRules
         // If the two players have the same three of a kind, the player with the highest kicker wins.
         else if (rankThreeOfAKindHand1 == rankThreeOfAKindHand2)
         {
+            kickersHand1 = insertionSort(kickersHand1);
+            kickersHand2 = insertionSort(kickersHand2);
 
-            int indexContHand1 = 4;
-            int indexContHand2 = 4;
-            for (int i = 4; i > 2; i--)
-            {
-
-                if (i == indexThreeOfAKindHand1)
-                {
-                    indexContHand1 -= 3;
-                }
-                if (i == indexThreeOfAKindHand2)
-                {
-                    indexContHand2 -= 3;
-                }
-
-                // Decide which player who has the highest kicker.
-                if (hand1[indexContHand1].getRank().ordinal() > hand2[indexContHand2].getRank().ordinal())
-                {
+            if(kickersHand1[1].getRank().ordinal() > kickersHand2[1].getRank().ordinal()){
+                return hand1;
+            }
+            else if (kickersHand1[1].getRank().ordinal() < kickersHand2[1].getRank().ordinal()){
+                return hand2;
+            }
+            // If two players have the same highest kickers, the player with the second highest kicker wins.
+            else {
+                if(kickersHand1[0].getRank().ordinal() > kickersHand2[0].getRank().ordinal()){
                     return hand1;
                 }
-                else if (hand1[indexContHand1].getRank().ordinal() < hand2[indexContHand2].getRank().ordinal())
-                {
+                else if (kickersHand1[0].getRank().ordinal() < kickersHand2[0].getRank().ordinal()){
                     return hand2;
                 }
-                indexContHand1--;
-                indexContHand2--;
             }
+
         }
 
         return hand1;
@@ -489,7 +483,7 @@ public class PokerRules
         hand2 = insertionSort(hand2);
 
 
-        for(int i=4; i >= 0; i++) {
+        for(int i=4; i >= 0; i--) {
             if (hand1[i].getRank().ordinal() > hand2[i].getRank().ordinal()) {
                 return hand1;
             } else if (hand1[i].getRank().ordinal() < hand2[i].getRank().ordinal()) {
@@ -666,32 +660,33 @@ public class PokerRules
     // This code is for testing purposes:
     public static void main(String[] args) {
 
+
         Card[] testHand1 = new Card[5];
         Card[] testHand2 = new Card[5];
         Card[] returnHand = new Card[5];
 
 
-        testHand1[0] = new Card(Card.Suit.DIAMONDS, Card.Rank.SIX, null);
-        testHand1[1] = new Card(Card.Suit.SPADES, Card.Rank.ACE, null);
-        testHand1[2] = new Card(Card.Suit.DIAMONDS, Card.Rank.ACE, null);
+        testHand1[0] = new Card(Card.Suit.DIAMONDS, Card.Rank.FIVE, null);
+        testHand1[1] = new Card(Card.Suit.SPADES, Card.Rank.SEVEN, null);
+        testHand1[2] = new Card(Card.Suit.DIAMONDS, Card.Rank.TEN, null);
         testHand1[3] = new Card(Card.Suit.SPADES, Card.Rank.TEN, null);
         testHand1[4] = new Card(Card.Suit.DIAMONDS, Card.Rank.TEN, null);
 
-        testHand2[0] = new Card(Card.Suit.HEARTS, Card.Rank.NINE, null);
-        testHand2[1] = new Card(Card.Suit.CLUBS, Card.Rank.ACE, null);
-        testHand2[2] = new Card(Card.Suit.HEARTS, Card.Rank.ACE, null);
-        testHand2[3] = new Card(Card.Suit.CLUBS, Card.Rank.TEN, null);
+        testHand2[0] = new Card(Card.Suit.HEARTS, Card.Rank.TEN, null);
+        testHand2[1] = new Card(Card.Suit.CLUBS, Card.Rank.TEN, null);
+        testHand2[2] = new Card(Card.Suit.HEARTS, Card.Rank.SEVEN, null);
+        testHand2[3] = new Card(Card.Suit.CLUBS, Card.Rank.FOUR, null);
         testHand2[4] = new Card(Card.Suit.HEARTS, Card.Rank.TEN, null);
 
         PokerRules p = new PokerRules();
         System.out.println("Hand rank 1 " + p.determineHandRank(testHand1));
         System.out.println("Hand rank 2 " + p.determineHandRank(testHand2));
-        returnHand = p.decideBestTwoPair(testHand1,testHand2);
+
+
+        returnHand = p.decideBestThreeOfAKind(testHand1,testHand2);
         System.out.println("Best hand: ");
         for(Card card : returnHand){
             System.out.println(card.getRank() + " " + card.getSuit());
         }
-
-
-    } */
+    }*/
 }
