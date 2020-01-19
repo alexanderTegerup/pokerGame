@@ -5,6 +5,7 @@ package common;
  */
 public enum PlayerMove
 {
+    NONE,
     FOLD,
     CHECK,
     CALL,

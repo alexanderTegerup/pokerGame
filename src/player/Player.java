@@ -14,6 +14,7 @@ public class Player {
     private Blind blind;
     private boolean dealer;
     private PlayerState state;
+    private PlayerMove move;
 
 
     public Player(String playerName, int initChips, int playerID) {
@@ -24,7 +25,8 @@ public class Player {
 
         blind = Blind.NONE;
         dealer = false;
-        state = PlayerState.MUST_MAKE_MOVE;
+        state = PlayerState.IN;
+        move = PlayerMove.NONE;
     }
 
     /**
@@ -56,7 +58,7 @@ public class Player {
      *
      * @return chips Amount of player's current chips.
      */
-    public double showChips() {
+    public int getChips() {
         return chips;
     }
 
@@ -80,13 +82,14 @@ public class Player {
      */
     public void removeChips (int lostChips){
 
-        try {
+        if (lostChips < 0) {
+            System.out.println("You cannot remove negative chips! ");
+        }
+        else if (chips > lostChips){
             chips -= lostChips;
-            if (lostChips <= 0) {
-                throw new Exception("Trying to remove negative chips");
-            }
-        } catch (Exception exc) {
-            System.out.println("Error: " + exc.getMessage());
+        }
+        else{
+            System.out.println("You have " + chips + "chips, so you cannot remove " + lostChips + "chips. ");
         }
     }
 
@@ -119,5 +122,8 @@ public class Player {
 
     public PlayerState getState(){ return state; }
     public void setState(PlayerState newState){ state = newState; }
+
+    public PlayerMove getMove() { return move; }
+    public void setMove(PlayerMove nextMove) { move = nextMove; }
 
 }
