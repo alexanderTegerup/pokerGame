@@ -10,6 +10,8 @@ public class Player {
     private HoleCards holeCards;
     private String name;
     private int chips;
+    private int chipsOnTable;
+
     private int id;
     private Blind blind;
     private boolean dealer;
@@ -85,11 +87,11 @@ public class Player {
         if (lostChips < 0) {
             System.out.println("You cannot remove negative chips! ");
         }
-        else if (chips > lostChips){
+        else if (chips >= lostChips){
             chips -= lostChips;
         }
         else{
-            System.out.println("You have " + chips + "chips, so you cannot remove " + lostChips + "chips. ");
+            System.out.println("You have " + chips + " chips, so you cannot remove " + lostChips + " chips. ");
         }
     }
 
@@ -126,4 +128,31 @@ public class Player {
     public PlayerMove getMove() { return move; }
     public void setMove(PlayerMove nextMove) { move = nextMove; }
 
+    public int getChipsOnTable() {return chipsOnTable;}
+    /**
+     * This function takes chips the player has and makes them to chips the player has bet.
+     */
+    public void moveChipsToTable(int chips_) {
+
+        if (chips_ < 0) {
+            System.out.println("You cannot bet negative chips! ");
+        }
+        else if (chips >= chips_){
+            chips -= chips_;
+            chipsOnTable += chips_;
+        }
+        else{
+            System.out.println("You have " + chips + " chips, so you cannot bet " + chips_ + " chips. ");
+        }
+
+    }
+
+    /**
+     * This function returns the chips the player has bet and sets the chips the player has bet to zero.
+     */
+    public int takeChipsOnTable() {
+        int tmpChips = chipsOnTable;
+        chipsOnTable = 0;
+        return tmpChips;
+    }
 }

@@ -7,6 +7,7 @@ public enum PlayerMove
 {
     NONE,
     FOLD,
+    BET,
     CHECK,
     CALL,
     RAISE,
