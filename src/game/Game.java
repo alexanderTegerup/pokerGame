@@ -8,7 +8,6 @@ import java.util.Scanner;
 /* Own modules */
 import common.*;
 
-import javafx.scene.web.WebHistory;
 import player.Player;
 
 import static common.PlayerMove.*;
@@ -54,8 +53,9 @@ public class Game {
     Scanner stringScan, intScan;
 
     // TODO : Improve the printouts before it is time to make a move.
-    // TODO : If no player has any chips left, that player shall be all in.
-
+    // TODO : Add attribute to a player: the amount of chips she/he has to pay to be in the game ( highestBid - player.getChipsOnTable() )
+    // TODO : Make the code cleaner
+    // TODO : Upgrade the architecture of the poker app. 
     /**
      * A no argument constructor.
      */
@@ -87,7 +87,7 @@ public class Game {
         System.out.println("Enter your name: ");
         String name = stringScan.nextLine();
 
-        while ( (name.isEmpty() ) || (null == name) ){
+        while ( name.isEmpty() ){
             System.out.println("You have to enter a name! Please enter your name: ");
             name = stringScan.nextLine();
         }
@@ -168,7 +168,7 @@ public class Game {
                         System.out.println("The player " + player.getName() + " has hand " + player.hand.getRank() +"\n");
                     }
                     winnerId = determineWinner();
-                    System.out.println("The winner is: " + winnerId[0]);
+                    System.out.println("The winner is: " + players.get(winnerId[0]).getName());
                     roundFinished = true;
 
                     break;
@@ -228,7 +228,9 @@ public class Game {
         }
     }
 
-
+    /**
+     * This function prints 3, 4 or 5 community cards, depending on how far in the round the game is.
+     */
     private void showCommunityCards(){
 
         switch (bettingRound)
@@ -271,6 +273,9 @@ public class Game {
         }
     }
 
+    /**
+     * Updates the betting round.
+     */
     private void updateBettingRound(){
 
         switch (bettingRound)
@@ -295,6 +300,7 @@ public class Game {
                 break;
         }
     }
+
     /**
      * Update the main pot by collecting all the chips on the table.
      */
@@ -348,7 +354,6 @@ public class Game {
 
             if ( PlayerState.IN == player.getState() ) {
 
-                showStatus(player);
                 chooseNextMove(player);
                 move = player.getMove();
 
@@ -384,7 +389,7 @@ public class Game {
                         break;
 
                 }
-                System.out.println("Player " + player.getName() + " did the move " + move + "\n");
+                System.out.println("Player " + player.getName() + " did the move " + move + "\n\n");
             }
             requiredDecisionsMade++;
             playersTurn = (playersTurn+1) % numberOfPlayers;
@@ -395,15 +400,13 @@ public class Game {
 
     private void showStatus(Player player){
 
-        System.out.println("Status of player " + player.getName() + ":");
+        System.out.println("\nStatus of player " + player.getName() + ":");
         System.out.println("Chips: " + player.getChips());
         System.out.println("Cards: ");
         System.out.println( player.getHoleCards().getCard1().getRank() + " " + player.getHoleCards().getCard1().getSuit() );
-        System.out.println( player.getHoleCards().getCard2().getRank() + " " + player.getHoleCards().getCard2().getSuit() );
+        System.out.println( player.getHoleCards().getCard2().getRank() + " " + player.getHoleCards().getCard2().getSuit() + "\n" );
         if (somebodyMadeABet){
-            int chipsToPutIn = highestBid - player.getChipsOnTable();
-            System.out.println("Somebody has raised, so the highest bid on the table is now " + highestBid);
-            System.out.println("You have to put in " + chipsToPutIn + " to join the game. ");
+            System.out.println("Somebody has made a bet. Now there are " + highestBid + " chips on the table.");
         }
     }
     /**
@@ -417,64 +420,74 @@ public class Game {
 
         int chosenMove;
         PlayerMove nextMove;
+        boolean validMove = false;
 
         System.out.println("Time for " + player.getName() + " to make his/her move.");
-        System.out.println("You have to put in at least " + chipsToPutIn);
+        showStatus(player);
 
-        if ( (!somebodyMadeABet) && (playersChips > minimumRaise) ){
-            possibleMoves.add(FOLD);
-            possibleMoves.add(CHECK);
-            possibleMoves.add(BET);
-            possibleMoves.add(GO_ALL_IN);
+        do {
+            if ((!somebodyMadeABet) && (playersChips > minimumRaise)) {
+                possibleMoves.add(FOLD);
+                possibleMoves.add(CHECK);
+                possibleMoves.add(BET);
+                possibleMoves.add(GO_ALL_IN);
 
-            System.out.println("Enter your next move. You can: \n" +
-                    " 1. Fold,\n" +
-                    " 2. Check,\n" +
-                    " 3. Bet,\n" +
-                    " 4. Go all in ");
-        }
-        else if ( (!somebodyMadeABet) && (playersChips <= minimumRaise) ){
-            possibleMoves.add(FOLD);
-            possibleMoves.add(CHECK);
-            possibleMoves.add(GO_ALL_IN);
+                System.out.println("Enter your next move. You can: \n" +
+                        " 1. Fold,\n" +
+                        " 2. Check,\n" +
+                        " 3. Bet,\n" +
+                        " 4. Go all in ");
+            } else if ((!somebodyMadeABet) && (playersChips <= minimumRaise)) {
+                possibleMoves.add(FOLD);
+                possibleMoves.add(CHECK);
+                possibleMoves.add(GO_ALL_IN);
 
-            System.out.println("Enter your next move. You can: \n" +
-                    " 1. Fold,\n" +
-                    " 2. Check,\n" +
-                    " 3. Go all in ");
-        }
-        else if ( (somebodyMadeABet) && (playersChips >= (chipsToPutIn + minimumRaise)) ){
-            possibleMoves.add(FOLD);
-            possibleMoves.add(CALL);
-            possibleMoves.add(RAISE);
-            possibleMoves.add(GO_ALL_IN);
+                System.out.println("Enter your next move. You can: \n" +
+                        " 1. Fold,\n" +
+                        " 2. Check,\n" +
+                        " 3. Go all in ");
+            } else if ((somebodyMadeABet) && (playersChips >= (chipsToPutIn + minimumRaise))) {
+                possibleMoves.add(FOLD);
+                possibleMoves.add(CALL);
+                possibleMoves.add(RAISE);
+                possibleMoves.add(GO_ALL_IN);
 
-            System.out.println("Enter your next move. You can: \n" +
-                    " 1. Fold,\n" +
-                    " 2. Call,\n" +
-                    " 3. Raise,\n" +
-                    " 4. Go all in ");
-        }
-        else if ( (somebodyMadeABet) && (playersChips >= (chipsToPutIn)) ){
-            possibleMoves.add(FOLD);
-            possibleMoves.add(CALL);
-            possibleMoves.add(GO_ALL_IN);
+                System.out.println("You have to put in at least " + chipsToPutIn + " to join the game.");
+                System.out.println("Enter your next move. You can: \n" +
+                        " 1. Fold,\n" +
+                        " 2. Call,\n" +
+                        " 3. Raise,\n" +
+                        " 4. Go all in ");
+            } else if ((somebodyMadeABet) && (playersChips > (chipsToPutIn))) {
+                possibleMoves.add(FOLD);
+                possibleMoves.add(CALL);
+                possibleMoves.add(GO_ALL_IN);
 
-            System.out.println("Enter your next move. You can: \n" +
-                    " 1. Fold,\n" +
-                    " 2. Call,\n" +
-                    " 3. Go all in ");
-        }
-        else{
-            possibleMoves.add(FOLD);
-            possibleMoves.add(GO_ALL_IN);
+                System.out.println("You have to put in " + chipsToPutIn + " chips to call.");
+                System.out.println("Enter your next move. You can: \n" +
+                        " 1. Fold,\n" +
+                        " 2. Call,\n" +
+                        " 3. Go all in ");
+            } else {
+                possibleMoves.add(FOLD);
+                possibleMoves.add(GO_ALL_IN);
 
-            System.out.println("Enter your next move. You can: \n" +
-                    " 1. Fold,\n" +
-                    " 2. Go all in ");
-        }
+                System.out.println("You have to go all in to join the game.");
+                System.out.println("Enter your next move. You can: \n" +
+                        " 1. Fold,\n" +
+                        " 2. Go all in ");
+            }
+            chosenMove = intScan.nextInt();
 
-        chosenMove = intScan.nextInt();
+            if ((chosenMove < 1) || (chosenMove > possibleMoves.size())){
+                System.out.println("Invalid move.");
+                possibleMoves.clear();
+            }
+            else {
+                validMove = true;
+            }
+        }while ( !validMove );
+
         nextMove = possibleMoves.get(chosenMove-1);
         player.setMove(nextMove);
     }
