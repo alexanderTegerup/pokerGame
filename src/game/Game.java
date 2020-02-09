@@ -15,8 +15,7 @@ import static common.PlayerMove.*;
 
 public class Game {
 
-    private enum BettingRound
-    {
+    private enum BettingRound {
         PRE_FLOP,
         FLOP,
         TURN,
@@ -52,10 +51,6 @@ public class Game {
     int numberOfPlayers;
     Scanner stringScan, intScan;
 
-    // TODO : Improve the printouts before it is time to make a move.
-    // TODO : Add attribute to a player: the amount of chips she/he has to pay to be in the game ( highestBid - player.getChipsOnTable() )
-    // TODO : Make the code cleaner
-    // TODO : Upgrade the architecture of the poker app. 
     /**
      * A no argument constructor.
      */
@@ -80,6 +75,7 @@ public class Game {
 
     /**
      * Create the players of the poker game.
+     * @param id - the id each player gets.
      */
     public void login(int id) {
 
@@ -100,7 +96,6 @@ public class Game {
      */
     public void play() {
 
-
         while (!gameFinished) {
             /* A new round will begin. */
             /* Deal new cards to the players, shuffle the deck, update the numbers of players etc... */
@@ -110,7 +105,6 @@ public class Game {
             dealCommunityCards();
             moveBlinds();
             updateDealer();
-
 
             /* Start a new round */
             playRound();
@@ -149,7 +143,7 @@ public class Game {
                         stateOfPlayers = StateOfPlayers.PLAYERS_MAKING_MOVES;
                     }
                     break;
-                // TODO : Go to this state directly if all players are all in or all players except one have folded
+
                 case ALL_PLAYERS_FINISHED:
 
                     for( Player player : players ){
@@ -162,9 +156,6 @@ public class Game {
 
                     for (Player player : players){
                         showStatus(player);
-                        System.out.println("Player " + player.getName() + " has cards ");
-                        System.out.println(player.getHoleCards().getCard1().getRank() + " " + player.getHoleCards().getCard1().getSuit() );
-                        System.out.println(player.getHoleCards().getCard2().getRank() + " " + player.getHoleCards().getCard2().getSuit());
                         System.out.println("The player " + player.getName() + " has hand " + player.hand.getRank() +"\n");
                     }
                     winnerId = determineWinner();
@@ -178,10 +169,17 @@ public class Game {
         }
     }
 
+    /**
+     * Function used for reset variables.
+     */
     private void resetGlobalVariables(){
         highestBid = 0;
         latestRaise = 0;
     }
+
+    /**
+     * Remove the players that are out of the game. Reset the state of the other players.
+     */
     private void updateStateOfPlayers(){
 
         for (Player player : players){
@@ -197,6 +195,7 @@ public class Game {
             }
         }
     }
+
     /**
      * Gives each player two cards (i.e. the hole cards).
      */
@@ -204,19 +203,12 @@ public class Game {
 
         Card card1;
         Card card2;
-        HoleCards cards;
         for(Player player : players)
         {
             card1 = deck.getTopCard();
             card2 = deck.getTopCard();
             player.setHoleCards(card1, card2);
-
-            cards = player.getHoleCards();
-            System.out.println("Player " + player.getName() + " has the cards: ");
-            System.out.println( cards.getCard1().getRank() + " " + cards.getCard1().getSuit());
-            System.out.println( cards.getCard2().getRank() + " " + cards.getCard2().getSuit() + "\n");
         }
-
     }
 
     /**
@@ -327,16 +319,20 @@ public class Game {
 
     /**
      * Update the value of big and small blind.
+     * @param small - new value of small blind.
+     * @param big - new value of big blind.
      */
-    private void updateBlinds(int small, int big){
+    private void updateValuesOfBlinds(int small, int big){
         smallBlind = small;
         bigBlind = big;
     }
 
+    /**
+     * Switch the dealer role, so that the next player becomes the dealer.
+     */
     private void updateDealer(){
 
     }
-
 
     /**
      * Make the moves of the players.
@@ -347,9 +343,9 @@ public class Game {
         int playersTurn = 0;
         int requiredDecisionsMade = 0;
         somebodyMadeABet = false;
+        boolean allPlayerFinished = false;
 
-        while(requiredDecisionsMade < numberOfPlayers) {
-
+        do {
             Player player = players.get(playersTurn);
 
             if ( PlayerState.IN == player.getState() ) {
@@ -392,12 +388,20 @@ public class Game {
                 System.out.println("Player " + player.getName() + " did the move " + move + "\n\n");
             }
             requiredDecisionsMade++;
+            // Update so that the next player can make his/her move.
             playersTurn = (playersTurn+1) % numberOfPlayers;
-        }
 
+            if (requiredDecisionsMade == numberOfPlayers){
+                allPlayerFinished = true;
+            }
+
+        }while (!allPlayerFinished);
     }
 
-
+    /**
+     * Prints the status of a player.
+     * @param player - the player who gets its status printed out.
+     */
     private void showStatus(Player player){
 
         System.out.println("\nStatus of player " + player.getName() + ":");
@@ -406,18 +410,20 @@ public class Game {
         System.out.println( player.getHoleCards().getCard1().getRank() + " " + player.getHoleCards().getCard1().getSuit() );
         System.out.println( player.getHoleCards().getCard2().getRank() + " " + player.getHoleCards().getCard2().getSuit() + "\n" );
         if (somebodyMadeABet){
-            System.out.println("Somebody has made a bet. Now there are " + highestBid + " chips on the table.");
+            System.out.println("Somebody has made a bet. The highest bet is now " + highestBid + " chips.");
         }
     }
+
     /**
      * The player chooses the move (among the possible moves) she/he wants to make.
+     * @param player - the player who is going to choose which move to make.
      */
     private void chooseNextMove(Player player){
 
         int playersChips = player.getChips();
-        ArrayList<PlayerMove> possibleMoves = new ArrayList<>();
         int chipsToPutIn = highestBid - player.getChipsOnTable();
 
+        ArrayList<PlayerMove> possibleMoves = new ArrayList<>();
         int chosenMove;
         PlayerMove nextMove;
         boolean validMove = false;
@@ -492,20 +498,35 @@ public class Game {
         player.setMove(nextMove);
     }
 
+    /**
+     * Makes a player bet some of his/her chips.
+     * @param player - the player who is making the bet.
+     */
     private void bet(Player player){
 
-        System.out.println("Enter how much you want to bet. The minimum bet is " + minimumRaise);
-        int bet = intScan.nextInt();
+        boolean validBet = false;
+        int bet;
 
-        while (bet < minimumRaise){
-            System.out.println("That is not enough chips, you have to bet at least " + minimumRaise);
-            System.out.println("How much do you want to bet?");
+        System.out.println("The minimum bet is " + minimumRaise);
+        do {
+            System.out.println("Enter how much you want to bet: ");
             bet = intScan.nextInt();
-        }
-        if (bet >= player.getChips()){
-            goAllIn(player);
-            return;
-        }
+            if (bet < minimumRaise) {
+                System.out.println("That is not enough chips, you have to bet at least " + minimumRaise);
+            }
+            else if (bet >= player.getChips()) {
+                System.out.println("You want to bet more than you can afford. Do you want to go all in?");
+                System.out.println("1. Yes    2. No");
+                int answer = intScan.nextInt();
+                if (1 ==answer){
+                    goAllIn(player);
+                    return;
+                }
+            }
+            else{
+                validBet = true;
+            }
+        }while (!validBet);
 
         player.moveChipsToTable(bet);
         highestBid = bet;
@@ -513,6 +534,11 @@ public class Game {
         somebodyMadeABet = true;
     }
 
+    /**
+     * Makes a player call the bet that is on the table, i.e. put ih the chips
+     * needed to join the game.
+     * @param player - the player who is calling the bet or calling the raise.
+     */
     private void call(Player player){
 
         int chipsToPutIn = highestBid - player.getChipsOnTable();
@@ -527,38 +553,49 @@ public class Game {
         }
     }
 
+    /**
+     * Makes a player raise, i.e. put in even more chips than is necessary to join the game.
+     * @param player - the player who is making the raise.
+     */
     private void raise(Player player){
 
-        if (player.getChips() >= minimumRaise){
+        int raise;
+        int chipsToPutIn;
+        boolean validRaise = false;
+
+        do {
             System.out.println("Enter the how much you want to raise. The minimum amount you can raise is " + minimumRaise);
-            int raise = intScan.nextInt();
-            while (raise < minimumRaise){
+            raise = intScan.nextInt();
+            chipsToPutIn = highestBid + raise - player.getChipsOnTable();
+
+            if (raise < minimumRaise) {
                 System.out.println("That is not enough chips, you have to raise at least " + minimumRaise);
-                System.out.println("How much do you want to raise?");
-                raise = intScan.nextInt();
             }
-            int chipsToPutIn = highestBid + raise - player.getChipsOnTable();
-            if (chipsToPutIn > player.getChips()){
-                goAllIn(player);
-                return;
+            else if (chipsToPutIn > player.getChips()) {
+                System.out.println("You want to raise more than you can afford. Do you want to go all in?");
+                System.out.println("1. Yes    2. No");
+                int answer = intScan.nextInt();
+                if (1 ==answer){
+                    goAllIn(player);
+                    return;
+                }
             }
+            else {
+                validRaise = true;
+            }
+        }while (!validRaise);
 
-            player.moveChipsToTable(chipsToPutIn);
-            highestBid += raise;
-            latestRaise = raise;
-            minimumRaise = latestRaise; // In this app, the rules are that if you want to make a raise, you have to
-        }                               // raise at least as much as the previous raise.
-        else{
-            System.out.println("You don't have enough chips to make a raise. Do you want to go all in?");
-            System.out.println("1: Yes.   2: No. ");
-            int allIn = intScan.nextInt();
-            if (1 == allIn){
-                goAllIn(player);
-            }
-        }
-
+        player.moveChipsToTable(chipsToPutIn);
+        highestBid += raise;
+        latestRaise = raise;
+        minimumRaise = latestRaise; // In this app, the rules are that if you want to make a raise, you have to
+                                        // raise at least as much as the previous raise.
     }
 
+    /**
+     * Makes a player go all in.
+     * @param player - the player who is going all in.
+     */
     private void goAllIn(Player player){
 
         int allChips = player.getChips();
@@ -571,10 +608,10 @@ public class Game {
         player.setState(PlayerState.ALL_IN);
     }
 
-
     /**
      * Method that computes the rank of each possible combination of the five cards on the table plus the two cards a
      * player has. The highest of those ranks is saved in the attribute 'rank' in the hand those two cards belong to.
+     * @param player - a player in the game.
      */
     public void setHand(Player player)
     {
@@ -645,6 +682,7 @@ public class Game {
                 bestHandRank = handRank;
                 bestCards = cardCombination;
             }
+            /* Determine the best card if there are two hands with the same rank. */
             else if(handRank.ordinal() == bestHandRank.ordinal()){
                 bestCards = pokerRules.getBestCardsSameRank(bestCards, cardCombination,handRank);
             }
@@ -659,8 +697,6 @@ public class Game {
      *
      * @return The ID(s) of a player/players with the best hand.
      */
-
-
     public int[] determineWinner()
     {
 
@@ -698,8 +734,4 @@ public class Game {
 
         return winners;
     }
-
 }
-
-
-
