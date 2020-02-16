@@ -156,7 +156,17 @@ public class Game {
 
                     for (Player player : players){
                         showStatus(player);
-                        System.out.println("The player " + player.getName() + " has hand " + player.hand.getRank() +"\n");
+                        switch (player.getState()){
+                            case IN:
+                            case ALL_IN:
+                                System.out.println("The player " + player.getName() + " has hand " + player.hand.getRank() +"\n");
+                                break;
+                            case FOLD:
+                                System.out.println("The player " + player.getName() + " has folded. ");
+                                break;
+                            case LOST_THE_GAME:
+                                System.out.println("The player " + player.getName() + " has lost the game. ");
+                        }
                     }
                     winnerId = determineWinner();
                     System.out.println("The winner is: " + players.get(winnerId[0]).getName());
