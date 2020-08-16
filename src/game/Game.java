@@ -713,9 +713,21 @@ public class Game {
         common.HandRank handRank;
         common.HandRank highestRank = common.HandRank.NOTHING;
         Card[] bestCards = communityCards;
-        int playerWithBestHand = players.get(0).getID();
 
-        for ( Player player : players)
+        ArrayList<Player> possibleWinners = new ArrayList();
+        for ( Player player : players )
+        {
+            if( player.getState() == PlayerState.IN  ||
+                player.getState() == PlayerState.ALL_IN )
+            {
+                /* Only players that have not folded or lost the game have the posibilty to win the round */
+                possibleWinners.add(player);
+            }
+        }
+
+        int playerWithBestHand = possibleWinners.get(0).getID();
+
+        for ( Player player : possibleWinners)
         {
             handRank = player.hand.getRank();
 
