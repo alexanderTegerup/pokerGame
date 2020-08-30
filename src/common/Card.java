@@ -1,12 +1,5 @@
 package common;
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
-
 /**
  * <h1> Class that creates Card objects </h1>
  * Each card has a suit, rank and a reference

@@ -1,5 +1,8 @@
 package game;
 
+/**
+ * <h1> Class that contains the main method. </h1>
+ */
 public class Main {
 
     public static void main(String[] args)

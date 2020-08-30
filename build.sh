@@ -4,6 +4,8 @@
 # Run this script from the parent directory of "src" containing the source code
 #------------------------------------------------------------------------------
 
+printf "Building poker app ... \n"
+
 # Creating output folder for the .class files
 mkdir tmpDir
 
@@ -34,7 +36,7 @@ mkdir -p bin
 # Adding the binary to the bin folder
 mv pokerApp.jar bin/pokerApp.jar
 
-echo -e ----------------------------------------------------------------------
+echo -e -------------------------------------------------------------------
 printf "Build Complete!\n"
 echo ----------------------------------------------------------------------
 

@@ -10,26 +10,10 @@ import common.HoleCards;
  */
 public class PokerRules
 {
-
-    // TODO Don't call getRank or getSuit that often, save those values and reuse them instead
-    // TODO Comment the methods and create java doc.
-    // TODO Go through and see if I can remove some hard coding.
-    // TODO Rename some methods and enums
-
-    // TODO Remove some code repetition. For instance, the decideHighest... methods could be merged into one method that
-    // TODO takes an argument that determines what to do exactly.
-
-    // TODO Write some unit tests for this module. There might be combinations of cards where the code determines the
-    // TODO wrong winner.
-    // TODO Do I need to call the ordinal method in checkStraight?
-    // TODO Remove the hard coding of numberOfWinners
-    // TODO Make determineWinner take an array of hands and the cards on the table as arguments.
-
-
     /**
      * Determines the highest possible rank of the five cards given as an input.
      * @param fiveCards An array containing five cards.
-     * @return The highest ranking of the five cards given as an input.
+     * @return The highest ranking of the five cards in the array.
      */
     public common.HandRank determineHandRank(Card[] fiveCards)
     {
@@ -110,7 +94,14 @@ public class PokerRules
         return cards;
     }
 
-
+    /**
+     * Method that compares two sets of cards with the same ranking and decides which one of the sets of cards is best.
+     *
+     * @param hand1 A set of five cards.
+     * @param hand2 Another set of five cards.
+     * @param rank The ranking the of hand1 and hand2
+     * @return The best set of the two sets of cards.
+     */
     public Card[] getBestCardsSameRank(Card[] hand1, Card[] hand2, HandRank rank)
     {
 
@@ -149,7 +140,7 @@ public class PokerRules
         return bestCards;
     }
     /**
-     * Method that determines which one of two players who has the highest card, including the cards on the table.
+     * Method that determines which one of two sets of cards that contains the highest card.
      *
      * @param hand1 Hand of five cards.
      * @param hand2 Hand of five cards.
@@ -178,8 +169,9 @@ public class PokerRules
     }
 
     /**
-     * Method that decides which of two players, who both have pair, has the best hand. If both players have the
-     * same pair, the player with the highest of the three remaining cards will have the best hand.
+     * Method that determines which one of two sets of cards that both have one pair, has the highest pair.
+     * If both sets of cards have the same pair, the set with the highest of the three remaining cards will be the best
+     * hand.
      *
      * @param hand1 Hand of five cards.
      * @param hand2 Hand of five cards.
@@ -265,8 +257,9 @@ public class PokerRules
 
 
     /**
-     * Method that decides which of two players, who both have two pair, has the best hand. The player with the highest
-     * pair wins. If two players have the same two pair, then the fifth card kicker determines the winner.
+     * Method that decides which of two set of cards, both containing two pair, is the best hand. The set with the
+     * highest pair is considered to be the best hand. If the hands have the same two pair, then the fifth card kicker
+     * determines the best hand.
      *
      * @param hand1 Hand of five cards.
      * @param hand2 Hand of five cards.
@@ -396,13 +389,13 @@ public class PokerRules
     }
 
     /**
-     * Method that decides which of two players, who both have three of a kind, has the best hand. The player with the
-     * highest ranked cards that makes up three of a kind wins. If two players have the same three of a kind, then the
-     * highest of the two remaining card kickers determines the winner.
+     * Method that decides which of two set of cards, both containing three of a kind, is the best hand. The set with
+     * the highest ranked cards that makes up three of a kind is considered to be the best hand. If two sets have the
+     * same three of a kind, then the highest of the two remaining card kickers determines the best hand.
      *
      * @param hand1 Hand of five cards.
      * @param hand2 Hand of five cards.
-     * @return The hand that contains the three of a kind.
+     * @return The best hand that contains the three of a kind.
      */
     public Card[] decideBestThreeOfAKind(Card[] hand1, Card[] hand2)
     {
@@ -470,8 +463,8 @@ public class PokerRules
     }
 
     /**
-     * Method that decides which of two players, who both have a straight, has the best hand. The player with the
-     * highest ranked card wins.
+     * Method that decides which of two sets of cards, both containing a straight, is the best hand. The set with the
+     * highest ranked card is the best hand.
      *
      * @param hand1 Hand of five cards.
      * @param hand2 Hand of five cards.

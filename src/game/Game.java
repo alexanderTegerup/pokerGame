@@ -12,7 +12,9 @@ import player.Player;
 
 import static common.PlayerMove.*;
 
-
+/**
+ * <h1> Class that runs the major events in the poker game and interacts with all the players of the game. </h1>
+ */
 public class Game {
 
     private enum BettingRound {
@@ -180,7 +182,7 @@ public class Game {
     }
 
     /**
-     * Function used for reset variables.
+     * Function used for resetting variables.
      */
     private void resetGlobalVariables(){
         highestBid = 0;
@@ -349,7 +351,6 @@ public class Game {
      */
     private void makeMoves(){
 
-        PlayerMove move;
         int playersTurn = 0;
         int requiredDecisionsMade = 0;
         somebodyMadeABet = false;
@@ -361,9 +362,8 @@ public class Game {
             if ( PlayerState.IN == player.getState() ) {
 
                 chooseNextMove(player);
-                move = player.getMove();
 
-                switch (move) {
+                switch (player.getMove()) {
 
                     case BET:
                         player.setState(PlayerState.IN);
@@ -395,7 +395,7 @@ public class Game {
                         break;
 
                 }
-                System.out.println("Player " + player.getName() + " did the move " + move + "\n\n");
+                System.out.println("Player " + player.getName() + " did the move " + player.getMove() + "\n\n");
             }
             requiredDecisionsMade++;
             // Update so that the next player can make his/her move.
@@ -528,7 +528,7 @@ public class Game {
                 System.out.println("You want to bet more than you can afford. Do you want to go all in?");
                 System.out.println("1. Yes    2. No");
                 int answer = intScan.nextInt();
-                if (1 ==answer){
+                if (1 == answer){
                     goAllIn(player);
                     return;
                 }
@@ -585,7 +585,7 @@ public class Game {
                 System.out.println("You want to raise more than you can afford. Do you want to go all in?");
                 System.out.println("1. Yes    2. No");
                 int answer = intScan.nextInt();
-                if (1 ==answer){
+                if (1 == answer){
                     goAllIn(player);
                     return;
                 }
@@ -620,7 +620,7 @@ public class Game {
 
     /**
      * Method that computes the rank of each possible combination of the five cards on the table plus the two cards a
-     * player has. The highest of those ranks is saved in the attribute 'rank' in the hand those two cards belong to.
+     * player has. The highest of those ranks is saved in the attribute 'rank' in the attribute 'hand' of the player.
      * @param player - a player in the game.
      */
     public void setHand(Player player)
