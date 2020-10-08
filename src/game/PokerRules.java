@@ -6,7 +6,7 @@ import common.HandRank;
 import common.HoleCards;
 
 /**
- * <h1> Class that determines which player who has the best poker hand </h1>
+ * <h1> Class used for determine which player who has the best poker hand </h1>
  */
 public class PokerRules
 {

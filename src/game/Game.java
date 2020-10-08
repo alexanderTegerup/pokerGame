@@ -17,6 +17,9 @@ import static common.PlayerMove.*;
  */
 public class Game {
 
+    /**
+     * The betting rounds in Texas hold'em.
+     */
     private enum BettingRound {
         PRE_FLOP,
         FLOP,
@@ -25,6 +28,9 @@ public class Game {
         SHOWDOWN
     }
 
+    /**
+     * The possible states the players as a group can have during the poker game.
+     */
     public enum StateOfPlayers {
         PLAYERS_MAKING_MOVES,
         MOVES_DONE,

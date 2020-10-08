@@ -2,7 +2,9 @@ package player;
 
 import common.*;
 
-
+/**
+ * <h1> Class used for instantiating the player objects of the poker game. </h1>
+ */
 public class Player {
 
     public Hand hand;
@@ -18,7 +20,12 @@ public class Player {
     private PlayerState state;
     private PlayerMove move;
 
-
+    /**
+     * Constructor.
+     * @param playerName Name of the player
+     * @param initChips The number of chips the player has at the beginning of the game
+     * @param playerID Unique id of the player.
+     */
     public Player(String playerName, int initChips, int playerID) {
         name = playerName;
         chips = initChips;
@@ -32,7 +39,7 @@ public class Player {
     }
 
     /**
-     * Returns the hole cards of the player.
+     * @return The hole cards of the player.
      */
     public HoleCards getHoleCards() {
         return holeCards;
@@ -40,6 +47,8 @@ public class Player {
 
     /**
      * Sets the hole cards of the player.
+     * @param card1 One of the hole cards of the player
+     * @param card2 One of the hole cards of the player
      */
     public void setHoleCards(Card card1, Card card2){
         holeCards = new HoleCards(card1, card2);
@@ -66,6 +75,7 @@ public class Player {
 
     /**
      * Give chips to the player.
+     * @param newChips The amount of chips that is given to the player.
      */
     public void addChips(int newChips) {
 
@@ -81,6 +91,7 @@ public class Player {
 
     /**
      * Remove chips from the player.
+     * @param lostChips The amount of chips that is removed from the player.
      */
     public void removeChips (int lostChips){
 
@@ -112,25 +123,60 @@ public class Player {
     public Blind getBlind () {
         return blind;
     }
+
     /**
      * Set the blind of the player.
+     * @param playerBlind The blind of the player (small, big or none)
      */
     public void setBlind (Blind playerBlind){
         blind = playerBlind;
     }
 
+    /**
+     * @return True if the player is dealer, otherwise false.
+     */
     public boolean isDealer(){ return dealer; }
+
+    /**
+     * Set if the player shall be dealer or not.
+     * @param deal True if the player shall be dealer, otherwise false.
+     */
     public void setDealer(boolean deal){ dealer = deal; }
 
+    /**
+     * Get the state the player is currently in (in, all in, fold or lost)
+     * @return The state of the player
+     */
     public PlayerState getState(){ return state; }
+
+    /**
+     * Set the state the player shall switch to (in, all in, fold or lost)
+     * @param newState The state the player shall switch to
+     */
     public void setState(PlayerState newState){ state = newState; }
 
+    /**
+     * Get the move the player has chosen to make
+     * @return The move of the player
+     */
     public PlayerMove getMove() { return move; }
+
+    /**
+     * Set the move the player has chosen to make
+     * @param nextMove The move of the player
+     */
     public void setMove(PlayerMove nextMove) { move = nextMove; }
 
+    /**
+     * Show the amount of chips the player currently has bet. Note, this method does not remove any chips from the
+     * player.
+     * @return The amount of chips the player has bet at the moment.
+     */
     public int getChipsOnTable() {return chipsOnTable;}
+
     /**
      * This function takes chips the player has and makes them to chips the player has bet.
+     * @param chips_ The number of chips the player shall bet.
      */
     public void moveChipsToTable(int chips_) {
 
@@ -149,6 +195,7 @@ public class Player {
 
     /**
      * This function returns the chips the player has bet and sets the chips the player has bet to zero.
+     * @return The chips the player has bet.
      */
     public int takeChipsOnTable() {
         int tmpChips = chipsOnTable;
