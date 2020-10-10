@@ -3,6 +3,9 @@
  */
 package common;
 
+/**
+ * Possible values of hand rankings of a poker hand of five cards.
+ */
 public enum HandRank
 {
     NOTHING,

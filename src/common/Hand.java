@@ -1,29 +1,49 @@
 package common;
 
+/**
+ * <h1> Class used for creating a poker hand of five cards, for each player. </h1>
+ */
 public class Hand {
 
+    /** The five cards of the hand. */
     private Card[] cards;
+    /** The ranking of the hand. */
     private HandRank rank;
 
-    public Hand()//Card c1, Card c2, Card c3, Card c4, Card c5)
+    /**
+     * Constructor.
+     */
+    public Hand()
     {
         cards = new Card[5];
-/*
-        cards[0] = c1;
-        cards[1] = c2;
-        cards[2] = c3;
-        cards[3] = c4;
-        cards[4] = c5;*/
         rank = HandRank.NOTHING;
     }
 
+    /**
+     * Get the ranking of the poker hand.
+     * @return The ranking of the poker hand.
+     */
     public HandRank getRank() { return rank; }
+
+    /**
+     * Set the ranking of the poker hand.
+     * @param handRank The ranking of the poker hand.
+     */
     public void setRank(HandRank handRank)
     {
         rank = handRank;
     }
 
+    /**
+     * Get the cards in the poker hand.
+     * @return The cards in the poker hand.
+     */
     public Card[] getCards(){ return cards; }
+
+    /**
+     * Set the cards of the poker hand.
+     * @param cardArray The cards of the poker hand.
+     */
     public void setCards(Card[] cardArray){
 
         cards[0] = cardArray[0];
@@ -33,6 +53,9 @@ public class Hand {
         cards[4] = cardArray[4];
     }
 
+    /**
+     * Remove the cards of the poker hand.
+     */
     public void resetHand()
     {
         for(int i=0; i<5; i++){

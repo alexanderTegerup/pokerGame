@@ -13,7 +13,7 @@ import player.Player;
 import static common.PlayerMove.*;
 
 /**
- * <h1> Class that runs the major events in the poker game and interacts with all the players of the game. </h1>
+ * <h1> Class used for running major events in the poker game and interact with all the players of the game. </h1>
  */
 public class Game {
 
@@ -37,27 +37,44 @@ public class Game {
         ALL_PLAYERS_FINISHED
     }
 
+    /** States which betting round it is. */
     private BettingRound bettingRound;
+    /** The state of the players in the game. */
     private StateOfPlayers stateOfPlayers;
+
+    /** Value of the big blind at the moment */
     private int bigBlind;
+    /** Value of the small blind at the moment */
     private int smallBlind;
+    /** The minimum amount any player is allowed to raise.
+     * In this game, the rules are that a player has to raise at least as much as the previous raise in the same
+     * round */
     private int minimumRaise;
+    /** Keeps track on how big the latest raise was. */
     private int latestRaise;
+    /** The highest, total amount of chips that any player has bet during the betting round.
+     * All the other players have to put in this amount of chips to continue playing the current round. */
     private int highestBid;
 
     private int playedRounds;
-    int pot;
-    int sidePot;
+    private int pot;
+    private int sidePot;
+    /** Flag that indicates if the whole poker game is finished. */
     private boolean gameFinished = false;
+    /** If somebody has made a bet in the current betting round. */
     private boolean somebodyMadeABet = false;
 
-
-    Deck deck;
+    /** The deck that contains all the cards used in the game. */
+    private Deck deck;
+    /** Instance of the poker rules used in this game. */
     private PokerRules pokerRules;
+    /** The five cards on the table that are common to all players. */
     private Card[] communityCards;
-    ArrayList<Player> players;
-    int numberOfPlayers;
-    Scanner stringScan, intScan;
+    /** Array with the players in the game. */
+    private ArrayList<Player> players;
+    /** The number of players that are currently in the game. */
+    private int numberOfPlayers;
+    private Scanner stringScan, intScan;
 
     /**
      * A no argument constructor.
@@ -163,7 +180,7 @@ public class Game {
                     }
 
                     for (Player player : players){
-                        showStatus(player);
+                        showPlayersStatus(player);
                         switch (player.getState()){
                             case IN:
                             case ALL_IN:
@@ -418,7 +435,7 @@ public class Game {
      * Prints the status of a player.
      * @param player - the player who gets its status printed out.
      */
-    private void showStatus(Player player){
+    private void showPlayersStatus(Player player){
 
         System.out.println("\nStatus of player " + player.getName() + ":");
         System.out.println("Chips: " + player.getChips());
@@ -445,7 +462,7 @@ public class Game {
         boolean validMove = false;
 
         System.out.println("Time for " + player.getName() + " to make his/her move.");
-        showStatus(player);
+        showPlayersStatus(player);
 
         do {
             if ((!somebodyMadeABet) && (playersChips > minimumRaise)) {
@@ -516,7 +533,7 @@ public class Game {
 
     /**
      * Makes a player bet some of his/her chips.
-     * @param player - the player who is making the bet.
+     * @param player - the player that is making the bet.
      */
     private void bet(Player player){
 

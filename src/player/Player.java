@@ -7,17 +7,25 @@ import common.*;
  */
 public class Player {
 
+    /** A poker hand the player has. */
     public Hand hand;
-
+    /** The hole cards of the player. */
     private HoleCards holeCards;
+    /** The name of the player. */
     private String name;
+    /** The amount of chips the player has. */
     private int chips;
+    /** The amount of chips the player has currently bet. */
     private int chipsOnTable;
-
+    /** Unique id of the player. */
     private int id;
+    /** States if the player has to put in small blind, big blind or no blind at all. */
     private Blind blind;
+    /** States if the player is dealer. */
     private boolean dealer;
+    /** The state the player is currently in. */
     private PlayerState state;
+    /** The move the player choose to make. */
     private PlayerMove move;
 
     /**

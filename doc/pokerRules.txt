@@ -1,0 +1,7 @@
+The poker app simulates No limit Texas holdem.
+
+- If a player make a raise, the raise has to be at least as much as the previous raise in the same round. 
+
+- There is no limit for the maximum raise, a player may bet all his/her chips. 
+
+- There are no limitations of how many times a player may make a raise. 

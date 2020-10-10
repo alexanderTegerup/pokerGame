@@ -8,7 +8,7 @@ import common.Card.Rank;
 import common.Card.Suit;
 
 /**
- * <h1> Class which generates a deck </h1>
+ * <h1> Class used for generating a deck. </h1>
  * Each card in the deck has a reference to the card below in the deck. This
  * means that the deck is a linked list of cards.
  */

@@ -1,13 +1,13 @@
 package common;
 
 /**
- * <h1> Class that creates Card objects </h1>
+ * <h1> Class for creating Card objects </h1>
  * Each card has a suit, rank and a reference
  * to an other card.
  */
 public class Card
 {
-
+    /** All possible suits of a card */
     public enum Suit
     {
         SPADES,
@@ -16,6 +16,7 @@ public class Card
         CLUBS
     }
 
+    /** All possible ranks of a card */
     public enum Rank
     {
         TWO,
