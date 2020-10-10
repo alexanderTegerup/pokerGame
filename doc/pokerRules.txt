@@ -5,3 +5,5 @@ The poker app simulates No limit Texas holdem.
 - There is no limit for the maximum raise, a player may bet all his/her chips. 
 
 - There are no limitations of how many times a player may make a raise. 
+
+- At the beginning of the game, the minimum bet is equal to the big blind. 
